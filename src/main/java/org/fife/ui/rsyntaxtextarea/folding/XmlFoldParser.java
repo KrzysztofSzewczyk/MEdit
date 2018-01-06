@@ -16,9 +16,8 @@ import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
 
-
 /**
- * Fold parser for XML.  Any tags that span more than one line, as well as
+ * Fold parser for XML. Any tags that span more than one line, as well as
  * comment regions spanning more than one line, are identified as foldable
  * regions.
  *
@@ -30,7 +29,6 @@ public class XmlFoldParser implements FoldParser {
 	private static final char[] MARKUP_CLOSING_TAG_START = { '<', '/' };
 	private static final char[] MARKUP_SHORT_TAG_END = { '/', '>' };
 	private static final char[] MLC_END = { '-', '-', '>' };
-
 
 	/**
 	 * {@inheritDoc}
@@ -47,10 +45,10 @@ public class XmlFoldParser implements FoldParser {
 
 		try {
 
-			for (int line=0; line<lineCount; line++) {
+			for (int line = 0; line < lineCount; line++) {
 
 				Token t = textArea.getTokenListForLine(line);
-				while (t!=null && t.isPaintable()) {
+				while (t != null && t.isPaintable()) {
 
 					if (t.isComment()) {
 
@@ -59,13 +57,12 @@ public class XmlFoldParser implements FoldParser {
 							// Found the end of the MLC starting on a previous line...
 							if (t.endsWith(MLC_END)) {
 								int mlcEnd = t.getEndOffset() - 1;
-								if (currentFold==null) {
+								if (currentFold == null) {
 									currentFold = new Fold(FoldType.COMMENT, textArea, mlcStart);
 									currentFold.setEndOffset(mlcEnd);
 									folds.add(currentFold);
 									currentFold = null;
-								}
-								else {
+								} else {
 									currentFold = currentFold.createChild(FoldType.COMMENT, mlcStart);
 									currentFold.setEndOffset(mlcEnd);
 									currentFold = currentFold.getParent();
@@ -79,7 +76,7 @@ public class XmlFoldParser implements FoldParser {
 
 						else {
 							// If we're an MLC that ends on a later line...
-							if (t.getType()==Token.COMMENT_MULTILINE && !t.endsWith(MLC_END)) {
+							if (t.getType() == Token.COMMENT_MULTILINE && !t.endsWith(MLC_END)) {
 								inMLC = true;
 								mlcStart = t.getOffset();
 							}
@@ -88,17 +85,16 @@ public class XmlFoldParser implements FoldParser {
 					}
 
 					else if (t.isSingleChar(Token.MARKUP_TAG_DELIMITER, '<')) {
-						if (currentFold==null) {
+						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);
-						}
-						else {
+						} else {
 							currentFold = currentFold.createChild(FoldType.CODE, t.getOffset());
 						}
 					}
 
 					else if (t.is(Token.MARKUP_TAG_DELIMITER, MARKUP_SHORT_TAG_END)) {
-						if (currentFold!=null) {
+						if (currentFold != null) {
 							Fold parentFold = currentFold.getParent();
 							removeFold(currentFold, folds);
 							currentFold = parentFold;
@@ -106,7 +102,7 @@ public class XmlFoldParser implements FoldParser {
 					}
 
 					else if (t.is(Token.MARKUP_TAG_DELIMITER, MARKUP_CLOSING_TAG_START)) {
-						if (currentFold!=null) {
+						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
 							Fold parentFold = currentFold.getParent();
 							// Don't add fold markers for single-line blocks
@@ -131,20 +127,20 @@ public class XmlFoldParser implements FoldParser {
 
 	}
 
-
 	/**
 	 * If this fold has a parent fold, this method removes it from its parent.
 	 * Otherwise, it's assumed to be the most recent (top-level) fold in the
 	 * <code>folds</code> list, and is removed from that.
 	 *
-	 * @param fold The fold to remove.
-	 * @param folds The list of top-level folds.
+	 * @param fold
+	 *            The fold to remove.
+	 * @param folds
+	 *            The list of top-level folds.
 	 */
 	private static void removeFold(Fold fold, List<Fold> folds) {
 		if (!fold.removeFromParent()) {
-			folds.remove(folds.size()-1);
+			folds.remove(folds.size() - 1);
 		}
 	}
-
 
 }

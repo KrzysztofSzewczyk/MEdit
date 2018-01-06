@@ -8,9 +8,8 @@
  */
 package org.fife.ui.rsyntaxtextarea.modes;
 
-
 /**
- * Scanner for .jshintrc files.  This is equivalent to JSON with C-style
+ * Scanner for .jshintrc files. This is equivalent to JSON with C-style
  * end-of-line comments.
  *
  * @author Robert Futrell
@@ -18,13 +17,11 @@ package org.fife.ui.rsyntaxtextarea.modes;
  */
 public class JshintrcTokenMaker extends JsonTokenMaker {
 
-
 	/**
 	 * Constructor; overridden to enable highlighting of EOL comments.
 	 */
 	public JshintrcTokenMaker() {
 		setHighlightEolComments(true);
 	}
-
 
 }

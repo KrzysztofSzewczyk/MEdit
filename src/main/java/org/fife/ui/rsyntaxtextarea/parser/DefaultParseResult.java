@@ -11,9 +11,8 @@ package org.fife.ui.rsyntaxtextarea.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * A basic implementation of {@link ParseResult}.  Most, if not all,
+ * A basic implementation of {@link ParseResult}. Most, if not all,
  * <code>Parser</code>s can return instances of this class.
  *
  * @author Robert Futrell
@@ -29,23 +28,21 @@ public class DefaultParseResult implements ParseResult {
 	private long parseTime;
 	private Exception error;
 
-
 	public DefaultParseResult(Parser parser) {
 		this.parser = parser;
 		notices = new ArrayList<ParserNotice>();
 	}
 
-
 	/**
 	 * Adds a parser notice.
 	 *
-	 * @param notice The new notice.
+	 * @param notice
+	 *            The new notice.
 	 * @see #clearNotices()
 	 */
 	public void addNotice(ParserNotice notice) {
 		notices.add(notice);
 	}
-
 
 	/**
 	 * Clears any parser notices in this result.
@@ -56,7 +53,6 @@ public class DefaultParseResult implements ParseResult {
 		notices.clear();
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -64,7 +60,6 @@ public class DefaultParseResult implements ParseResult {
 	public Exception getError() {
 		return error;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -74,7 +69,6 @@ public class DefaultParseResult implements ParseResult {
 		return firstLineParsed;
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -82,7 +76,6 @@ public class DefaultParseResult implements ParseResult {
 	public int getLastLineParsed() {
 		return lastLineParsed;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -92,7 +85,6 @@ public class DefaultParseResult implements ParseResult {
 		return notices;
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -100,7 +92,6 @@ public class DefaultParseResult implements ParseResult {
 	public Parser getParser() {
 		return parser;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -110,24 +101,24 @@ public class DefaultParseResult implements ParseResult {
 		return parseTime;
 	}
 
-
 	/**
-	 * Sets the error that occurred when last parsing the document, if
-	 * any.
+	 * Sets the error that occurred when last parsing the document, if any.
 	 *
-	 * @param e The error that occurred, or <code>null</code> if no error
-	 *        occurred.
+	 * @param e
+	 *            The error that occurred, or <code>null</code> if no error
+	 *            occurred.
 	 */
 	public void setError(Exception e) {
 		this.error = e;
 	}
 
-
 	/**
 	 * Sets the line range parsed.
 	 *
-	 * @param first The first line parsed, inclusive.
-	 * @param last The last line parsed, inclusive.
+	 * @param first
+	 *            The first line parsed, inclusive.
+	 * @param last
+	 *            The last line parsed, inclusive.
 	 * @see #getFirstLineParsed()
 	 * @see #getLastLineParsed()
 	 */
@@ -136,16 +127,15 @@ public class DefaultParseResult implements ParseResult {
 		lastLineParsed = last;
 	}
 
-
 	/**
 	 * Sets the amount of time it took for this parser to parse the document.
 	 *
-	 * @param time The amount of time, in milliseconds.
+	 * @param time
+	 *            The amount of time, in milliseconds.
 	 * @see #getParseTime()
 	 */
 	public void setParseTime(long time) {
 		parseTime = time;
 	}
-
 
 }

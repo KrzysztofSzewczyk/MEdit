@@ -1,12 +1,14 @@
 package medit;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -30,18 +32,17 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import javax.swing.BoxLayout;
-import javax.swing.JTextField;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.KeyStroke;
-import java.awt.event.InputEvent;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 /**
  * Main frame for MEdit project.
@@ -64,6 +65,23 @@ public class MainFrame extends JFrame {
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
+
+	public void initPane() {
+		textPane.clearParsers();
+		textPane.setParserDelay(1);
+		textPane.setAnimateBracketMatching(false);
+		textPane.setAutoIndentEnabled(false);
+		textPane.setAntiAliasingEnabled(false);
+		textPane.setBracketMatchingEnabled(false);
+		textPane.setCloseCurlyBraces(false);
+		textPane.setCloseMarkupTags(false);
+		textPane.setCodeFoldingEnabled(false);
+		textPane.setHyperlinkForeground(Color.pink);
+		textPane.setHyperlinksEnabled(false);
+		textPane.setPaintMatchedBracketPair(false);
+		textPane.setPaintTabLines(false);
+		textPane.setCurrentLineHighlightColor(textPane.getCurrentLineHighlightColor());
+	}
 
 	/**
 	 * Create the frame.
@@ -318,31 +336,52 @@ public class MainFrame extends JFrame {
 
 		JMenu mnLanguage = new JMenu("Language");
 		menuBar.add(mnLanguage);
-		
+
 		JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
-		
+
 		JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
 		menuBar.add(mnSyntaxHighlighting);
-		
-		JRadioButtonMenuItem rdbtnmntmNo = new JRadioButtonMenuItem("No");
-		rdbtnmntmNo.setSelected(true);
-		mnSyntaxHighlighting.add(rdbtnmntmNo);
+
+		JMenuItem mntmNo = new JMenuItem("No");
+		mntmNo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initPane();
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmNo);
+
+		JMenuItem mntmC = new JMenuItem("C");
+		mntmC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initPane();
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+			}
+		});
+
+		JMenuItem mntmAssembler = new JMenuItem("Assembly");
+		mntmAssembler.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initPane();
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
+			}
+		});
+
+		JMenuItem mntmActionscript = new JMenuItem("ActionScript");
+		mntmActionscript.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				initPane();
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmActionscript);
+		mnSyntaxHighlighting.add(mntmAssembler);
+		mnSyntaxHighlighting.add(mntmC);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
-
-		JMenuItem mntmPreferences = new JMenuItem("Preferences");
-		mntmPreferences.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				PropertiesBox dialog = new PropertiesBox(instance);
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		mntmPreferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
-		mnAbout.add(mntmPreferences);
 
 		JMenuItem mntmAbout = new JMenuItem("About MEdit");
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
@@ -554,20 +593,6 @@ public class MainFrame extends JFrame {
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
 		toolBar.add(btnRedoButton);
 
-		JButton btnPreferencesButton = new JButton("");
-		btnPreferencesButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				PropertiesBox dialog = new PropertiesBox(instance);
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		btnPreferencesButton.setToolTipText("Preferences");
-		btnPreferencesButton.setFocusPainted(false);
-		btnPreferencesButton.setIcon(
-				new ImageIcon(MainFrame.class.getResource("/medit/assets/categories/applications-system.png")));
-		toolBar.add(btnPreferencesButton);
-
 		JToolBar toolBar_1 = new JToolBar();
 		toolBar_1.setFloatable(false);
 		contentPane.add(toolBar_1, BorderLayout.SOUTH);
@@ -656,13 +681,13 @@ public class MainFrame extends JFrame {
 		btnCountOccurences.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int amount = 0;
-				while(true) {
+				while (true) {
 					final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
 					final int l2 = searchTextField.getText().length();
 					if (l1 == -1) {
 						break;
 					} else {
-						textPane.setCaretPosition(l1+l2);
+						textPane.setCaretPosition(l1 + l2);
 						amount++;
 					}
 				}
@@ -670,6 +695,28 @@ public class MainFrame extends JFrame {
 			}
 		});
 		panel_6.add(btnCountOccurences);
+
+		JPanel panel_7 = new JPanel();
+		panel_5.add(panel_7, BorderLayout.SOUTH);
+
+		JLabel lblTheme = new JLabel("Theme:");
+		panel_7.add(lblTheme);
+
+		JButton btnBlack = new JButton("Black");
+		btnBlack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setBackground(new Color(0, 0, 0));
+			}
+		});
+		panel_7.add(btnBlack);
+
+		JButton btnClassical = new JButton("Classical");
+		btnClassical.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setBackground(new Color(255, 255, 255));
+			}
+		});
+		panel_7.add(btnClassical);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

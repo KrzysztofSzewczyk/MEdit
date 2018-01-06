@@ -45,27 +45,29 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 /**
  * A theme is a set of fonts and colors to use to style RSyntaxTextArea and
- * RTextScrollPane.  Themes are defined in XML files that are validated against
- * <code>org/fife/ui/rsyntaxtextarea/themes/theme.dtd</code>.  This provides
+ * RTextScrollPane. Themes are defined in XML files that are validated against
+ * <code>org/fife/ui/rsyntaxtextarea/themes/theme.dtd</code>. This provides
  * applications and other consumers with an easy way to style RSyntaxTextArea
- * without having to use the API.<p>
+ * without having to use the API.
+ * <p>
  *
  * Sample themes are included in the source tree in the
  * <code>org.fife.ui.rsyntaxtextarea.themes</code> package, and can be loaded
- * via <code>getClass().getResourceAsStream(...)</code>.<p>
+ * via <code>getClass().getResourceAsStream(...)</code>.
+ * <p>
  *
  * All fields are public to facilitate programmatic manipulation, but typically
  * you won't need to reference any fields directly, rather using the
  * <code>load()</code>, <code>save()</code>, and <code>apply()</code> methods
- * for various tasks.<p>
+ * for various tasks.
+ * <p>
  *
- * Note that to save a <code>Theme</code> via {@link #save(OutputStream)},
- * you must currently create a <code>Theme</code> from a text area wrapped in
- * an <code>RTextScrollPane</code>, so that the color information for the
- * gutter can be retrieved.
+ * Note that to save a <code>Theme</code> via {@link #save(OutputStream)}, you
+ * must currently create a <code>Theme</code> from a text area wrapped in an
+ * <code>RTextScrollPane</code>, so that the color information for the gutter
+ * can be retrieved.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -106,27 +108,27 @@ public class Theme {
 	public Color foldBG;
 	public Color armedFoldBG;
 
-
 	/**
 	 * Private constructor, used when loading from a stream.
 	 *
-	 * @param baseFont The default font to use for any "base font" properties
-	 *        not specified in the theme XML.  If this is <code>null</code>,
-	 *        a default monospaced font will be used.
+	 * @param baseFont
+	 *            The default font to use for any "base font" properties not
+	 *            specified in the theme XML. If this is <code>null</code>, a
+	 *            default monospaced font will be used.
 	 */
 	private Theme(Font baseFont) {
 		// Optional fields that require a default value.
-		this.baseFont = baseFont!=null ? baseFont : RTextArea.getDefaultFont();
+		this.baseFont = baseFont != null ? baseFont : RTextArea.getDefaultFont();
 		secondaryLanguages = new Color[3];
 		activeLineRangeColor = Gutter.DEFAULT_ACTIVE_LINE_RANGE_COLOR;
 	}
 
-
 	/**
-	 * Creates a theme from an RSyntaxTextArea.  It should be contained in
-	 * an <code>RTextScrollPane</code> to get all gutter color information.
+	 * Creates a theme from an RSyntaxTextArea. It should be contained in an
+	 * <code>RTextScrollPane</code> to get all gutter color information.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 */
 	public Theme(RSyntaxTextArea textArea) {
 
@@ -151,14 +153,14 @@ public class Theme {
 
 		int count = textArea.getSecondaryLanguageCount();
 		secondaryLanguages = new Color[count];
-		for (int i=0; i<count; i++) {
-			secondaryLanguages[i]= textArea.getSecondaryLanguageBackground(i+1);
+		for (int i = 0; i < count; i++) {
+			secondaryLanguages[i] = textArea.getSecondaryLanguageBackground(i + 1);
 		}
 
 		scheme = textArea.getSyntaxScheme();
 
 		Gutter gutter = RSyntaxUtilities.getGutter(textArea);
-		if (gutter!=null) {
+		if (gutter != null) {
 			gutterBackgroundColor = gutter.getBackground();
 			gutterBorderColor = gutter.getBorderColor();
 			activeLineRangeColor = gutter.getActiveLineRangeColor();
@@ -173,11 +175,11 @@ public class Theme {
 
 	}
 
-
 	/**
 	 * Applies this theme to a text area.
 	 *
-	 * @param textArea The text area to apply this theme to.
+	 * @param textArea
+	 *            The text area to apply this theme to.
 	 */
 	public void apply(RSyntaxTextArea textArea) {
 
@@ -201,23 +203,21 @@ public class Theme {
 		textArea.setHyperlinkForeground(hyperlinkFG);
 
 		int count = secondaryLanguages.length;
-		for (int i=0; i<count; i++) {
-			textArea.setSecondaryLanguageBackground(i+1, secondaryLanguages[i]);
+		for (int i = 0; i < count; i++) {
+			textArea.setSecondaryLanguageBackground(i + 1, secondaryLanguages[i]);
 		}
 
 		textArea.setSyntaxScheme(scheme);
 
 		Gutter gutter = RSyntaxUtilities.getGutter(textArea);
-		if (gutter!=null) {
+		if (gutter != null) {
 			gutter.setBackground(gutterBackgroundColor);
 			gutter.setBorderColor(gutterBorderColor);
 			gutter.setActiveLineRangeColor(activeLineRangeColor);
 			gutter.setIconRowHeaderInheritsGutterBackground(iconRowHeaderInheritsGutterBG);
 			gutter.setLineNumberColor(lineNumberColor);
-			String fontName = lineNumberFont!=null ? lineNumberFont :
-				baseFont.getFamily();
-			int fontSize = lineNumberFontSize>0 ? lineNumberFontSize :
-				baseFont.getSize();
+			String fontName = lineNumberFont != null ? lineNumberFont : baseFont.getFamily();
+			int fontSize = lineNumberFontSize > 0 ? lineNumberFontSize : baseFont.getSize();
 			Font font = getFont(fontName, Font.PLAIN, fontSize);
 			gutter.setLineNumberFont(font);
 			gutter.setFoldIndicatorForeground(foldIndicatorFG);
@@ -227,16 +227,14 @@ public class Theme {
 
 	}
 
-
 	private static String colorToString(Color c) {
 		int color = c.getRGB() & 0xffffff;
-        StringBuilder stringBuilder = new StringBuilder(Integer.toHexString(color));
-		while (stringBuilder.length()<6) {
-            stringBuilder.insert(0, "0");
+		StringBuilder stringBuilder = new StringBuilder(Integer.toHexString(color));
+		while (stringBuilder.length() < 6) {
+			stringBuilder.insert(0, "0");
 		}
 		return stringBuilder.toString();
 	}
-
 
 	/**
 	 * Returns the default selection background color to use if "default" is
@@ -247,19 +245,18 @@ public class Theme {
 	 */
 	private static Color getDefaultBG() {
 		Color c = UIManager.getColor("nimbusLightBackground");
-		if (c==null) {
+		if (c == null) {
 			// Don't search for "text", as Nimbus defines that as the text
 			// component "text" color, but Basic LAFs use it for text
-			// component backgrounds!  Nimbus also defines TextArea.background
+			// component backgrounds! Nimbus also defines TextArea.background
 			// as too dark, not what it actually uses for text area backgrounds
 			c = UIManager.getColor("TextArea.background");
-			if (c==null) {
+			if (c == null) {
 				c = new ColorUIResource(SystemColor.text);
 			}
 		}
 		return c;
 	}
-
 
 	/**
 	 * Returns the default selection background color to use if "default" is
@@ -270,11 +267,11 @@ public class Theme {
 	 */
 	private static Color getDefaultSelectionBG() {
 		Color c = UIManager.getColor("TextArea.selectionBackground");
-		if (c==null) {
+		if (c == null) {
 			c = UIManager.getColor("textHighlight");
-			if (c==null) {
+			if (c == null) {
 				c = UIManager.getColor("nimbusSelectionBackground");
-				if (c==null) {
+				if (c == null) {
 					c = new ColorUIResource(SystemColor.textHighlight);
 				}
 			}
@@ -282,21 +279,20 @@ public class Theme {
 		return c;
 	}
 
-
 	/**
-	 * Returns the default "selected text" color to use if "default" is
-	 * specified in a theme.
+	 * Returns the default "selected text" color to use if "default" is specified in
+	 * a theme.
 	 *
 	 * @return The default selection foreground color to use.
 	 * @see #getDefaultSelectionBG()
 	 */
 	private static Color getDefaultSelectionFG() {
 		Color c = UIManager.getColor("TextArea.selectionForeground");
-		if (c==null) {
+		if (c == null) {
 			c = UIManager.getColor("textHighlightText");
-			if (c==null) {
+			if (c == null) {
 				c = UIManager.getColor("nimbusSelectedText");
-				if (c==null) {
+				if (c == null) {
 					c = new ColorUIResource(SystemColor.textHighlightText);
 				}
 			}
@@ -304,13 +300,15 @@ public class Theme {
 		return c;
 	}
 
-
 	/**
 	 * Returns the specified font.
 	 *
-	 * @param family The font family.
-	 * @param style The style of font.
-	 * @param size The size of the font.
+	 * @param family
+	 *            The font family.
+	 * @param style
+	 *            The style of font.
+	 * @param size
+	 *            The size of the font.
 	 * @return The font.
 	 */
 	private static Font getFont(String family, int style, int size) {
@@ -319,31 +317,34 @@ public class Theme {
 		return sc.getFont(family, style, size);
 	}
 
-
 	/**
 	 * Loads a theme.
 	 *
-	 * @param in The input stream to read from.  This will be closed when this
-	 *        method returns.
+	 * @param in
+	 *            The input stream to read from. This will be closed when this
+	 *            method returns.
 	 * @return The theme.
-	 * @throws IOException If an IO error occurs.
+	 * @throws IOException
+	 *             If an IO error occurs.
 	 * @see #save(OutputStream)
 	 */
 	public static Theme load(InputStream in) throws IOException {
 		return load(in, null);
 	}
 
-
 	/**
 	 * Loads a theme.
 	 *
-	 * @param in The input stream to read from.  This will be closed when this
-	 *        method returns.
-	 * @param baseFont The default font to use for any "base font" properties
-	 *        not specified in the theme XML.  If this is <code>null</code>,
-	 *        a default monospaced font will be used.
+	 * @param in
+	 *            The input stream to read from. This will be closed when this
+	 *            method returns.
+	 * @param baseFont
+	 *            The default font to use for any "base font" properties not
+	 *            specified in the theme XML. If this is <code>null</code>, a
+	 *            default monospaced font will be used.
 	 * @return The theme.
-	 * @throws IOException If an IO error occurs.
+	 * @throws IOException
+	 *             If an IO error occurs.
 	 * @see #save(OutputStream)
 	 */
 	public static Theme load(InputStream in, Font baseFont) throws IOException {
@@ -361,12 +362,13 @@ public class Theme {
 
 	}
 
-
 	/**
 	 * Saves this theme to an output stream.
 	 *
-	 * @param out The output stream to write to.
-	 * @throws IOException If an IO error occurs.
+	 * @param out
+	 *            The output stream to write to.
+	 * @throws IOException
+	 *             If an IO error occurs.
 	 * @see #load(InputStream)
 	 */
 	public void save(OutputStream out) throws IOException {
@@ -374,8 +376,7 @@ public class Theme {
 		BufferedOutputStream bout = new BufferedOutputStream(out);
 		try {
 
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().
-					newDocumentBuilder();
+			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			DOMImplementation impl = db.getDOMImplementation();
 
 			Document doc = impl.createDocument(null, "RSyntaxTheme", null);
@@ -383,8 +384,7 @@ public class Theme {
 			root.setAttribute("version", "1.0");
 
 			Element elem = doc.createElement("baseFont");
-			if (!baseFont.getFamily().equals(
-					RSyntaxTextArea.getDefaultFont().getFamily())) {
+			if (!baseFont.getFamily().equals(RSyntaxTextArea.getDefaultFont().getFamily())) {
 				elem.setAttribute("family", baseFont.getFamily());
 			}
 			elem.setAttribute("size", Integer.toString(baseFont.getSize()));
@@ -435,11 +435,11 @@ public class Theme {
 			root.appendChild(elem);
 
 			elem = doc.createElement("secondaryLanguages");
-			for (int i=0; i<secondaryLanguages.length; i++) {
+			for (int i = 0; i < secondaryLanguages.length; i++) {
 				Color color = secondaryLanguages[i];
 				Element elem2 = doc.createElement("language");
-				elem2.setAttribute("index", Integer.toString(i+1));
-				elem2.setAttribute("bg", color==null ? "":colorToString(color));
+				elem2.setAttribute("index", Integer.toString(i + 1));
+				elem2.setAttribute("bg", color == null ? "" : colorToString(color));
 				elem.appendChild(elem2);
 			}
 			root.appendChild(elem);
@@ -454,12 +454,11 @@ public class Theme {
 
 			elem = doc.createElement("lineNumbers");
 			elem.setAttribute("fg", colorToString(lineNumberColor));
-			if (lineNumberFont!=null) {
+			if (lineNumberFont != null) {
 				elem.setAttribute("fontFamily", lineNumberFont);
 			}
-			if (lineNumberFontSize>0) {
-				elem.setAttribute("fontSize",
-						Integer.toString(lineNumberFontSize));
+			if (lineNumberFontSize > 0) {
+				elem.setAttribute("fontSize", Integer.toString(lineNumberFontSize));
 			}
 			root.appendChild(elem);
 
@@ -476,29 +475,28 @@ public class Theme {
 
 			elem = doc.createElement("tokenStyles");
 			Field[] fields = TokenTypes.class.getFields();
-			for (int i=0; i<fields.length; i++) {
+			for (int i = 0; i < fields.length; i++) {
 				Field field = fields[i];
 				int value = field.getInt(null);
-				if (value!=TokenTypes.DEFAULT_NUM_TOKEN_TYPES) {
+				if (value != TokenTypes.DEFAULT_NUM_TOKEN_TYPES) {
 					Style style = scheme.getStyle(value);
-					if (style!=null) {
+					if (style != null) {
 						Element elem2 = doc.createElement("style");
 						elem2.setAttribute("token", field.getName());
 						Color fg = style.foreground;
-						if (fg!=null) {
+						if (fg != null) {
 							elem2.setAttribute("fg", colorToString(fg));
 						}
 						Color bg = style.background;
-						if (bg!=null) {
+						if (bg != null) {
 							elem2.setAttribute("bg", colorToString(bg));
 						}
 						Font font = style.font;
-						if (font!=null) {
-							if (!font.getFamily().equals(
-									baseFont.getFamily())) {
+						if (font != null) {
+							if (!font.getFamily().equals(baseFont.getFamily())) {
 								elem2.setAttribute("fontFamily", font.getFamily());
 							}
-							if (font.getSize()!=baseFont.getSize()) {
+							if (font.getSize() != baseFont.getSize()) {
 								elem2.setAttribute("fontSize", Integer.toString(font.getSize()));
 							}
 							if (font.isBold()) {
@@ -520,8 +518,7 @@ public class Theme {
 			DOMSource source = new DOMSource(doc);
 			// Use a writer instead of OutputStream to allow pretty printing.
 			// See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6337981
-			StreamResult result = new StreamResult(new PrintWriter(
-					new UnicodeWriter(bout, "UTF-8")));
+			StreamResult result = new StreamResult(new PrintWriter(new UnicodeWriter(bout, "UTF-8")));
 			TransformerFactory transFac = TransformerFactory.newInstance();
 			Transformer transformer = transFac.newTransformer();
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -540,53 +537,56 @@ public class Theme {
 
 	}
 
-
 	/**
-	 * Returns the color represented by a string.  The input is expected to
-	 * be a 6-digit hex string, optionally prefixed by a '$'.  For example,
-	 * either of the following:
+	 * Returns the color represented by a string. The input is expected to be a
+	 * 6-digit hex string, optionally prefixed by a '$'. For example, either of the
+	 * following:
+	 * 
 	 * <pre>
 	 * "$00ff00"
 	 * "00ff00"
 	 * </pre>
+	 * 
 	 * will return <code>new Color(0, 255, 0)</code>.
 	 *
-	 * @param s The string to evaluate.
+	 * @param s
+	 *            The string to evaluate.
 	 * @return The color.
 	 */
 	private static Color stringToColor(String s) {
 		return stringToColor(s, null);
 	}
 
-
 	/**
-	 * Returns the color represented by a string.  The input is expected to
-	 * be a 6-digit hex string, optionally prefixed by a '$'.  For example,
-	 * either of the following:
+	 * Returns the color represented by a string. The input is expected to be a
+	 * 6-digit hex string, optionally prefixed by a '$'. For example, either of the
+	 * following:
+	 * 
 	 * <pre>
 	 * "$00ff00"
 	 * "00ff00"
 	 * </pre>
+	 * 
 	 * will return <code>new Color(0, 255, 0)</code>.
 	 *
-	 * @param s The string to evaluate.
-	 * @param defaultVal The color to use if <code>s</code> is
-	 *        "<code>default</code>".
+	 * @param s
+	 *            The string to evaluate.
+	 * @param defaultVal
+	 *            The color to use if <code>s</code> is "<code>default</code>".
 	 * @return The color.
 	 */
 	private static Color stringToColor(String s, Color defaultVal) {
-		if (s==null || "default".equalsIgnoreCase(s)) {
+		if (s == null || "default".equalsIgnoreCase(s)) {
 			return defaultVal;
 		}
-		if (s.length()==6 || s.length()==7) {
-			if (s.charAt(0)=='$') {
+		if (s.length() == 6 || s.length() == 7) {
+			if (s.charAt(0) == '$') {
 				s = s.substring(1);
 			}
 			return new Color(Integer.parseInt(s, 16));
 		}
 		return null;
 	}
-
 
 	/**
 	 * Loads a <code>SyntaxScheme</code> from an XML file.
@@ -605,7 +605,7 @@ public class Theme {
 			throw e;
 		}
 
-	    public static void load(Theme theme, InputStream in) throws IOException {
+		public static void load(Theme theme, InputStream in) throws IOException {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			spf.setValidating(true);
 			try {
@@ -620,13 +620,12 @@ public class Theme {
 				InputSource is = new InputSource(in);
 				is.setEncoding("UTF-8");
 				reader.parse(is);
-			} catch (/*SAX|ParserConfiguration*/Exception se) {
+			} catch (/* SAX|ParserConfiguration */Exception se) {
 				throw new IOException(se.toString());
 			}
 		}
 
-		private static int parseInt(Attributes attrs, String attr,
-				int def) {
+		private static int parseInt(Attributes attrs, String attr, int def) {
 			int value = def;
 			String temp = attrs.getValue(attr);
 			if (temp != null) {
@@ -640,26 +639,22 @@ public class Theme {
 		}
 
 		@Override
-		public InputSource resolveEntity(String publicID,
-				String systemID) throws SAXException {
-			return new InputSource(getClass().
-					getResourceAsStream("themes/theme.dtd"));
+		public InputSource resolveEntity(String publicID, String systemID) throws SAXException {
+			return new InputSource(getClass().getResourceAsStream("themes/theme.dtd"));
 		}
 
 		@Override
-		public void startElement(String uri, String localName, String qName,
-								Attributes attrs) {
+		public void startElement(String uri, String localName, String qName, Attributes attrs) {
 
 			if ("background".equals(qName)) {
 
 				String color = attrs.getValue("color");
-				if (color!=null) {
+				if (color != null) {
 					theme.bgColor = stringToColor(color, getDefaultBG());
 					theme.gutterBackgroundColor = theme.bgColor;
-				}
-				else {
+				} else {
 					String img = attrs.getValue("image");
-					if (img!=null) {
+					if (img != null) {
 						throw new IllegalArgumentException("Not yet implemented");
 					}
 				}
@@ -669,16 +664,15 @@ public class Theme {
 			else if ("baseFont".equals(qName)) {
 				int size = theme.baseFont.getSize();
 				String sizeStr = attrs.getValue("size");
-				if (sizeStr!=null) {
+				if (sizeStr != null) {
 					size = Integer.parseInt(sizeStr);
 				}
 				String family = attrs.getValue("family");
-				if (family!=null) {
+				if (family != null) {
 					theme.baseFont = getFont(family, Font.PLAIN, size);
-				}
-				else if (sizeStr!=null) {
+				} else if (sizeStr != null) {
 					// No family specified, keep original family
-					theme.baseFont = theme.baseFont.deriveFont(size*1f);
+					theme.baseFont = theme.baseFont.deriveFont(size * 1f);
 				}
 			}
 
@@ -706,7 +700,7 @@ public class Theme {
 
 			else if ("gutterBackground".equals(qName)) {
 				String color = attrs.getValue("color");
-				if (color!=null) {
+				if (color != null) {
 					theme.gutterBackgroundColor = stringToColor(color);
 				}
 			}
@@ -720,8 +714,7 @@ public class Theme {
 				String color = attrs.getValue("activeLineRange");
 				theme.activeLineRangeColor = stringToColor(color);
 				String inheritBGStr = attrs.getValue("inheritsGutterBG");
-				theme.iconRowHeaderInheritsGutterBG =
-						inheritBGStr==null ? false : Boolean.valueOf(inheritBGStr);
+				theme.iconRowHeaderInheritsGutterBG = inheritBGStr == null ? false : Boolean.valueOf(inheritBGStr);
 			}
 
 			else if ("lineNumbers".equals(qName)) {
@@ -767,7 +760,7 @@ public class Theme {
 			else if ("language".equals(qName)) {
 				String indexStr = attrs.getValue("index");
 				int index = Integer.parseInt(indexStr) - 1;
-				if (theme.secondaryLanguages.length>index) { // Sanity
+				if (theme.secondaryLanguages.length > index) { // Sanity
 					Color bg = stringToColor(attrs.getValue("bg"));
 					theme.secondaryLanguages[index] = bg;
 				}
@@ -777,12 +770,10 @@ public class Theme {
 				String useStr = attrs.getValue("useFG");
 				theme.useSelctionFG = Boolean.parseBoolean(useStr);
 				String color = attrs.getValue("fg");
-				theme.selectionFG = stringToColor(color,
-											getDefaultSelectionFG());
-				//System.out.println(theme.selectionFG);
+				theme.selectionFG = stringToColor(color, getDefaultSelectionFG());
+				// System.out.println(theme.selectionFG);
 				color = attrs.getValue("bg");
-				theme.selectionBG = stringToColor(color,
-											getDefaultSelectionBG());
+				theme.selectionBG = stringToColor(color, getDefaultSelectionBG());
 				String roundedStr = attrs.getValue("roundedEdges");
 				theme.selectionRoundedEdges = Boolean.parseBoolean(roundedStr);
 			}
@@ -806,7 +797,7 @@ public class Theme {
 					return;
 				}
 
-				if (field.getType()==int.class) {
+				if (field.getType() == int.class) {
 
 					int index = 0;
 					try {
@@ -829,12 +820,11 @@ public class Theme {
 
 					Font font = theme.baseFont;
 					String familyName = attrs.getValue("fontFamily");
-					if (familyName!=null) {
-						font = getFont(familyName, font.getStyle(),
-								font.getSize());
+					if (familyName != null) {
+						font = getFont(familyName, font.getStyle(), font.getSize());
 					}
 					String sizeStr = attrs.getValue("fontSize");
-					if (sizeStr!=null) {
+					if (sizeStr != null) {
 						try {
 							float size = Float.parseFloat(sizeStr);
 							size = Math.max(size, 1f);
@@ -849,12 +839,12 @@ public class Theme {
 					boolean bold = false;
 					boolean italic = false;
 					String boldStr = attrs.getValue("bold");
-					if (boldStr!=null) {
+					if (boldStr != null) {
 						bold = Boolean.parseBoolean(boldStr);
 						styleSpecified = true;
 					}
 					String italicStr = attrs.getValue("italic");
-					if (italicStr!=null) {
+					if (italicStr != null) {
 						italic = Boolean.parseBoolean(italicStr);
 						styleSpecified = true;
 					}
@@ -867,13 +857,12 @@ public class Theme {
 							style |= Font.ITALIC;
 						}
 						Font orig = theme.scheme.getStyle(index).font;
-						theme.scheme.getStyle(index).font =
-							orig.deriveFont(style);
+						theme.scheme.getStyle(index).font = orig.deriveFont(style);
 					}
 
 					String ulineStr = attrs.getValue("underline");
-					if (ulineStr!=null) {
-						boolean uline= Boolean.parseBoolean(ulineStr);
+					if (ulineStr != null) {
+						boolean uline = Boolean.parseBoolean(ulineStr);
 						theme.scheme.getStyle(index).underline = uline;
 					}
 
@@ -889,6 +878,5 @@ public class Theme {
 		}
 
 	}
-
 
 }

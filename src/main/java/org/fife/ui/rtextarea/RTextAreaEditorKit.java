@@ -41,7 +41,6 @@ import javax.swing.text.Utilities;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 
-
 /**
  * An extension of <code>DefaultEditorKit</code> that adds functionality found
  * in <code>RTextArea</code>.
@@ -49,7 +48,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
  * @author Robert Futrell
  * @version 0.1
  */
-// FIXME:  Replace Utilities calls with custom versions (in RSyntaxUtilities) to
+// FIXME: Replace Utilities calls with custom versions (in RSyntaxUtilities) to
 // cut down on all of the modelToViews, as each call causes
 // a getTokenList => expensive!
 @SuppressWarnings({ "checkstyle:constantname" })
@@ -58,252 +57,213 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 	/**
 	 * The name of the action that begins recording a macro.
 	 */
-	public static final String rtaBeginRecordingMacroAction	= "RTA.BeginRecordingMacroAction";
+	public static final String rtaBeginRecordingMacroAction = "RTA.BeginRecordingMacroAction";
 
 	/**
 	 * The name of the action to decrease the font size.
 	 */
-	public static final String rtaDecreaseFontSizeAction		= "RTA.DecreaseFontSizeAction";
+	public static final String rtaDecreaseFontSizeAction = "RTA.DecreaseFontSizeAction";
 
 	/**
 	 * The name of the action that deletes the current line.
 	 */
-	public static final String rtaDeleteLineAction			= "RTA.DeleteLineAction";
+	public static final String rtaDeleteLineAction = "RTA.DeleteLineAction";
 
 	/**
 	 * The name of the action to delete the word before the caret.
 	 */
-	public static final String rtaDeletePrevWordAction		= "RTA.DeletePrevWordAction";
+	public static final String rtaDeletePrevWordAction = "RTA.DeletePrevWordAction";
 
 	/**
-	 * The name of the action taken to delete the remainder of the line (from
-	 * the caret position to the end of the line).
+	 * The name of the action taken to delete the remainder of the line (from the
+	 * caret position to the end of the line).
 	 */
-	public static final String rtaDeleteRestOfLineAction		= "RTA.DeleteRestOfLineAction";
+	public static final String rtaDeleteRestOfLineAction = "RTA.DeleteRestOfLineAction";
 
 	/**
-	 * The name of the action that completes the word at the caret position
-	 * with the last word in the document that starts with the text up to the
-	 * caret.
+	 * The name of the action that completes the word at the caret position with the
+	 * last word in the document that starts with the text up to the caret.
 	 */
-	public static final String rtaDumbCompleteWordAction		= "RTA.DumbCompleteWordAction";
+	public static final String rtaDumbCompleteWordAction = "RTA.DumbCompleteWordAction";
 
 	/**
 	 * The name of the action that ends recording a macro.
 	 */
-	public static final String rtaEndRecordingMacroAction		= "RTA.EndRecordingMacroAction";
+	public static final String rtaEndRecordingMacroAction = "RTA.EndRecordingMacroAction";
 
 	/**
 	 * The name of the action to increase the font size.
 	 */
-	public static final String rtaIncreaseFontSizeAction		= "RTA.IncreaseFontSizeAction";
+	public static final String rtaIncreaseFontSizeAction = "RTA.IncreaseFontSizeAction";
 
 	/**
 	 * The name of the action that inverts the case of the current selection.
 	 */
-	public static final String rtaInvertSelectionCaseAction	= "RTA.InvertCaseAction";
+	public static final String rtaInvertSelectionCaseAction = "RTA.InvertCaseAction";
 
 	/**
 	 * The name of the action to join two lines.
 	 */
-	public static final String rtaJoinLinesAction			= "RTA.JoinLinesAction";
+	public static final String rtaJoinLinesAction = "RTA.JoinLinesAction";
 
 	/**
 	 * Action to move a line down.
 	 */
-	public static final String rtaLineDownAction				= "RTA.LineDownAction";
+	public static final String rtaLineDownAction = "RTA.LineDownAction";
 
 	/**
 	 * Action to move a line up.
 	 */
-	public static final String rtaLineUpAction				= "RTA.LineUpAction";
+	public static final String rtaLineUpAction = "RTA.LineUpAction";
 
 	/**
 	 * The name of the action to make the current selection lower-case.
 	 */
-	public static final String rtaLowerSelectionCaseAction		= "RTA.LowerCaseAction";
+	public static final String rtaLowerSelectionCaseAction = "RTA.LowerCaseAction";
 
 	/**
 	 * Action to select the next occurrence of the selected text.
 	 */
-	public static final String rtaNextOccurrenceAction		= "RTA.NextOccurrenceAction";
+	public static final String rtaNextOccurrenceAction = "RTA.NextOccurrenceAction";
 
 	/**
-     * Action to select the previous occurrence of the selected text.
+	 * Action to select the previous occurrence of the selected text.
 	 */
-	public static final String rtaPrevOccurrenceAction		= "RTA.PrevOccurrenceAction";
+	public static final String rtaPrevOccurrenceAction = "RTA.PrevOccurrenceAction";
 
 	/**
 	 * Action to jump to the next bookmark.
 	 */
-	public static final String rtaNextBookmarkAction		= "RTA.NextBookmarkAction";
+	public static final String rtaNextBookmarkAction = "RTA.NextBookmarkAction";
 
 	/**
 	 * Action to display the paste history popup.
 	 */
-	public static final String clipboardHistoryAction		= "RTA.PasteHistoryAction";
+	public static final String clipboardHistoryAction = "RTA.PasteHistoryAction";
 
 	/**
 	 * Action to jump to the previous bookmark.
 	 */
-	public static final String rtaPrevBookmarkAction		= "RTA.PrevBookmarkAction";
+	public static final String rtaPrevBookmarkAction = "RTA.PrevBookmarkAction";
 
 	/**
 	 * The name of the action that "plays back" the last macro.
 	 */
-	public static final String rtaPlaybackLastMacroAction		= "RTA.PlaybackLastMacroAction";
+	public static final String rtaPlaybackLastMacroAction = "RTA.PlaybackLastMacroAction";
 
 	/**
 	 * The name of the action for "redoing" the last action undone.
 	 */
-	public static final String rtaRedoAction				= "RTA.RedoAction";
+	public static final String rtaRedoAction = "RTA.RedoAction";
 
 	/**
-	 * The name of the action to scroll the text area down one line
-	 * without changing the caret's position.
+	 * The name of the action to scroll the text area down one line without changing
+	 * the caret's position.
 	 */
-	public static final String rtaScrollDownAction			= "RTA.ScrollDownAction";
+	public static final String rtaScrollDownAction = "RTA.ScrollDownAction";
 
 	/**
-	 * The name of the action to scroll the text area up one line
-	 * without changing the caret's position.
+	 * The name of the action to scroll the text area up one line without changing
+	 * the caret's position.
 	 */
-	public static final String rtaScrollUpAction				= "RTA.ScrollUpAction";
+	public static final String rtaScrollUpAction = "RTA.ScrollUpAction";
 
 	/**
 	 * The name of the action for "paging up" with the selection.
 	 */
-	public static final String rtaSelectionPageUpAction		= "RTA.SelectionPageUpAction";
+	public static final String rtaSelectionPageUpAction = "RTA.SelectionPageUpAction";
 
 	/**
 	 * The name of the action for "paging down" with the selection.
 	 */
-	public static final String rtaSelectionPageDownAction		= "RTA.SelectionPageDownAction";
+	public static final String rtaSelectionPageDownAction = "RTA.SelectionPageDownAction";
 
 	/**
 	 * The name of the action for "paging left" with the selection.
 	 */
-	public static final String rtaSelectionPageLeftAction		= "RTA.SelectionPageLeftAction";
+	public static final String rtaSelectionPageLeftAction = "RTA.SelectionPageLeftAction";
 
 	/**
 	 * The name of the action for "paging right" with the selection.
 	 */
-	public static final String rtaSelectionPageRightAction		= "RTA.SelectionPageRightAction";
+	public static final String rtaSelectionPageRightAction = "RTA.SelectionPageRightAction";
 
 	/**
 	 * The name of the action for inserting a time/date stamp.
 	 */
-	public static final String rtaTimeDateAction				= "RTA.TimeDateAction";
+	public static final String rtaTimeDateAction = "RTA.TimeDateAction";
 
 	/**
-	 * Toggles whether the current line has a bookmark, if this text area
-	 * is in an {@link RTextScrollPane}.
+	 * Toggles whether the current line has a bookmark, if this text area is in an
+	 * {@link RTextScrollPane}.
 	 */
-	public static final String rtaToggleBookmarkAction		= "RTA.ToggleBookmarkAction";
+	public static final String rtaToggleBookmarkAction = "RTA.ToggleBookmarkAction";
 
 	/**
-	 * The name of the action taken when the user hits the Insert key (thus
-	 * toggling between insert and overwrite modes).
+	 * The name of the action taken when the user hits the Insert key (thus toggling
+	 * between insert and overwrite modes).
 	 */
-	public static final String rtaToggleTextModeAction		= "RTA.ToggleTextModeAction";
+	public static final String rtaToggleTextModeAction = "RTA.ToggleTextModeAction";
 
 	/**
 	 * The name of the action for "undoing" the last action done.
 	 */
-	public static final String rtaUndoAction				= "RTA.UndoAction";
+	public static final String rtaUndoAction = "RTA.UndoAction";
 
 	/**
-	 * The name of the action for unselecting any selected text in the text
-	 * area.
+	 * The name of the action for unselecting any selected text in the text area.
 	 */
-	public static final String rtaUnselectAction				= "RTA.UnselectAction";
+	public static final String rtaUnselectAction = "RTA.UnselectAction";
 
 	/**
 	 * The name of the action for making the current selection upper-case.
 	 */
-	public static final String rtaUpperSelectionCaseAction		= "RTA.UpperCaseAction";
+	public static final String rtaUpperSelectionCaseAction = "RTA.UpperCaseAction";
 
 	/**
-	 * The actions that <code>RTextAreaEditorKit</code> adds to those of
-	 * the default editor kit.
+	 * The actions that <code>RTextAreaEditorKit</code> adds to those of the default
+	 * editor kit.
 	 */
-	private static final RecordableTextAction[] defaultActions = {
-		new BeginAction(beginAction, false),
-		new BeginAction(selectionBeginAction, true),
-		new BeginLineAction(beginLineAction, false),
-		new BeginLineAction(selectionBeginLineAction, true),
-		new BeginRecordingMacroAction(),
-		new BeginWordAction(beginWordAction, false),
-		new BeginWordAction(selectionBeginWordAction, true),
-		new ClipboardHistoryAction(),
-		new CopyAction(),
-		new CutAction(),
-		new DefaultKeyTypedAction(),
-		new DeleteLineAction(),
-		new DeleteNextCharAction(),
-		new DeletePrevCharAction(),
-		new DeletePrevWordAction(),
-		new DeleteRestOfLineAction(),
-		new DumbCompleteWordAction(),
-		new EndAction(endAction, false),
-		new EndAction(selectionEndAction, true),
-		new EndLineAction(endLineAction, false),
-		new EndLineAction(selectionEndLineAction, true),
-		new EndRecordingMacroAction(),
-		new EndWordAction(endWordAction, false),
-		new EndWordAction(endWordAction, true),
-		new InsertBreakAction(),
-		new InsertContentAction(),
-		new InsertTabAction(),
-		new InvertSelectionCaseAction(),
-		new JoinLinesAction(),
-		new LowerSelectionCaseAction(),
-		new LineMoveAction(rtaLineUpAction, -1),
-		new LineMoveAction(rtaLineDownAction, 1),
-		new NextBookmarkAction(rtaNextBookmarkAction, true),
-		new NextBookmarkAction(rtaPrevBookmarkAction, false),
-		new NextVisualPositionAction(forwardAction, false, SwingConstants.EAST),
-		new NextVisualPositionAction(backwardAction, false, SwingConstants.WEST),
-		new NextVisualPositionAction(selectionForwardAction, true, SwingConstants.EAST),
-		new NextVisualPositionAction(selectionBackwardAction, true, SwingConstants.WEST),
-		new NextVisualPositionAction(upAction, false, SwingConstants.NORTH),
-		new NextVisualPositionAction(downAction, false, SwingConstants.SOUTH),
-		new NextVisualPositionAction(selectionUpAction, true, SwingConstants.NORTH),
-		new NextVisualPositionAction(selectionDownAction, true, SwingConstants.SOUTH),
-        new NextOccurrenceAction(rtaNextOccurrenceAction),
-        new PreviousOccurrenceAction(rtaPrevOccurrenceAction),
-		new NextWordAction(nextWordAction, false),
-		new NextWordAction(selectionNextWordAction, true),
-		new PageAction(rtaSelectionPageLeftAction, true, true),
-		new PageAction(rtaSelectionPageRightAction, false, true),
-		new PasteAction(),
-		new PlaybackLastMacroAction(),
-		new PreviousWordAction(previousWordAction, false),
-		new PreviousWordAction(selectionPreviousWordAction, true),
-		new RedoAction(),
-		new ScrollAction(rtaScrollUpAction, -1),
-		new ScrollAction(rtaScrollDownAction, 1),
-		new SelectAllAction(),
-		new SelectLineAction(),
-		new SelectWordAction(),
-		new SetReadOnlyAction(),
-		new SetWritableAction(),
-		new ToggleBookmarkAction(),
-		new ToggleTextModeAction(),
-		new UndoAction(),
-		new UnselectAction(),
-		new UpperSelectionCaseAction(),
-		new VerticalPageAction(pageUpAction, -1, false),
-		new VerticalPageAction(pageDownAction, 1, false),
-		new VerticalPageAction(rtaSelectionPageUpAction, -1, true),
-		new VerticalPageAction(rtaSelectionPageDownAction, 1, true)
-	};
+	private static final RecordableTextAction[] defaultActions = { new BeginAction(beginAction, false),
+			new BeginAction(selectionBeginAction, true), new BeginLineAction(beginLineAction, false),
+			new BeginLineAction(selectionBeginLineAction, true), new BeginRecordingMacroAction(),
+			new BeginWordAction(beginWordAction, false), new BeginWordAction(selectionBeginWordAction, true),
+			new ClipboardHistoryAction(), new CopyAction(), new CutAction(), new DefaultKeyTypedAction(),
+			new DeleteLineAction(), new DeleteNextCharAction(), new DeletePrevCharAction(), new DeletePrevWordAction(),
+			new DeleteRestOfLineAction(), new DumbCompleteWordAction(), new EndAction(endAction, false),
+			new EndAction(selectionEndAction, true), new EndLineAction(endLineAction, false),
+			new EndLineAction(selectionEndLineAction, true), new EndRecordingMacroAction(),
+			new EndWordAction(endWordAction, false), new EndWordAction(endWordAction, true), new InsertBreakAction(),
+			new InsertContentAction(), new InsertTabAction(), new InvertSelectionCaseAction(), new JoinLinesAction(),
+			new LowerSelectionCaseAction(), new LineMoveAction(rtaLineUpAction, -1),
+			new LineMoveAction(rtaLineDownAction, 1), new NextBookmarkAction(rtaNextBookmarkAction, true),
+			new NextBookmarkAction(rtaPrevBookmarkAction, false),
+			new NextVisualPositionAction(forwardAction, false, SwingConstants.EAST),
+			new NextVisualPositionAction(backwardAction, false, SwingConstants.WEST),
+			new NextVisualPositionAction(selectionForwardAction, true, SwingConstants.EAST),
+			new NextVisualPositionAction(selectionBackwardAction, true, SwingConstants.WEST),
+			new NextVisualPositionAction(upAction, false, SwingConstants.NORTH),
+			new NextVisualPositionAction(downAction, false, SwingConstants.SOUTH),
+			new NextVisualPositionAction(selectionUpAction, true, SwingConstants.NORTH),
+			new NextVisualPositionAction(selectionDownAction, true, SwingConstants.SOUTH),
+			new NextOccurrenceAction(rtaNextOccurrenceAction), new PreviousOccurrenceAction(rtaPrevOccurrenceAction),
+			new NextWordAction(nextWordAction, false), new NextWordAction(selectionNextWordAction, true),
+			new PageAction(rtaSelectionPageLeftAction, true, true),
+			new PageAction(rtaSelectionPageRightAction, false, true), new PasteAction(), new PlaybackLastMacroAction(),
+			new PreviousWordAction(previousWordAction, false),
+			new PreviousWordAction(selectionPreviousWordAction, true), new RedoAction(),
+			new ScrollAction(rtaScrollUpAction, -1), new ScrollAction(rtaScrollDownAction, 1), new SelectAllAction(),
+			new SelectLineAction(), new SelectWordAction(), new SetReadOnlyAction(), new SetWritableAction(),
+			new ToggleBookmarkAction(), new ToggleTextModeAction(), new UndoAction(), new UnselectAction(),
+			new UpperSelectionCaseAction(), new VerticalPageAction(pageUpAction, -1, false),
+			new VerticalPageAction(pageDownAction, 1, false),
+			new VerticalPageAction(rtaSelectionPageUpAction, -1, true),
+			new VerticalPageAction(rtaSelectionPageDownAction, 1, true) };
 
 	/**
 	 * The amount of characters read at a time when reading a file.
 	 */
-	private static final int READBUFFER_SIZE	= 32768;
-
+	private static final int READBUFFER_SIZE = 32768;
 
 	/**
 	 * Constructor.
@@ -312,33 +272,31 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		super();
 	}
 
-
 	/**
 	 * Creates an icon row header to use in the gutter for a text area.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 * @return The icon row header.
 	 */
 	public IconRowHeader createIconRowHeader(RTextArea textArea) {
 		return new IconRowHeader(textArea);
 	}
 
-
 	/**
 	 * Creates a line number list to use in the gutter for a text area.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 * @return The line number list.
 	 */
 	public LineNumberList createLineNumberList(RTextArea textArea) {
 		return new LineNumberList(textArea);
 	}
 
-
 	/**
-	 * Fetches the set of commands that can be used
-	 * on a text component that is using a model and
-	 * view produced by this kit.
+	 * Fetches the set of commands that can be used on a text component that is
+	 * using a model and view produced by this kit.
 	 *
 	 * @return the command list
 	 */
@@ -347,23 +305,24 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		return defaultActions;
 	}
 
-
 	/**
-	 * Inserts content from the given stream, which will be
-	 * treated as plain text.  This method is overridden merely
-	 * so we can increase the number of characters read at a time.
+	 * Inserts content from the given stream, which will be treated as plain text.
+	 * This method is overridden merely so we can increase the number of characters
+	 * read at a time.
 	 *
-	 * @param in  The stream to read from
-	 * @param doc The destination for the insertion.
-	 * @param pos The location in the document to place the
-	 *   content &gt;= 0.
-	 * @exception IOException on any I/O error
-	 * @exception BadLocationException if pos represents an invalid
-	 *   location within the document.
-	*/
+	 * @param in
+	 *            The stream to read from
+	 * @param doc
+	 *            The destination for the insertion.
+	 * @param pos
+	 *            The location in the document to place the content &gt;= 0.
+	 * @exception IOException
+	 *                on any I/O error
+	 * @exception BadLocationException
+	 *                if pos represents an invalid location within the document.
+	 */
 	@Override
-	public void read(Reader in, Document doc, int pos)
-				throws IOException, BadLocationException {
+	public void read(Reader in, Document doc, int pos) throws IOException, BadLocationException {
 
 		char[] buff = new char[READBUFFER_SIZE];
 		int nch;
@@ -382,62 +341,55 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			last = 0;
 			for (int counter = 0; counter < nch; counter++) {
 				switch (buff[counter]) {
-					case '\r':
-						if (lastWasCR) {
-							isCR = true;
-							if (counter == 0) {
-								doc.insertString(pos, "\n", null);
-								pos++;
-							}
-							else {
-								buff[counter - 1] = '\n';
-							}
+				case '\r':
+					if (lastWasCR) {
+						isCR = true;
+						if (counter == 0) {
+							doc.insertString(pos, "\n", null);
+							pos++;
+						} else {
+							buff[counter - 1] = '\n';
 						}
-						else {
-							lastWasCR = true;
+					} else {
+						lastWasCR = true;
+					}
+					break;
+				case '\n':
+					if (lastWasCR) {
+						if (counter > (last + 1)) {
+							doc.insertString(pos, new String(buff, last, counter - last - 1), null);
+							pos += (counter - last - 1);
 						}
-						break;
-					case '\n':
-						if (lastWasCR) {
-							if (counter > (last + 1)) {
-								doc.insertString(pos, new String(buff, last,
-												counter - last - 1), null);
-								pos += (counter - last - 1);
-							}
-							// else nothing to do, can skip \r, next write will
-							// write \n
-							lastWasCR = false;
-							last = counter;
-							isCRLF = true;
+						// else nothing to do, can skip \r, next write will
+						// write \n
+						lastWasCR = false;
+						last = counter;
+						isCRLF = true;
+					}
+					break;
+				default:
+					if (lastWasCR) {
+						isCR = true;
+						if (counter == 0) {
+							doc.insertString(pos, "\n", null);
+							pos++;
+						} else {
+							buff[counter - 1] = '\n';
 						}
-						break;
-					default:
-						if (lastWasCR) {
-							isCR = true;
-							if (counter == 0) {
-								doc.insertString(pos, "\n", null);
-								pos++;
-							}
-							else {
-								buff[counter - 1] = '\n';
-							}
-							lastWasCR = false;
-						}
-						break;
+						lastWasCR = false;
+					}
+					break;
 				} // End of switch (buff[counter]).
 			} // End of for (int counter = 0; counter < nch; counter++).
 
 			if (last < nch) {
-				if(lastWasCR) {
+				if (lastWasCR) {
 					if (last < (nch - 1)) {
-						doc.insertString(pos, new String(buff, last,
-										nch - last - 1), null);
+						doc.insertString(pos, new String(buff, last, nch - last - 1), null);
 						pos += (nch - last - 1);
 					}
-				}
-				else {
-					doc.insertString(pos, new String(buff, last,
-									nch - last), null);
+				} else {
+					doc.insertString(pos, new String(buff, last, nch - last), null);
 					pos += (nch - last);
 				}
 			}
@@ -452,17 +404,14 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		if (wasEmpty) {
 			if (isCRLF) {
 				doc.putProperty(EndOfLineStringProperty, "\r\n");
-			}
-			else if (isCR) {
+			} else if (isCR) {
 				doc.putProperty(EndOfLineStringProperty, "\r");
-			}
-			else {
+			} else {
 				doc.putProperty(EndOfLineStringProperty, "\n");
 			}
 		}
 
 	}
-
 
 	/**
 	 * Creates a beep.
@@ -485,13 +434,12 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Moves the caret to the beginning of the document.
 	 */
 	public static class BeginAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		public BeginAction(String name, boolean select) {
 			super(name);
@@ -502,8 +450,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 			if (select) {
 				textArea.moveCaretPosition(0);
-			}
-			else {
+			} else {
 				textArea.setCaretPosition(0);
 			}
 		}
@@ -515,15 +462,14 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
-	 * Toggles the position of the caret between the beginning of the line,
-	 * and the first non-whitespace character on the line.
+	 * Toggles the position of the caret between the beginning of the line, and the
+	 * first non-whitespace character on the line.
 	 */
 	public static class BeginLineAction extends RecordableTextAction {
 
- 		private Segment currentLine = new Segment(); // For speed.
- 		private boolean select;
+		private Segment currentLine = new Segment(); // For speed.
+		private boolean select;
 
 		public BeginLineAction(String name, boolean select) {
 			super(name);
@@ -540,7 +486,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 				// Is line wrap enabled?
 				if (textArea.getLineWrap()) {
 					int offs = textArea.getCaretPosition();
-					// TODO:  Replace Utilities call with custom version
+					// TODO: Replace Utilities call with custom version
 					// to cut down on all of the modelToViews, as each call
 					// causes TokenList => expensive!
 					int begOffs = Utilities.getRowStart(textArea, offs);
@@ -564,19 +510,16 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 					int currentLineStart = currentLineElement.getStartOffset();
 					int currentLineEnd = currentLineElement.getEndOffset();
 					int count = currentLineEnd - currentLineStart;
-					if (count>0) { // If there are chars in the line...
+					if (count > 0) { // If there are chars in the line...
 						document.getText(currentLineStart, count, currentLine);
 						int firstNonWhitespace = getFirstNonWhitespacePos();
-						firstNonWhitespace = currentLineStart +
-								(firstNonWhitespace - currentLine.offset);
-						if (caretPosition!=firstNonWhitespace) {
+						firstNonWhitespace = currentLineStart + (firstNonWhitespace - currentLine.offset);
+						if (caretPosition != firstNonWhitespace) {
 							newPos = firstNonWhitespace;
-						}
-						else {
+						} else {
 							newPos = currentLineStart;
 						}
-					}
-					else { // Empty line (at end of the document only).
+					} else { // Empty line (at end of the document only).
 						newPos = currentLineStart;
 					}
 
@@ -584,11 +527,10 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 				if (select) {
 					textArea.moveCaretPosition(newPos);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(newPos);
 				}
-				//e.consume();
+				// e.consume();
 
 			} catch (BadLocationException ble) {
 				/* Shouldn't ever happen. */
@@ -604,7 +546,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			int pos = offset;
 			char[] array = currentLine.array;
 			char currentChar = array[pos];
-			while ((currentChar=='\t' || currentChar==' ') && (++pos<end)) {
+			while ((currentChar == '\t' || currentChar == ' ') && (++pos < end)) {
 				currentChar = array[pos];
 			}
 			return pos;
@@ -617,7 +559,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Action that begins recording a macro.
 	 */
@@ -627,8 +568,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			super(rtaBeginRecordingMacroAction);
 		}
 
-		public BeginRecordingMacroAction(String name, Icon icon,
-					String desc, Integer mnemonic, KeyStroke accelerator) {
+		public BeginRecordingMacroAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -649,13 +589,12 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Positions the caret at the beginning of the word.
 	 */
 	protected static class BeginWordAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		protected BeginWordAction(String name, boolean select) {
 			super(name);
@@ -669,8 +608,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 				int begOffs = getWordStart(textArea, offs);
 				if (select) {
 					textArea.moveCaretPosition(begOffs);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(begOffs);
 				}
 			} catch (BadLocationException ble) {
@@ -683,29 +621,25 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			return getName();
 		}
 
-		protected int getWordStart(RTextArea textArea, int offs)
-										throws BadLocationException {
+		protected int getWordStart(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getWordStart(textArea, offs);
 		}
 
 	}
 
-
 	/**
-	 * Action for displaying a popup with a list of recently pasted text
-	 * snippets.
+	 * Action for displaying a popup with a list of recently pasted text snippets.
 	 */
 	public static class ClipboardHistoryAction extends RecordableTextAction {
 
 		private ClipboardHistory clipboardHistory;
 
- 		public ClipboardHistoryAction() {
+		public ClipboardHistoryAction() {
 			super(clipboardHistoryAction);
 			clipboardHistory = ClipboardHistory.get();
 		}
 
-		public ClipboardHistoryAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public ClipboardHistoryAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 			clipboardHistory = ClipboardHistory.get();
 		}
@@ -725,7 +659,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Action for copying text.
 	 */
@@ -735,8 +668,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			super(DefaultEditorKit.copyAction);
 		}
 
-		public CopyAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public CopyAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -753,7 +685,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Action for cutting text.
 	 */
@@ -763,8 +694,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			super(DefaultEditorKit.cutAction);
 		}
 
-		public CutAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public CutAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -781,7 +711,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Action for decreasing the font size.
 	 */
@@ -789,15 +718,14 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 		protected float decreaseAmount;
 
-		protected static final float MINIMUM_SIZE	= 2.0f;
+		protected static final float MINIMUM_SIZE = 2.0f;
 
 		public DecreaseFontSizeAction() {
 			super(rtaDecreaseFontSizeAction);
 			initialize();
 		}
 
-		public DecreaseFontSizeAction(String name, Icon icon, String desc,
-							Integer mnemonic, KeyStroke accelerator) {
+		public DecreaseFontSizeAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 			initialize();
 		}
@@ -807,18 +735,16 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			Font font = textArea.getFont();
 			float oldSize = font.getSize2D();
 			float newSize = oldSize - decreaseAmount;
-			if (newSize>=MINIMUM_SIZE) {
+			if (newSize >= MINIMUM_SIZE) {
 				// Shrink by decreaseAmount.
 				font = font.deriveFont(newSize);
 				textArea.setFont(font);
-			}
-			else if (oldSize>MINIMUM_SIZE) {
+			} else if (oldSize > MINIMUM_SIZE) {
 				// Can't shrink by full decreaseAmount, but can shrink a
 				// little bit.
 				font = font.deriveFont(MINIMUM_SIZE);
 				textArea.setFont(font);
-			}
-			else {
+			} else {
 				// Our font size must be at or below MINIMUM_SIZE.
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
@@ -836,18 +762,16 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * The action to use when no actions in the input/action map meet the key
-	 * pressed.  This is actually called from the keymap I believe.
+	 * pressed. This is actually called from the keymap I believe.
 	 */
 	public static class DefaultKeyTypedAction extends RecordableTextAction {
 
 		private Action delegate;
 
 		public DefaultKeyTypedAction() {
-			super(DefaultEditorKit.defaultKeyTypedAction, null, null, null,
-					null);
+			super(DefaultEditorKit.defaultKeyTypedAction, null, null, null, null);
 			delegate = new DefaultEditorKit.DefaultKeyTypedAction();
 		}
 
@@ -857,7 +781,7 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			// (at least the OSX implementation must be different - Alt+Numbers
 			// inputs symbols such as '[', '{', etc., which is a *required*
 			// feature on MacBooks running with non-English input, such as
-			// German or Swedish Pro).  So we can't just copy the
+			// German or Swedish Pro). So we can't just copy the
 			// implementation, we must delegate to it.
 			delegate.actionPerformed(e);
 		}
@@ -869,15 +793,13 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Deletes the current line(s).
 	 */
 	public static class DeleteLineAction extends RecordableTextAction {
 
 		public DeleteLineAction() {
-			super(RTextAreaEditorKit.rtaDeleteLineAction, null, null, null,
-						null);
+			super(RTextAreaEditorKit.rtaDeleteLineAction, null, null, null, null);
 		}
 
 		@Override
@@ -889,18 +811,18 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			}
 
 			int selStart = textArea.getSelectionStart();
-			int selEnd   = textArea.getSelectionEnd();
+			int selEnd = textArea.getSelectionEnd();
 
 			try {
 
-				int line1     = textArea.getLineOfOffset(selStart);
+				int line1 = textArea.getLineOfOffset(selStart);
 				int startOffs = textArea.getLineStartOffset(line1);
-				int line2     = textArea.getLineOfOffset(selEnd);
-				int endOffs   = textArea.getLineEndOffset(line2);
+				int line2 = textArea.getLineOfOffset(selEnd);
+				int endOffs = textArea.getLineEndOffset(line2);
 
 				// Don't remove the last line if no actual chars are selected
-				if (line2>line1) {
-					if (selEnd==textArea.getLineStartOffset(line2)) {
+				if (line2 > line1) {
+					if (selEnd == textArea.getLineStartOffset(line2)) {
 						endOffs = selEnd;
 					}
 				}
@@ -920,20 +842,16 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
-	 * Deletes the character of content that follows the current caret
-	 * position.
+	 * Deletes the character of content that follows the current caret position.
 	 */
 	public static class DeleteNextCharAction extends RecordableTextAction {
 
 		public DeleteNextCharAction() {
-			super(DefaultEditorKit.deleteNextCharAction, null, null,
-												null, null);
+			super(DefaultEditorKit.deleteNextCharAction, null, null, null, null);
 		}
 
-		public DeleteNextCharAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public DeleteNextCharAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -950,15 +868,13 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 					if (dot != mark) {
 						doc.remove(Math.min(dot, mark), Math.abs(dot - mark));
 						beep = false;
-					}
-					else if (dot < doc.getLength()) {
+					} else if (dot < doc.getLength()) {
 						int delChars = 1;
 						if (dot < doc.getLength() - 1) {
 							String dotChars = doc.getText(dot, 2);
 							char c0 = dotChars.charAt(0);
 							char c1 = dotChars.charAt(1);
-							if (c0 >= '\uD800' && c0 <= '\uDBFF' &&
-								c1 >= '\uDC00' && c1 <= '\uDFFF') {
+							if (c0 >= '\uD800' && c0 <= '\uDBFF' && c1 >= '\uDC00' && c1 <= '\uDFFF') {
 								delChars = 2;
 							}
 						}
@@ -972,9 +888,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			if (beep) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
-            if (textArea != null) {
-                textArea.requestFocusInWindow();
-            }
+			if (textArea != null) {
+				textArea.requestFocusInWindow();
+			}
 
 		}
 
@@ -985,10 +901,8 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
-	 * Deletes the character of content that precedes the current caret
-	 * position.
+	 * Deletes the character of content that precedes the current caret position.
 	 */
 	public static class DeletePrevCharAction extends RecordableTextAction {
 
@@ -1009,15 +923,13 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 					if (dot != mark) {
 						doc.remove(Math.min(dot, mark), Math.abs(dot - mark));
 						beep = false;
-					}
-					else if (dot > 0) {
+					} else if (dot > 0) {
 						int delChars = 1;
 						if (dot > 1) {
 							String dotChars = doc.getText(dot - 2, 2);
 							char c0 = dotChars.charAt(0);
 							char c1 = dotChars.charAt(1);
-							if (c0 >= '\uD800' && c0 <= '\uDBFF' &&
-								c1 >= '\uDC00' && c1 <= '\uDFFF') {
+							if (c0 >= '\uD800' && c0 <= '\uDBFF' && c1 >= '\uDC00' && c1 <= '\uDFFF') {
 								delChars = 2;
 							}
 						}
@@ -1041,7 +953,6 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
 	 * Action that deletes the previous word in the text area.
 	 */
@@ -1060,8 +971,8 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 			try {
 				int end = textArea.getSelectionStart();
 				int start = getPreviousWordStart(textArea, end);
-				if (end>start) {
-					textArea.getDocument().remove(start, end-start);
+				if (end > start) {
+					textArea.getDocument().remove(start, end - start);
 				}
 			} catch (BadLocationException ex) {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
@@ -1074,16 +985,13 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 		}
 
 		/**
-		 * Returns the starting offset to delete.  Exists so subclasses can
-		 * override.
+		 * Returns the starting offset to delete. Exists so subclasses can override.
 		 */
-		protected int getPreviousWordStart(RTextArea textArea, int end)
-				throws BadLocationException {
+		protected int getPreviousWordStart(RTextArea textArea, int end) throws BadLocationException {
 			return Utilities.getPreviousWord(textArea, end);
 		}
 
 	}
-
 
 	/**
 	 * Action that deletes all text from the caret position to the end of the
@@ -1108,10 +1016,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 				int currentLineNum = map.getElementIndex(caretPosition);
 				Element currentLineElement = map.getElement(currentLineNum);
 				// Always take -1 as we don't want to remove the newline.
-				int currentLineEnd = currentLineElement.getEndOffset()-1;
-				if (caretPosition<currentLineEnd) {
-					document.remove(caretPosition,
-									currentLineEnd-caretPosition);
+				int currentLineEnd = currentLineElement.getEndOffset() - 1;
+				if (caretPosition < currentLineEnd) {
+					document.remove(caretPosition, currentLineEnd - caretPosition);
 				}
 
 			} catch (BadLocationException ble) {
@@ -1127,12 +1034,11 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	}
 
-
 	/**
-	 * Finds the most recent word in the document that matches the "word" up
-	 * to the current caret position, and auto-completes the rest.  Repeatedly
-	 * calling this action at the same location in the document goes one
-	 * match back each time it is called.
+	 * Finds the most recent word in the document that matches the "word" up to the
+	 * current caret position, and auto-completes the rest. Repeatedly calling this
+	 * action at the same location in the document goes one match back each time it
+	 * is called.
 	 */
 	public static class DumbCompleteWordAction extends RecordableTextAction {
 
@@ -1162,8 +1068,8 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 
 				int curWordStart = getWordStart(textArea, dot);
 
-				if (lastWordStart!=curWordStart || dot!=lastDot) {
-					lastPrefix = textArea.getText(curWordStart,dot-curWordStart);
+				if (lastWordStart != curWordStart || dot != lastDot) {
+					lastPrefix = textArea.getText(curWordStart, dot - curWordStart);
 					// Utilities.getWordStart() treats spans of whitespace and
 					// single non-letter chars as "words."
 					if (!isAcceptablePrefix(lastPrefix)) {
@@ -1171,9 +1077,9 @@ public class RTextAreaEditorKit extends DefaultEditorKit {
 						return;
 					}
 					lastWordStart = dot - lastPrefix.length();
-//					searchOffs = lastWordStart;
-//searchOffs = getWordStart(textArea, lastWordStart);
-searchOffs = Math.max(lastWordStart - 1, 0);
+					// searchOffs = lastWordStart;
+					// searchOffs = getWordStart(textArea, lastWordStart);
+					searchOffs = Math.max(lastWordStart - 1, 0);
 				}
 
 				while (searchOffs > 0) {
@@ -1181,14 +1087,13 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 					try {
 						wordStart = getPreviousWord(textArea, searchOffs);
 					} catch (BadLocationException ble) {
-						// No more words.  Sometimes happens for example if the
+						// No more words. Sometimes happens for example if the
 						// document starts off with whitespace - then searchOffs
 						// is > 0 but there are no more words
 						wordStart = BreakIterator.DONE;
 					}
-					if (wordStart==BreakIterator.DONE) {
-						UIManager.getLookAndFeel().provideErrorFeedback(
-								textArea);
+					if (wordStart == BreakIterator.DONE) {
+						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 						break;
 					}
 					int end = getWordEnd(textArea, wordStart);
@@ -1212,45 +1117,40 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-		protected int getPreviousWord(RTextArea textArea, int offs)
-				throws BadLocationException {
+		protected int getPreviousWord(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getPreviousWord(textArea, offs);
 		}
 
-		protected int getWordEnd(RTextArea textArea, int offs)
-				throws BadLocationException {
+		protected int getWordEnd(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getWordEnd(textArea, offs);
 		}
 
-		protected int getWordStart(RTextArea textArea, int offs)
-				throws BadLocationException {
+		protected int getWordStart(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getWordStart(textArea, offs);
 		}
 
 		/**
-		 * <code>Utilities.getWordStart()</code> treats spans of whitespace and
-		 * single non-letter chars as "words."  This method is used to filter
-		 * that kind of thing out - non-words should not be suggested by this
-		 * action.
+		 * <code>Utilities.getWordStart()</code> treats spans of whitespace and single
+		 * non-letter chars as "words." This method is used to filter that kind of thing
+		 * out - non-words should not be suggested by this action.
 		 *
-		 * @param prefix The prefix characters before the caret.
-		 * @return Whether the prefix could be part of a "word" in the context
-		 *         of the text area's current content.
+		 * @param prefix
+		 *            The prefix characters before the caret.
+		 * @return Whether the prefix could be part of a "word" in the context of the
+		 *         text area's current content.
 		 */
 		protected boolean isAcceptablePrefix(String prefix) {
-			return prefix.length() > 0 &&
-				Character.isLetter(prefix.charAt(prefix.length()-1));
+			return prefix.length() > 0 && Character.isLetter(prefix.charAt(prefix.length() - 1));
 		}
 
 	}
-
 
 	/**
 	 * Moves the caret to the end of the document.
 	 */
 	public static class EndAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		public EndAction(String name, boolean select) {
 			super(name);
@@ -1262,8 +1162,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			int dot = getVisibleEnd(textArea);
 			if (select) {
 				textArea.moveCaretPosition(dot);
-			}
-			else {
+			} else {
 				textArea.setCaretPosition(dot);
 			}
 		}
@@ -1279,13 +1178,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Positions the caret at the end of the line.
 	 */
 	public static class EndLineAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		public EndLineAction(String name, boolean select) {
 			super(name);
@@ -1300,20 +1198,18 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				if (textArea.getLineWrap()) {
 					// Must check per character, since one logical line may be
 					// many physical lines.
-					// FIXME:  Replace Utilities call with custom version to
+					// FIXME: Replace Utilities call with custom version to
 					// cut down on all of the modelToViews, as each call causes
 					// a getTokenList => expensive!
 					endOffs = Utilities.getRowEnd(textArea, offs);
-				}
-				else {
+				} else {
 					Element root = textArea.getDocument().getDefaultRootElement();
 					int line = root.getElementIndex(offs);
 					endOffs = root.getElement(line).getEndOffset() - 1;
 				}
 				if (select) {
 					textArea.moveCaretPosition(endOffs);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(endOffs);
 				}
 			} catch (Exception ex) {
@@ -1328,7 +1224,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Action that ends recording a macro.
 	 */
@@ -1338,8 +1233,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			super(rtaEndRecordingMacroAction);
 		}
 
-		public EndRecordingMacroAction(String name, Icon icon,
-					String desc, Integer mnemonic, KeyStroke accelerator) {
+		public EndRecordingMacroAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -1360,13 +1254,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Positions the caret at the end of the word.
 	 */
 	protected static class EndWordAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		protected EndWordAction(String name, boolean select) {
 			super(name);
@@ -1380,8 +1273,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				int endOffs = getWordEnd(textArea, offs);
 				if (select) {
 					textArea.moveCaretPosition(endOffs);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(endOffs);
 				}
 			} catch (BadLocationException ble) {
@@ -1394,13 +1286,11 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-		protected int getWordEnd(RTextArea textArea, int offs)
-									throws BadLocationException {
+		protected int getWordEnd(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getWordEnd(textArea, offs);
 		}
 
 	}
-
 
 	/**
 	 * Action for increasing the font size.
@@ -1409,15 +1299,14 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 		protected float increaseAmount;
 
-		protected static final float MAXIMUM_SIZE	= 40.0f;
+		protected static final float MAXIMUM_SIZE = 40.0f;
 
 		public IncreaseFontSizeAction() {
 			super(rtaIncreaseFontSizeAction);
 			initialize();
 		}
 
-		public IncreaseFontSizeAction(String name, Icon icon, String desc,
-							Integer mnemonic, KeyStroke accelerator) {
+		public IncreaseFontSizeAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 			initialize();
 		}
@@ -1427,18 +1316,16 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			Font font = textArea.getFont();
 			float oldSize = font.getSize2D();
 			float newSize = oldSize + increaseAmount;
-			if (newSize<=MAXIMUM_SIZE) {
+			if (newSize <= MAXIMUM_SIZE) {
 				// Grow by increaseAmount.
 				font = font.deriveFont(newSize);
 				textArea.setFont(font);
-			}
-			else if (oldSize<MAXIMUM_SIZE) {
+			} else if (oldSize < MAXIMUM_SIZE) {
 				// Can't grow by full increaseAmount, but can grow a
 				// little bit.
 				font = font.deriveFont(MAXIMUM_SIZE);
 				textArea.setFont(font);
-			}
-			else {
+			} else {
 				// Our font size must be at or bigger than MAXIMUM_SIZE.
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
@@ -1455,7 +1342,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Action for when the user presses the Enter key.
@@ -1481,18 +1367,17 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 		/*
-		 * Overridden for Sun bug 4515750.  Sun fixed this in a more complicated
-		 * way, but I'm not sure why.  See BasicTextUI#getActionMap() and
+		 * Overridden for Sun bug 4515750. Sun fixed this in a more complicated way, but
+		 * I'm not sure why. See BasicTextUI#getActionMap() and
 		 * BasicTextUI.TextActionWrapper.
 		 */
 		@Override
 		public boolean isEnabled() {
 			JTextComponent tc = getTextComponent(null);
-			return (tc==null || tc.isEditable()) ? super.isEnabled() : false;
+			return (tc == null || tc.isEditable()) ? super.isEnabled() : false;
 		}
 
 	}
-
 
 	/**
 	 * Action taken when content is to be inserted.
@@ -1500,8 +1385,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 	public static class InsertContentAction extends RecordableTextAction {
 
 		public InsertContentAction() {
-			super(DefaultEditorKit.insertContentAction, null, null, null,
-					null);
+			super(DefaultEditorKit.insertContentAction, null, null, null, null);
 		}
 
 		@Override
@@ -1513,8 +1397,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			String content = e.getActionCommand();
 			if (content != null) {
 				textArea.replaceSelection(content);
-			}
-			else {
+			} else {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
 		}
@@ -1526,10 +1409,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
-	 * Places a tab character into the document. If there is a selection, it
-	 * is removed before the tab is added.
+	 * Places a tab character into the document. If there is a selection, it is
+	 * removed before the tab is added.
 	 */
 	public static class InsertTabAction extends RecordableTextAction {
 
@@ -1553,7 +1435,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Action to invert the selection's case.
 	 */
@@ -1570,15 +1451,14 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				return;
 			}
 			String selection = textArea.getSelectedText();
-			if (selection!=null) {
+			if (selection != null) {
 				StringBuilder buffer = new StringBuilder(selection);
 				int length = buffer.length();
-				for (int i=0; i<length; i++) {
+				for (int i = 0; i < length; i++) {
 					char c = buffer.charAt(i);
 					if (Character.isUpperCase(c)) {
 						buffer.setCharAt(i, Character.toLowerCase(c));
-					}
-					else if (Character.isLowerCase(c)) {
+					} else if (Character.isLowerCase(c)) {
 						buffer.setCharAt(i, Character.toUpperCase(c));
 					}
 				}
@@ -1593,7 +1473,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Action to join the current line and the following line.
@@ -1617,15 +1496,14 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				Element map = doc.getDefaultRootElement();
 				int lineCount = map.getElementCount();
 				int line = map.getElementIndex(caretPos);
-				if (line==lineCount-1) {
-					UIManager.getLookAndFeel().
-								provideErrorFeedback(textArea);
+				if (line == lineCount - 1) {
+					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					return;
 				}
 				Element lineElem = map.getElement(line);
 				caretPos = lineElem.getEndOffset() - 1;
-				c.setDot(caretPos);		// Gets rid of any selection.
-				doc.remove(caretPos, 1);	// Should be '\n'.
+				c.setDot(caretPos); // Gets rid of any selection.
+				doc.remove(caretPos, 1); // Should be '\n'.
 			} catch (BadLocationException ble) {
 				/* Shouldn't ever happen. */
 				ble.printStackTrace();
@@ -1639,7 +1517,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Action that moves a line up or down.
@@ -1680,13 +1557,11 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 					}
 				}
 
-				if (moveAmt==-1 && startLine>0) {
+				if (moveAmt == -1 && startLine > 0) {
 					moveLineUp(textArea, startLine, moveCount);
-				}
-				else if (moveAmt==1 && endLine < root.getElementCount()-1) {
+				} else if (moveAmt == 1 && endLine < root.getElementCount() - 1) {
 					moveLineDown(textArea, startLine, moveCount);
-				}
-				else {
+				} else {
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					return;
 				}
@@ -1703,16 +1578,15 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-		private void moveLineDown(RTextArea textArea, int line, int lineCount)
-									throws BadLocationException {
+		private void moveLineDown(RTextArea textArea, int line, int lineCount) throws BadLocationException {
 
 			// If we'd be moving lines past the end of the document, stop.
 			// We could perhaps just decide to move the lines to the end of the
 			// file, but this just keeps things simple.
-//			if (textArea.getLineCount() - line < lineCount) {
-//				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-//				return;
-//			}
+			// if (textArea.getLineCount() - line < lineCount) {
+			// UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			// return;
+			// }
 
 			Document doc = textArea.getDocument();
 			Element root = doc.getDefaultRootElement();
@@ -1751,8 +1625,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 		}
 
-		private void moveLineUp(RTextArea textArea, int line, int moveCount)
-									throws BadLocationException {
+		private void moveLineUp(RTextArea textArea, int line, int moveCount) throws BadLocationException {
 
 			Document doc = textArea.getDocument();
 			Element root = doc.getDefaultRootElement();
@@ -1797,7 +1670,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Action to make the selection lower-case.
 	 */
@@ -1814,7 +1686,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				return;
 			}
 			String selection = textArea.getSelectedText();
-			if (selection!=null) {
+			if (selection != null) {
 				textArea.replaceSelection(selection.toLowerCase());
 			}
 			textArea.requestFocusInWindow();
@@ -1826,7 +1698,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Action that moves the caret to the next (or previous) bookmark.
@@ -1844,14 +1715,13 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 
 			Gutter gutter = RSyntaxUtilities.getGutter(textArea);
-			if (gutter!=null) {
+			if (gutter != null) {
 
 				try {
 
 					GutterIconInfo[] bookmarks = gutter.getBookmarks();
-					if (bookmarks.length==0) {
-						UIManager.getLookAndFeel().
-									provideErrorFeedback(textArea);
+					if (bookmarks.length == 0) {
+						UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 						return;
 					}
 
@@ -1859,40 +1729,38 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 					int curLine = textArea.getCaretLineNumber();
 
 					if (forward) {
-						for (int i=0; i<bookmarks.length; i++) {
+						for (int i = 0; i < bookmarks.length; i++) {
 							GutterIconInfo bookmark = bookmarks[i];
 							int offs = bookmark.getMarkedOffset();
 							int line = textArea.getLineOfOffset(offs);
-							if (line>curLine) {
+							if (line > curLine) {
 								moveTo = bookmark;
 								break;
 							}
 						}
-						if (moveTo==null) { // Loop back to beginning
+						if (moveTo == null) { // Loop back to beginning
 							moveTo = bookmarks[0];
 						}
-					}
-					else {
-						for (int i=bookmarks.length-1; i>=0; i--) {
+					} else {
+						for (int i = bookmarks.length - 1; i >= 0; i--) {
 							GutterIconInfo bookmark = bookmarks[i];
 							int offs = bookmark.getMarkedOffset();
 							int line = textArea.getLineOfOffset(offs);
-							if (line<curLine) {
+							if (line < curLine) {
 								moveTo = bookmark;
 								break;
 							}
 						}
-						if (moveTo==null) { // Loop back to end
-							moveTo = bookmarks[bookmarks.length-1];
+						if (moveTo == null) { // Loop back to end
+							moveTo = bookmarks[bookmarks.length - 1];
 						}
 					}
 
 					int offs = moveTo.getMarkedOffset();
 					if (textArea instanceof RSyntaxTextArea) {
-						RSyntaxTextArea rsta = (RSyntaxTextArea)textArea;
+						RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
 						if (rsta.isCodeFoldingEnabled()) {
-							rsta.getFoldManager().
-										ensureOffsetNotInClosedFold(offs);
+							rsta.getFoldManager().ensureOffsetNotInClosedFold(offs);
 						}
 					}
 					int line = textArea.getLineOfOffset(offs);
@@ -1900,8 +1768,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 					textArea.setCaretPosition(offs);
 
 				} catch (BadLocationException ble) { // Never happens
-					UIManager.getLookAndFeel().
-								provideErrorFeedback(textArea);
+					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					ble.printStackTrace();
 				}
 			}
@@ -1914,7 +1781,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Selects the next occurrence of the text last selected.
@@ -1952,10 +1818,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
-	 * Action to move the selection and/or caret. Constructor indicates
-	 * direction to use.
+	 * Action to move the selection and/or caret. Constructor indicates direction to
+	 * use.
 	 */
 	public static class NextVisualPositionAction extends RecordableTextAction {
 
@@ -1975,28 +1840,27 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			int dot = caret.getDot();
 
 			/*
-			 * Move to the beginning/end of selection on a "non-shifted"
-			 * left- or right-keypress.  We shouldn't have to worry about
-			 * navigation filters as, if one is being used, it let us get
-			 * to that position before.
+			 * Move to the beginning/end of selection on a "non-shifted" left- or
+			 * right-keypress. We shouldn't have to worry about navigation filters as, if
+			 * one is being used, it let us get to that position before.
 			 */
 			if (!select) {
 				switch (direction) {
-					case SwingConstants.EAST:
-						int mark = caret.getMark();
-						if (dot!=mark) {
-							caret.setDot(Math.max(dot, mark));
-							return;
-						}
-						break;
-					case SwingConstants.WEST:
-						mark = caret.getMark();
-						if (dot!=mark) {
-							caret.setDot(Math.min(dot, mark));
-							return;
-						}
-						break;
-					default:
+				case SwingConstants.EAST:
+					int mark = caret.getMark();
+					if (dot != mark) {
+						caret.setDot(Math.max(dot, mark));
+						return;
+					}
+					break;
+				case SwingConstants.WEST:
+					mark = caret.getMark();
+					if (dot != mark) {
+						caret.setDot(Math.min(dot, mark));
+						return;
+					}
+					break;
+				default:
 				}
 			}
 
@@ -2005,9 +1869,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 			try {
 
-				if(magicPosition == null &&
-					(direction == SwingConstants.NORTH ||
-					direction == SwingConstants.SOUTH)) {
+				if (magicPosition == null && (direction == SwingConstants.NORTH || direction == SwingConstants.SOUTH)) {
 					Rectangle r = textArea.modelToView(dot);
 					magicPosition = new Point(r.x, r.y);
 				}
@@ -2015,25 +1877,19 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				NavigationFilter filter = textArea.getNavigationFilter();
 
 				if (filter != null) {
-					dot = filter.getNextVisualPositionFrom(textArea, dot,
-								Position.Bias.Forward, direction, bias);
-				}
-				else {
-					dot = textArea.getUI().getNextVisualPositionFrom(
-								textArea, dot,
-								Position.Bias.Forward, direction, bias);
+					dot = filter.getNextVisualPositionFrom(textArea, dot, Position.Bias.Forward, direction, bias);
+				} else {
+					dot = textArea.getUI().getNextVisualPositionFrom(textArea, dot, Position.Bias.Forward, direction,
+							bias);
 				}
 				if (select) {
 					caret.moveDot(dot);
-				}
-				else {
+				} else {
 					caret.setDot(dot);
 				}
 
-				if(magicPosition != null &&
-					(direction == SwingConstants.NORTH ||
-					direction == SwingConstants.SOUTH)) {
-						caret.setMagicCaretPosition(magicPosition);
+				if (magicPosition != null && (direction == SwingConstants.NORTH || direction == SwingConstants.SOUTH)) {
+					caret.setMagicCaretPosition(magicPosition);
 				}
 
 			} catch (BadLocationException ble) {
@@ -2047,15 +1903,14 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-    }
-
+	}
 
 	/**
 	 * Positions the caret at the next word.
 	 */
 	public static class NextWordAction extends RecordableTextAction {
 
- 		private boolean select;
+		private boolean select;
 
 		public NextWordAction(String name, boolean select) {
 			super(name);
@@ -2071,8 +1926,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 			try {
 				offs = getNextWord(textArea, offs);
-				if(offs >= curPara.getEndOffset() &&
-							oldOffs != curPara.getEndOffset() - 1) {
+				if (offs >= curPara.getEndOffset() && oldOffs != curPara.getEndOffset() - 1) {
 					// we should first move to the end of current paragraph
 					// http://bugs.sun.com/view_bug.do?bug_id=4278839
 					offs = curPara.getEndOffset() - 1;
@@ -2080,10 +1934,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			} catch (BadLocationException ble) {
 				int end = textArea.getDocument().getLength();
 				if (offs != end) {
-					if(oldOffs != curPara.getEndOffset() - 1) {
+					if (oldOffs != curPara.getEndOffset() - 1) {
 						offs = curPara.getEndOffset() - 1;
-					}
-					else {
+					} else {
 						offs = end;
 					}
 				}
@@ -2091,8 +1944,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 			if (select) {
 				textArea.moveCaretPosition(offs);
-			}
-			else {
+			} else {
 				textArea.setCaretPosition(offs);
 			}
 
@@ -2103,13 +1955,11 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-		protected int getNextWord(RTextArea textArea, int offs)
-									throws BadLocationException {
+		protected int getNextWord(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getNextWord(textArea, offs);
 		}
 
 	}
-
 
 	/**
 	 * Pages one view to the left or right.
@@ -2133,34 +1983,27 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			textArea.computeVisibleRect(visible);
 			if (left) {
 				visible.x = Math.max(0, visible.x - visible.width);
-			}
-			else {
+			} else {
 				visible.x += visible.width;
 			}
 
 			selectedIndex = textArea.getCaretPosition();
-			if(selectedIndex != -1) {
+			if (selectedIndex != -1) {
 				if (left) {
-					selectedIndex = textArea.viewToModel(
-									new Point(visible.x, visible.y));
-				}
-				else {
-					selectedIndex = textArea.viewToModel(
-							new Point(visible.x + visible.width - 1,
-									visible.y + visible.height - 1));
+					selectedIndex = textArea.viewToModel(new Point(visible.x, visible.y));
+				} else {
+					selectedIndex = textArea
+							.viewToModel(new Point(visible.x + visible.width - 1, visible.y + visible.height - 1));
 				}
 				Document doc = textArea.getDocument();
-				if ((selectedIndex != 0) &&
-					(selectedIndex  > (doc.getLength()-1))) {
-					selectedIndex = doc.getLength()-1;
-				}
-				else if(selectedIndex  < 0) {
+				if ((selectedIndex != 0) && (selectedIndex > (doc.getLength() - 1))) {
+					selectedIndex = doc.getLength() - 1;
+				} else if (selectedIndex < 0) {
 					selectedIndex = 0;
 				}
 				if (select) {
 					textArea.moveCaretPosition(selectedIndex);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(selectedIndex);
 				}
 			}
@@ -2174,18 +2017,16 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Action for pasting text.
 	 */
 	public static class PasteAction extends RecordableTextAction {
 
- 		public PasteAction() {
+		public PasteAction() {
 			super(DefaultEditorKit.pasteAction);
 		}
 
-		public PasteAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public PasteAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2202,7 +2043,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * "Plays back" the last macro recorded.
 	 */
@@ -2212,8 +2052,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			super(rtaPlaybackLastMacroAction);
 		}
 
-		public PlaybackLastMacroAction(String name, Icon icon,
-					String desc, Integer mnemonic, KeyStroke accelerator) {
+		public PlaybackLastMacroAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2233,7 +2072,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Select the previous occurrence of the text last selected.
@@ -2272,13 +2110,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
+	/**
+	 * Positions the caret at the beginning of the previous word.
+	 */
+	public static class PreviousWordAction extends RecordableTextAction {
 
-    /**
-     * Positions the caret at the beginning of the previous word.
-     */
-    public static class PreviousWordAction extends RecordableTextAction {
-
- 		private boolean select;
+		private boolean select;
 
 		public PreviousWordAction(String name, boolean select) {
 			super(name);
@@ -2294,16 +2131,14 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 				Element curPara = Utilities.getParagraphElement(textArea, offs);
 				offs = getPreviousWord(textArea, offs);
-				if(offs < curPara.getStartOffset()) {
-					offs = Utilities.getParagraphElement(textArea, offs).
-												getEndOffset() - 1;
+				if (offs < curPara.getStartOffset()) {
+					offs = Utilities.getParagraphElement(textArea, offs).getEndOffset() - 1;
 				}
 
 			} catch (BadLocationException bl) {
 				if (offs != 0) {
 					offs = 0;
-				}
-				else {
+				} else {
 					failed = true;
 				}
 			}
@@ -2311,12 +2146,10 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			if (!failed) {
 				if (select) {
 					textArea.moveCaretPosition(offs);
-				}
-				else {
+				} else {
 					textArea.setCaretPosition(offs);
 				}
-			}
-			else {
+			} else {
 				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 			}
 
@@ -2327,13 +2160,11 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			return getName();
 		}
 
-		protected int getPreviousWord(RTextArea textArea, int offs)
-										throws BadLocationException {
+		protected int getPreviousWord(RTextArea textArea, int offs) throws BadLocationException {
 			return Utilities.getPreviousWord(textArea, offs);
 		}
 
 	}
-
 
 	/**
 	 * Re-does the last action undone.
@@ -2344,8 +2175,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			super(rtaRedoAction);
 		}
 
-		public RedoAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public RedoAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2364,10 +2194,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
-	 * Scrolls the text area one line up or down, without changing
-	 * the caret position.
+	 * Scrolls the text area one line up or down, without changing the caret
+	 * position.
 	 */
 	public static class ScrollAction extends RecordableTextAction {
 
@@ -2382,16 +2211,15 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 			Container parent = textArea.getParent();
 			if (parent instanceof JViewport) {
-				JViewport viewport = (JViewport)parent;
+				JViewport viewport = (JViewport) parent;
 				Point p = viewport.getViewPosition();
-				p.y += delta*textArea.getLineHeight();
-				if (p.y<0) {
+				p.y += delta * textArea.getLineHeight();
+				if (p.y < 0) {
 					p.y = 0;
-				}
-				else {
+				} else {
 					Rectangle viewRect = viewport.getViewRect();
 					int visibleEnd = p.y + viewRect.height;
-					if (visibleEnd>=textArea.getHeight()) {
+					if (visibleEnd >= textArea.getHeight()) {
 						p.y = textArea.getHeight() - viewRect.height;
 					}
 				}
@@ -2406,7 +2234,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Selects the entire document.
 	 */
@@ -2416,8 +2243,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			super(selectAllAction);
 		}
 
-		public SelectAllAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public SelectAllAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2435,13 +2261,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Selects the line around the caret.
 	 */
 	public static class SelectLineAction extends RecordableTextAction {
 
- 		private Action start;
+		private Action start;
 		private Action end;
 
 		public SelectLineAction() {
@@ -2463,13 +2288,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Selects the word around the caret.
 	 */
 	public static class SelectWordAction extends RecordableTextAction {
 
- 		protected Action start;
+		protected Action start;
 		protected Action end;
 
 		public SelectWordAction() {
@@ -2495,12 +2319,10 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Puts the text area into read-only mode.
 	 */
 	public static class SetReadOnlyAction extends RecordableTextAction {
-
 
 		public SetReadOnlyAction() {
 			super(readOnlyAction);
@@ -2522,7 +2344,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Puts the text area into writable (from read-only) mode.
@@ -2550,19 +2371,16 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * The action for inserting a time/date stamp.
 	 */
 	public static class TimeDateAction extends RecordableTextAction {
 
-
 		public TimeDateAction() {
 			super(rtaTimeDateAction);
 		}
 
-		public TimeDateAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public TimeDateAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2585,7 +2403,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Toggles whether the current line has a bookmark.
 	 */
@@ -2598,13 +2415,12 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		@Override
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 			Gutter gutter = RSyntaxUtilities.getGutter(textArea);
-			if (gutter!=null) {
+			if (gutter != null) {
 				int line = textArea.getCaretLineNumber();
 				try {
 					gutter.toggleBookmark(line);
 				} catch (BadLocationException ble) { // Never happens
-					UIManager.getLookAndFeel().
-								provideErrorFeedback(textArea);
+					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					ble.printStackTrace();
 				}
 			}
@@ -2616,7 +2432,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * The action for the insert key toggling insert/overwrite modes.
@@ -2630,10 +2445,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		@Override
 		public void actionPerformedImpl(ActionEvent e, RTextArea textArea) {
 			int textMode = textArea.getTextMode();
-			if (textMode==RTextArea.INSERT_MODE) {
+			if (textMode == RTextArea.INSERT_MODE) {
 				textArea.setTextMode(RTextArea.OVERWRITE_MODE);
-			}
-			else {
+			} else {
 				textArea.setTextMode(RTextArea.INSERT_MODE);
 			}
 		}
@@ -2645,18 +2459,16 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Undoes the last action done.
 	 */
 	public static class UndoAction extends RecordableTextAction {
 
- 		public UndoAction() {
+		public UndoAction() {
 			super(rtaUndoAction);
 		}
 
-		public UndoAction(String name, Icon icon, String desc,
-					Integer mnemonic, KeyStroke accelerator) {
+		public UndoAction(String name, Icon icon, String desc, Integer mnemonic, KeyStroke accelerator) {
 			super(name, icon, desc, mnemonic, accelerator);
 		}
 
@@ -2674,7 +2486,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 	/**
 	 * Removes the selection, if any.
@@ -2697,7 +2508,6 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
 	 * Action to make the selection upper-case.
 	 */
@@ -2714,7 +2524,7 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 				return;
 			}
 			String selection = textArea.getSelectedText();
-			if (selection!=null) {
+			if (selection != null) {
 				textArea.replaceSelection(selection.toUpperCase());
 			}
 			textArea.requestFocusInWindow();
@@ -2727,10 +2537,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 
 	}
 
-
 	/**
-	 * Scrolls up/down vertically.  The select version of this action extends
-	 * the selection, instead of simply moving the caret.
+	 * Scrolls up/down vertically. The select version of this action extends the
+	 * selection, instead of simply moving the caret.
 	 */
 	public static class VerticalPageAction extends RecordableTextAction {
 
@@ -2749,43 +2558,35 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			Rectangle visible = textArea.getVisibleRect();
 			Rectangle newVis = new Rectangle(visible);
 			int selectedIndex = textArea.getCaretPosition();
-			int scrollAmount = textArea.getScrollableBlockIncrement(
-							visible, SwingConstants.VERTICAL, direction);
+			int scrollAmount = textArea.getScrollableBlockIncrement(visible, SwingConstants.VERTICAL, direction);
 			int initialY = visible.y;
 			Caret caret = textArea.getCaret();
 			Point magicPosition = caret.getMagicCaretPosition();
 			int yOffset;
 
-			if (selectedIndex!=-1) {
+			if (selectedIndex != -1) {
 
 				try {
 
 					Rectangle dotBounds = textArea.modelToView(selectedIndex);
-					int x = (magicPosition != null) ? magicPosition.x :
-												dotBounds.x;
+					int x = (magicPosition != null) ? magicPosition.x : dotBounds.x;
 					int h = dotBounds.height;
-					yOffset = direction *
-							((int)Math.ceil(scrollAmount/(double)h)-1)*h;
-					newVis.y = constrainY(textArea, initialY+yOffset, yOffset, visible.height);
+					yOffset = direction * ((int) Math.ceil(scrollAmount / (double) h) - 1) * h;
+					newVis.y = constrainY(textArea, initialY + yOffset, yOffset, visible.height);
 					int newIndex;
 
 					if (visible.contains(dotBounds.x, dotBounds.y)) {
 						// Dot is currently visible, base the new
 						// location off the old, or
-						newIndex = textArea.viewToModel(
-									new Point(x, constrainY(textArea,
-										dotBounds.y + yOffset, 0, 0)));
-										}
-					else {
+						newIndex = textArea
+								.viewToModel(new Point(x, constrainY(textArea, dotBounds.y + yOffset, 0, 0)));
+					} else {
 						// Dot isn't visible, choose the top or the bottom
 						// for the new location.
 						if (direction == -1) {
-							newIndex = textArea.viewToModel(new Point(
-													x, newVis.y));
-						}
-						else {
-							newIndex = textArea.viewToModel(new Point(
-									x, newVis.y + visible.height));
+							newIndex = textArea.viewToModel(new Point(x, newVis.y));
+						} else {
+							newIndex = textArea.viewToModel(new Point(x, newVis.y + visible.height));
 						}
 					}
 					newIndex = constrainOffset(textArea, newIndex);
@@ -2793,17 +2594,16 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 						// Make sure the new visible location contains
 						// the location of dot, otherwise Caret will
 						// cause an additional scroll.
-						adjustScrollIfNecessary(textArea, newVis, initialY,
-											newIndex);
+						adjustScrollIfNecessary(textArea, newVis, initialY, newIndex);
 						if (select) {
 							textArea.moveCaretPosition(newIndex);
-						}
-						else {
+						} else {
 							textArea.setCaretPosition(newIndex);
 						}
 					}
 
-				} catch (BadLocationException ble) { }
+				} catch (BadLocationException ble) {
+				}
 
 			} // End of if (selectedIndex!=-1).
 
@@ -2822,10 +2622,9 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		private int constrainY(JTextComponent textArea, int y, int vis, int screenHeight) {
 			if (y < 0) {
 				y = 0;
-			}
-			else if (y + vis > textArea.getHeight()) {
-				//y = Math.max(0, textArea.getHeight() - vis);
-				y = Math.max(0, textArea.getHeight()-screenHeight);
+			} else if (y + vis > textArea.getHeight()) {
+				// y = Math.max(0, textArea.getHeight() - vis);
+				y = Math.max(0, textArea.getHeight() - screenHeight);
 			}
 			return y;
 		}
@@ -2835,35 +2634,30 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 			if ((offset != 0) && (offset > doc.getLength())) {
 				offset = doc.getLength();
 			}
-			if (offset  < 0) {
+			if (offset < 0) {
 				offset = 0;
 			}
 			return offset;
 		}
 
-		private void adjustScrollIfNecessary(JTextComponent text,
-									Rectangle visible, int initialY,
-									int index) {
+		private void adjustScrollIfNecessary(JTextComponent text, Rectangle visible, int initialY, int index) {
 			try {
 				Rectangle dotBounds = text.modelToView(index);
-	                if (dotBounds.y < visible.y ||
-					(dotBounds.y > (visible.y + visible.height)) ||
-					(dotBounds.y + dotBounds.height) >
-					(visible.y + visible.height)) {
+				if (dotBounds.y < visible.y || (dotBounds.y > (visible.y + visible.height))
+						|| (dotBounds.y + dotBounds.height) > (visible.y + visible.height)) {
 					int y;
 					if (dotBounds.y < visible.y) {
 						y = dotBounds.y;
-					}
-					else {
+					} else {
 						y = dotBounds.y + dotBounds.height - visible.height;
 					}
-					if ((direction == -1 && y < initialY) ||
-						(direction == 1 && y > initialY)) {
+					if ((direction == -1 && y < initialY) || (direction == 1 && y > initialY)) {
 						// Only adjust if won't cause scrolling upward.
 						visible.y = y;
 					}
 				}
-			} catch (BadLocationException ble) {}
+			} catch (BadLocationException ble) {
+			}
 		}
 
 		@Override
@@ -2872,6 +2666,5 @@ searchOffs = Math.max(lastWordStart - 1, 0);
 		}
 
 	}
-
 
 }

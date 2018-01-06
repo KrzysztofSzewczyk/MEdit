@@ -10,7 +10,6 @@ package org.fife.ui.rsyntaxtextarea;
 
 import javax.swing.text.Segment;
 
-
 /**
  * Interface for a class that generates tokens somehow.
  *
@@ -19,7 +18,6 @@ import javax.swing.text.Segment;
  */
 interface TokenFactory {
 
-
 	/**
 	 * Returns a null token.
 	 *
@@ -27,41 +25,45 @@ interface TokenFactory {
 	 */
 	TokenImpl createToken();
 
+	/**
+	 * Returns a token.
+	 *
+	 * @param line
+	 *            The segment from which to get the token's text.
+	 * @param beg
+	 *            The starting offset of the token's text in the segment.
+	 * @param end
+	 *            The ending offset of the token's text in the segment.
+	 * @param startOffset
+	 *            The offset in the document of the token.
+	 * @param type
+	 *            The type of token.
+	 * @return The token.
+	 */
+	TokenImpl createToken(final Segment line, final int beg, final int end, final int startOffset, final int type);
 
 	/**
 	 * Returns a token.
 	 *
-	 * @param line The segment from which to get the token's text.
-	 * @param beg The starting offset of the token's text in the segment.
-	 * @param end The ending offset of the token's text in the segment.
-	 * @param startOffset The offset in the document of the token.
-	 * @param type The type of token.
+	 * @param line
+	 *            The char array from which to get the token's text.
+	 * @param beg
+	 *            The starting offset of the token's text in the char array.
+	 * @param end
+	 *            The ending offset of the token's text in the char array.
+	 * @param startOffset
+	 *            The offset in the document of the token.
+	 * @param type
+	 *            The type of token.
 	 * @return The token.
 	 */
-	TokenImpl createToken(final Segment line, final int beg,
-					final int end, final int startOffset, final int type);
-
+	TokenImpl createToken(final char[] line, final int beg, final int end, final int startOffset, final int type);
 
 	/**
-	 * Returns a token.
-	 *
-	 * @param line The char array from which to get the token's text.
-	 * @param beg The starting offset of the token's text in the char array.
-	 * @param end The ending offset of the token's text in the char array.
-	 * @param startOffset The offset in the document of the token.
-	 * @param type The type of token.
-	 * @return The token.
-	 */
-	TokenImpl createToken(final char[] line, final int beg,
-					final int end, final int startOffset, final int type);
-
-
-	/**
-	 * Resets the state of this token maker.  This method should be called
-	 * by the <code>TokenMaker</code> every time a token list is generated for
-	 * a new line so the tokens can be reused.
+	 * Resets the state of this token maker. This method should be called by the
+	 * <code>TokenMaker</code> every time a token list is generated for a new line
+	 * so the tokens can be reused.
 	 */
 	void resetAllTokens();
-
 
 }

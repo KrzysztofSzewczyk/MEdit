@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 
 /**
  * AboutBox is dialog containing information about MEdit.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -30,7 +31,8 @@ public class AboutBox extends JDialog {
 	 * Create the dialog.
 	 */
 	public AboutBox() {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(AboutBox.class.getResource("/medit/assets/apps/help-browser.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(AboutBox.class.getResource("/medit/assets/apps/help-browser.png")));
 		setTitle("About MEdit");
 		setBounds(100, 100, 632, 201);
 		getContentPane().setLayout(new BorderLayout());
@@ -42,7 +44,8 @@ public class AboutBox extends JDialog {
 			contentPanel.add(lblMeditIsFree);
 		}
 		{
-			JLabel lblDevcppIconsWere = new JLabel("Tango Icon Library was used. It belongs to it's author(s) and it's redistributed under GPLv2 license.");
+			JLabel lblDevcppIconsWere = new JLabel(
+					"Tango Icon Library was used. It belongs to it's author(s) and it's redistributed under GPLv2 license.");
 			contentPanel.add(lblDevcppIconsWere);
 		}
 		{

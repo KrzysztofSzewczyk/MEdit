@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 
 /**
  * Crash dialog that appears after some exception is thrown.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -31,7 +32,8 @@ public class Crash extends JDialog {
 	 * Create the dialog.
 	 */
 	public Crash(Exception E1) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(Crash.class.getResource("/medit/assets/actions/process-stop.png")));
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(Crash.class.getResource("/medit/assets/actions/process-stop.png")));
 		setTitle("MEdit");
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());

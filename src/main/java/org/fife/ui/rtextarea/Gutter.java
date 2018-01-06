@@ -35,26 +35,27 @@ import org.fife.ui.rsyntaxtextarea.ActiveLineRangeListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
 
-
 /**
  * The gutter is the component on the left-hand side of the text area that
  * displays optional information such as line numbers, fold regions, and icons
- * (for bookmarks, debugging breakpoints, error markers, etc.).<p>
+ * (for bookmarks, debugging breakpoints, error markers, etc.).
+ * <p>
  *
  * Icons can be added on a per-line basis to visually mark syntax errors, lines
- * with breakpoints set on them, etc.  To add icons to the gutter, you must
- * first call {@link RTextScrollPane#setIconRowHeaderEnabled(boolean)} on the
- * parent scroll pane, to make the icon area visible.  Then, you can add icons
- * that track either lines in the document, or offsets, via
+ * with breakpoints set on them, etc. To add icons to the gutter, you must first
+ * call {@link RTextScrollPane#setIconRowHeaderEnabled(boolean)} on the parent
+ * scroll pane, to make the icon area visible. Then, you can add icons that
+ * track either lines in the document, or offsets, via
  * {@link #addLineTrackingIcon(int, Icon)} and
- * {@link #addOffsetTrackingIcon(int, Icon)}, respectively.  To remove an
- * icon you've added, use {@link #removeTrackingIcon(GutterIconInfo)}.<p>
+ * {@link #addOffsetTrackingIcon(int, Icon)}, respectively. To remove an icon
+ * you've added, use {@link #removeTrackingIcon(GutterIconInfo)}.
+ * <p>
  *
- * In addition to support for arbitrary per-line icons, this component also
- * has built-in support for displaying icons representing "bookmarks;" that is,
- * lines a user can cycle through via F2 and Shift+F2.  Bookmarked lines are
- * toggled via Ctrl+F2.  In order to enable bookmarking, you must first assign
- * an icon to represent a bookmarked line, then actually enable the feature:
+ * In addition to support for arbitrary per-line icons, this component also has
+ * built-in support for displaying icons representing "bookmarks;" that is,
+ * lines a user can cycle through via F2 and Shift+F2. Bookmarked lines are
+ * toggled via Ctrl+F2. In order to enable bookmarking, you must first assign an
+ * icon to represent a bookmarked line, then actually enable the feature:
  *
  * <pre>
  * Gutter gutter = scrollPane.getGutter();
@@ -71,8 +72,7 @@ public class Gutter extends JPanel {
 	/**
 	 * The color used to highlight active line ranges if none is specified.
 	 */
-	public static final Color DEFAULT_ACTIVE_LINE_RANGE_COLOR =
-												new Color(51, 153, 255);
+	public static final Color DEFAULT_ACTIVE_LINE_RANGE_COLOR = new Color(51, 153, 255);
 
 	/**
 	 * The text area.
@@ -105,8 +105,8 @@ public class Gutter extends JPanel {
 	private IconRowHeader iconArea;
 
 	/**
-	 * Whether the icon area inherits the gutter background (as opposed to
-	 * painting with its own, default "panel" color).
+	 * Whether the icon area inherits the gutter background (as opposed to painting
+	 * with its own, default "panel" color).
 	 */
 	private boolean iconRowHeaderInheritsGutterBackground;
 
@@ -120,11 +120,11 @@ public class Gutter extends JPanel {
 	 */
 	private transient TextAreaListener listener;
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param textArea The parent text area.
+	 * @param textArea
+	 *            The parent text area.
 	 */
 	public Gutter(RTextArea textArea) {
 
@@ -136,12 +136,12 @@ public class Gutter extends JPanel {
 
 		setTextArea(textArea);
 		setLayout(new BorderLayout());
-		if (this.textArea!=null) {
+		if (this.textArea != null) {
 			// Enable line numbers our first time through if they give us
 			// a text area.
 			setLineNumbersEnabled(true);
 			if (this.textArea instanceof RSyntaxTextArea) {
-				RSyntaxTextArea rsta = (RSyntaxTextArea)this.textArea;
+				RSyntaxTextArea rsta = (RSyntaxTextArea) this.textArea;
 				setFoldIndicatorEnabled(rsta.isCodeFoldingEnabled());
 			}
 		}
@@ -149,100 +149,99 @@ public class Gutter extends JPanel {
 		setBorder(new GutterBorder(0, 0, 0, 1)); // Assume ltr
 
 		Color bg = null;
-		if (textArea!=null) {
+		if (textArea != null) {
 			bg = textArea.getBackground(); // May return null if image bg
 		}
-		setBackground(bg!=null ? bg : Color.WHITE);
+		setBackground(bg != null ? bg : Color.WHITE);
 
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param line The line to track (zero-based).
-	 * @param icon The icon to display.  This should be small (say 16x16).
-	 * @return A tag for this icon.  This can later be used in a call to
-	 *         {@link #removeTrackingIcon(GutterIconInfo)} to remove this
-	 *         icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @param line
+	 *            The line to track (zero-based).
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
+	 * @return A tag for this icon. This can later be used in a call to
+	 *         {@link #removeTrackingIcon(GutterIconInfo)} to remove this icon.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #addLineTrackingIcon(int, Icon, String)
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
-	public GutterIconInfo addLineTrackingIcon(int line, Icon icon)
-											throws BadLocationException {
+	public GutterIconInfo addLineTrackingIcon(int line, Icon icon) throws BadLocationException {
 		return addLineTrackingIcon(line, icon, null);
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param line The line to track (zero-based).
-	 * @param icon The icon to display.  This should be small (say 16x16).
-	 * @param tip An optional tool tip for the icon.
-	 * @return A tag for this icon.  This can later be used in a call to
-	 *         {@link #removeTrackingIcon(GutterIconInfo)} to remove this
-	 *         icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @param line
+	 *            The line to track (zero-based).
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
+	 * @param tip
+	 *            An optional tool tip for the icon.
+	 * @return A tag for this icon. This can later be used in a call to
+	 *         {@link #removeTrackingIcon(GutterIconInfo)} to remove this icon.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #addLineTrackingIcon(int, Icon)
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
-	public GutterIconInfo addLineTrackingIcon(int line, Icon icon, String tip)
-											throws BadLocationException {
+	public GutterIconInfo addLineTrackingIcon(int line, Icon icon, String tip) throws BadLocationException {
 		int offs = textArea.getLineStartOffset(line);
 		return addOffsetTrackingIcon(offs, icon, tip);
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param offs The offset to track.
-	 * @param icon The icon to display.  This should be small (say 16x16).
+	 * @param offs
+	 *            The offset to track.
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #addOffsetTrackingIcon(int, Icon, String)
 	 * @see #addLineTrackingIcon(int, Icon)
 	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
-	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon)
-												throws BadLocationException {
+	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon) throws BadLocationException {
 		return addOffsetTrackingIcon(offs, icon, null);
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param offs The offset to track.
-	 * @param icon The icon to display.  This should be small (say 16x16).
-	 * @param tip An optional tool tip for the icon.
+	 * @param offs
+	 *            The offset to track.
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
+	 * @param tip
+	 *            An optional tool tip for the icon.
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 * @see #addLineTrackingIcon(int, Icon)
 	 * @see #removeTrackingIcon(GutterIconInfo)
 	 */
-	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon, String tip)
-												throws BadLocationException {
+	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon, String tip) throws BadLocationException {
 		return iconArea.addOffsetTrackingIcon(offs, icon, tip);
 	}
-
 
 	/**
 	 * Clears the active line range.
@@ -252,7 +251,6 @@ public class Gutter extends JPanel {
 	private void clearActiveLineRange() {
 		iconArea.clearActiveLineRange();
 	}
-
 
 	/**
 	 * Returns the color used to paint the active line range, if any.
@@ -264,10 +262,9 @@ public class Gutter extends JPanel {
 		return iconArea.getActiveLineRangeColor();
 	}
 
-
 	/**
-	 * Returns the background color used by the (default) fold icons when they
-	 * are armed.
+	 * Returns the background color used by the (default) fold icons when they are
+	 * armed.
 	 *
 	 * @return The background color.
 	 * @see #setArmedFoldBackground(Color)
@@ -277,11 +274,10 @@ public class Gutter extends JPanel {
 		return foldIndicator.getFoldIconArmedBackground();
 	}
 
-
 	/**
 	 * Returns the icon to use for bookmarks.
 	 *
-	 * @return The icon to use for bookmarks.  If this is <code>null</code>,
+	 * @return The icon to use for bookmarks. If this is <code>null</code>,
 	 *         bookmarking is effectively disabled.
 	 * @see #setBookmarkIcon(Icon)
 	 * @see #isBookmarkingEnabled()
@@ -290,18 +286,15 @@ public class Gutter extends JPanel {
 		return iconArea.getBookmarkIcon();
 	}
 
-
 	/**
 	 * Returns the bookmarks known to this gutter.
 	 *
-	 * @return The bookmarks.  If there are no bookmarks, an empty array is
-	 *         returned.
+	 * @return The bookmarks. If there are no bookmarks, an empty array is returned.
 	 * @see #toggleBookmark(int)
 	 */
 	public GutterIconInfo[] getBookmarks() {
 		return iconArea.getBookmarks();
 	}
-
 
 	/**
 	 * Returns the color of the "border" line.
@@ -310,9 +303,8 @@ public class Gutter extends JPanel {
 	 * @see #setBorderColor(Color)
 	 */
 	public Color getBorderColor() {
-		return ((GutterBorder)getBorder()).getColor();
+		return ((GutterBorder) getBorder()).getColor();
 	}
-
 
 	/**
 	 * Returns the background color used by the (default) fold icons.
@@ -324,7 +316,6 @@ public class Gutter extends JPanel {
 		return foldIndicator.getFoldIconBackground();
 	}
 
-
 	/**
 	 * Returns the foreground color of the fold indicator.
 	 *
@@ -335,10 +326,9 @@ public class Gutter extends JPanel {
 		return foldIndicator.getForeground();
 	}
 
-
 	/**
-	 * Returns whether the icon area inherits the gutter background (as opposed
-	 * to painting with its own, default "panel" color, which is the default).
+	 * Returns whether the icon area inherits the gutter background (as opposed to
+	 * painting with its own, default "panel" color, which is the default).
 	 *
 	 * @return Whether the gutter background is used in the icon row header.
 	 * @see #setIconRowHeaderInheritsGutterBackground(boolean)
@@ -346,7 +336,6 @@ public class Gutter extends JPanel {
 	public boolean getIconRowHeaderInheritsGutterBackground() {
 		return iconRowHeaderInheritsGutterBackground;
 	}
-
 
 	/**
 	 * Returns the color to use to paint line numbers.
@@ -358,7 +347,6 @@ public class Gutter extends JPanel {
 		return lineNumberColor;
 	}
 
-
 	/**
 	 * Returns the font used for line numbers.
 	 *
@@ -369,10 +357,8 @@ public class Gutter extends JPanel {
 		return lineNumberFont;
 	}
 
-
 	/**
-	 * Returns the starting line's line number.  The default value is
-	 * <code>1</code>.
+	 * Returns the starting line's line number. The default value is <code>1</code>.
 	 *
 	 * @return The index
 	 * @see #setLineNumberingStartIndex(int)
@@ -381,25 +367,23 @@ public class Gutter extends JPanel {
 		return lineNumberingStartIndex;
 	}
 
-
 	/**
 	 * Returns <code>true</code> if the line numbers are enabled and visible.
 	 *
 	 * @return Whether or not line numbers are visible.
 	 */
 	public boolean getLineNumbersEnabled() {
-		for (int i=0; i<getComponentCount(); i++) {
-			if (getComponent(i)==lineNumberList) {
+		for (int i = 0; i < getComponentCount(); i++) {
+			if (getComponent(i) == lineNumberList) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-
 	/**
-	 * Returns whether tool tips are displayed showing the contents of
-	 * collapsed fold regions when the mouse hovers over a +/- icon.
+	 * Returns whether tool tips are displayed showing the contents of collapsed
+	 * fold regions when the mouse hovers over a +/- icon.
 	 *
 	 * @return Whether these tool tips are displayed.
 	 * @see #setShowCollapsedRegionToolTips(boolean)
@@ -408,22 +392,21 @@ public class Gutter extends JPanel {
 		return foldIndicator.getShowCollapsedRegionToolTips();
 	}
 
-
 	/**
 	 * Returns the tracking icons at the specified view position.
 	 *
-	 * @param p The view position.
-	 * @return The tracking icons at that position.  If there are no tracking
-	 *         icons there, this will be an empty array.
-	 * @throws BadLocationException If <code>p</code> is invalid.
+	 * @param p
+	 *            The view position.
+	 * @return The tracking icons at that position. If there are no tracking icons
+	 *         there, this will be an empty array.
+	 * @throws BadLocationException
+	 *             If <code>p</code> is invalid.
 	 */
-	public GutterIconInfo[] getTrackingIcons(Point p)
-			throws BadLocationException {
+	public GutterIconInfo[] getTrackingIcons(Point p) throws BadLocationException {
 		int offs = textArea.viewToModel(new Point(0, p.y));
 		int line = textArea.getLineOfOffset(offs);
 		return iconArea.getTrackingIcons(line);
 	}
-
 
 	/**
 	 * Returns whether the fold indicator is enabled.
@@ -432,14 +415,13 @@ public class Gutter extends JPanel {
 	 * @see #setFoldIndicatorEnabled(boolean)
 	 */
 	public boolean isFoldIndicatorEnabled() {
-		for (int i=0; i<getComponentCount(); i++) {
-			if (getComponent(i)==foldIndicator) {
+		for (int i = 0; i < getComponentCount(); i++) {
+			if (getComponent(i) == foldIndicator) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	/**
 	 * Returns whether bookmarking is enabled.
@@ -451,21 +433,19 @@ public class Gutter extends JPanel {
 		return iconArea.isBookmarkingEnabled();
 	}
 
-
 	/**
 	 * Returns whether the icon row header is enabled.
 	 *
 	 * @return Whether the icon row header is enabled.
 	 */
 	public boolean isIconRowHeaderEnabled() {
-		for (int i=0; i<getComponentCount(); i++) {
-			if (getComponent(i)==iconArea) {
+		for (int i = 0; i < getComponentCount(); i++) {
+			if (getComponent(i) == iconArea) {
 				return true;
 			}
 		}
 		return false;
 	}
-
 
 	/**
 	 * Removes all tracking icons.
@@ -477,13 +457,13 @@ public class Gutter extends JPanel {
 		iconArea.removeAllTrackingIcons();
 	}
 
-
 	/**
 	 * Removes the specified tracking icon.
 	 *
-	 * @param tag A tag for an icon in the gutter, as returned from either
-	 *        {@link #addLineTrackingIcon(int, Icon)} or
-	 *        {@link #addOffsetTrackingIcon(int, Icon)}.
+	 * @param tag
+	 *            A tag for an icon in the gutter, as returned from either
+	 *            {@link #addLineTrackingIcon(int, Icon)} or
+	 *            {@link #addOffsetTrackingIcon(int, Icon)}.
 	 * @see #removeAllTrackingIcons()
 	 * @see #addLineTrackingIcon(int, Icon)
 	 * @see #addOffsetTrackingIcon(int, Icon)
@@ -492,12 +472,11 @@ public class Gutter extends JPanel {
 		iconArea.removeTrackingIcon(tag);
 	}
 
-
 	/**
 	 * Sets the color to use to render active line ranges.
 	 *
-	 * @param color The color to use.  If this is null, then the default
-	 *        color is used.
+	 * @param color
+	 *            The color to use. If this is null, then the default color is used.
 	 * @see #getActiveLineRangeColor()
 	 * @see #DEFAULT_ACTIVE_LINE_RANGE_COLOR
 	 */
@@ -505,26 +484,27 @@ public class Gutter extends JPanel {
 		iconArea.setActiveLineRangeColor(color);
 	}
 
-
 	/**
-	 * Highlights a range of lines in the icon area.  This, of course, will
-	 * only be visible if the icon area is visible.
+	 * Highlights a range of lines in the icon area. This, of course, will only be
+	 * visible if the icon area is visible.
 	 *
-	 * @param startLine The start of the line range.
-	 * @param endLine The end of the line range.
+	 * @param startLine
+	 *            The start of the line range.
+	 * @param endLine
+	 *            The end of the line range.
 	 * @see #clearActiveLineRange()
 	 */
 	private void setActiveLineRange(int startLine, int endLine) {
 		iconArea.setActiveLineRange(startLine, endLine);
 	}
 
-
 	/**
-	 * Sets the background color used by the (default) fold icons when they
-	 * are armed.
+	 * Sets the background color used by the (default) fold icons when they are
+	 * armed.
 	 *
-	 * @param bg The new background color.  If this is {@code null}, then
-	 *        armed fold icons will not render with a special color.
+	 * @param bg
+	 *            The new background color. If this is {@code null}, then armed fold
+	 *            icons will not render with a special color.
 	 * @see #getArmedFoldBackground()
 	 * @see #setFoldBackground(Color)
 	 */
@@ -532,12 +512,12 @@ public class Gutter extends JPanel {
 		foldIndicator.setFoldIconArmedBackground(bg);
 	}
 
-
 	/**
 	 * Sets the icon to use for bookmarks.
 	 *
-	 * @param icon The new bookmark icon.  If this is <code>null</code>,
-	 *        bookmarking is effectively disabled.
+	 * @param icon
+	 *            The new bookmark icon. If this is <code>null</code>, bookmarking
+	 *            is effectively disabled.
 	 * @see #getBookmarkIcon()
 	 * @see #isBookmarkingEnabled()
 	 */
@@ -545,13 +525,12 @@ public class Gutter extends JPanel {
 		iconArea.setBookmarkIcon(icon);
 	}
 
-
 	/**
-	 * Sets whether bookmarking is enabled.  Note that a bookmarking icon
-	 * must be set via {@link #setBookmarkIcon(Icon)} before bookmarks are
-	 * truly enabled.
+	 * Sets whether bookmarking is enabled. Note that a bookmarking icon must be set
+	 * via {@link #setBookmarkIcon(Icon)} before bookmarks are truly enabled.
 	 *
-	 * @param enabled Whether bookmarking is enabled.
+	 * @param enabled
+	 *            Whether bookmarking is enabled.
 	 * @see #isBookmarkingEnabled()
 	 * @see #setBookmarkIcon(Icon)
 	 */
@@ -562,18 +541,17 @@ public class Gutter extends JPanel {
 		}
 	}
 
-
 	/**
 	 * Sets the color for the "border" line.
 	 *
-	 * @param color The new color.
+	 * @param color
+	 *            The new color.
 	 * @see #getBorderColor()
 	 */
 	public void setBorderColor(Color color) {
-		((GutterBorder)getBorder()).setColor(color);
+		((GutterBorder) getBorder()).setColor(color);
 		repaint();
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -587,241 +565,230 @@ public class Gutter extends JPanel {
 		if (getBorder() instanceof GutterBorder) {
 			// Reuse the border to preserve its color.
 			if (o.isLeftToRight()) {
-				((GutterBorder)getBorder()).setEdges(0, 0, 0, 1);
-			}
-			else {
-				((GutterBorder)getBorder()).setEdges(0, 1, 0, 0);
+				((GutterBorder) getBorder()).setEdges(0, 0, 0, 1);
+			} else {
+				((GutterBorder) getBorder()).setEdges(0, 1, 0, 0);
 			}
 		}
 		super.setComponentOrientation(o);
 	}
 
-
 	/**
 	 * Sets the icons to use to represent collapsed and expanded folds.
 	 *
-	 * @param collapsedIcon The collapsed fold icon.  This cannot be
-	 *        <code>null</code>.
-	 * @param expandedIcon The expanded fold icon.  This cannot be
-	 *        <code>null</code>.
+	 * @param collapsedIcon
+	 *            The collapsed fold icon. This cannot be <code>null</code>.
+	 * @param expandedIcon
+	 *            The expanded fold icon. This cannot be <code>null</code>.
 	 */
 	public void setFoldIcons(Icon collapsedIcon, Icon expandedIcon) {
-		if (foldIndicator!=null) {
+		if (foldIndicator != null) {
 			foldIndicator.setFoldIcons(collapsedIcon, expandedIcon);
 		}
 	}
 
-
 	/**
 	 * Toggles whether the fold indicator is enabled.
 	 *
-	 * @param enabled Whether the fold indicator should be enabled.
+	 * @param enabled
+	 *            Whether the fold indicator should be enabled.
 	 * @see #isFoldIndicatorEnabled()
 	 */
 	public void setFoldIndicatorEnabled(boolean enabled) {
-		if (foldIndicator!=null) {
+		if (foldIndicator != null) {
 			if (enabled) {
 				add(foldIndicator, BorderLayout.LINE_END);
-			}
-			else {
+			} else {
 				remove(foldIndicator);
 			}
 			revalidate();
 		}
 	}
 
-
 	/**
 	 * Sets the background color used by the (default) fold icons.
 	 *
-	 * @param bg The new background color.
+	 * @param bg
+	 *            The new background color.
 	 * @see #getFoldBackground()
 	 * @see #setArmedFoldBackground(Color)
 	 */
 	public void setFoldBackground(Color bg) {
-		if (bg==null) {
+		if (bg == null) {
 			bg = FoldIndicator.DEFAULT_FOLD_BACKGROUND;
 		}
 		foldIndicator.setFoldIconBackground(bg);
 	}
 
-
 	/**
 	 * Sets the foreground color used by the fold indicator.
 	 *
-	 * @param fg The new fold indicator foreground.
+	 * @param fg
+	 *            The new fold indicator foreground.
 	 * @see #getFoldIndicatorForeground()
 	 */
 	public void setFoldIndicatorForeground(Color fg) {
-		if (fg==null) {
+		if (fg == null) {
 			fg = FoldIndicator.DEFAULT_FOREGROUND;
 		}
 		foldIndicator.setForeground(fg);
 	}
 
-
 	/**
-	 * Toggles whether the icon row header (used for breakpoints, bookmarks,
-	 * etc.) is enabled.
+	 * Toggles whether the icon row header (used for breakpoints, bookmarks, etc.)
+	 * is enabled.
 	 *
-	 * @param enabled Whether the icon row header is enabled.
+	 * @param enabled
+	 *            Whether the icon row header is enabled.
 	 * @see #isIconRowHeaderEnabled()
 	 */
 	void setIconRowHeaderEnabled(boolean enabled) {
-		if (iconArea!=null) {
+		if (iconArea != null) {
 			if (enabled) {
 				add(iconArea, BorderLayout.LINE_START);
-			}
-			else {
+			} else {
 				remove(iconArea);
 			}
 			revalidate();
 		}
 	}
 
-
 	/**
-	 * Sets whether the icon area inherits the gutter background (as opposed
-	 * to painting with its own, default "panel" color, which is the default).
+	 * Sets whether the icon area inherits the gutter background (as opposed to
+	 * painting with its own, default "panel" color, which is the default).
 	 *
-	 * @param inherits Whether the gutter background should be used in the icon
-	 *        row header.  If this is <code>false</code>, a default,
-	 *        Look-and-feel-dependent color is used.
+	 * @param inherits
+	 *            Whether the gutter background should be used in the icon row
+	 *            header. If this is <code>false</code>, a default,
+	 *            Look-and-feel-dependent color is used.
 	 * @see #getIconRowHeaderInheritsGutterBackground()
 	 */
 	public void setIconRowHeaderInheritsGutterBackground(boolean inherits) {
-		if (inherits!=iconRowHeaderInheritsGutterBackground) {
+		if (inherits != iconRowHeaderInheritsGutterBackground) {
 			iconRowHeaderInheritsGutterBackground = inherits;
-			if (iconArea!=null) {
+			if (iconArea != null) {
 				iconArea.setInheritsGutterBackground(inherits);
 			}
 		}
 	}
 
-
 	/**
 	 * Sets the color to use to paint line numbers.
 	 *
-	 * @param color The color to use when painting line numbers.
+	 * @param color
+	 *            The color to use when painting line numbers.
 	 * @see #getLineNumberColor()
 	 */
 	public void setLineNumberColor(Color color) {
-		if (color!=null && !color.equals(lineNumberColor)) {
+		if (color != null && !color.equals(lineNumberColor)) {
 			lineNumberColor = color;
-			if (lineNumberList!=null) {
+			if (lineNumberList != null) {
 				lineNumberList.setForeground(color);
 			}
 		}
 	}
 
-
 	/**
 	 * Sets the font used for line numbers.
 	 *
-	 * @param font The font to use.  This cannot be <code>null</code>.
+	 * @param font
+	 *            The font to use. This cannot be <code>null</code>.
 	 * @see #getLineNumberFont()
 	 */
 	public void setLineNumberFont(Font font) {
-		if (font==null) {
+		if (font == null) {
 			throw new IllegalArgumentException("font cannot be null");
 		}
 		if (!font.equals(lineNumberFont)) {
 			lineNumberFont = font;
-			if (lineNumberList!=null) {
+			if (lineNumberList != null) {
 				lineNumberList.setFont(font);
 			}
 		}
 	}
 
-
 	/**
-	 * Sets the starting line's line number.  The default value is
-	 * <code>1</code>.  Applications can call this method to change this value
-	 * if they are displaying a subset of lines in a file, for example.
+	 * Sets the starting line's line number. The default value is <code>1</code>.
+	 * Applications can call this method to change this value if they are displaying
+	 * a subset of lines in a file, for example.
 	 *
-	 * @param index The new index.
+	 * @param index
+	 *            The new index.
 	 * @see #getLineNumberingStartIndex()
 	 */
 	public void setLineNumberingStartIndex(int index) {
-		if (index!=lineNumberingStartIndex) {
+		if (index != lineNumberingStartIndex) {
 			lineNumberingStartIndex = index;
 			lineNumberList.setLineNumberingStartIndex(index);
 		}
 	}
 
-
 	/**
 	 * Toggles whether or not line numbers are visible.
 	 *
-	 * @param enabled Whether or not line numbers should be visible.
+	 * @param enabled
+	 *            Whether or not line numbers should be visible.
 	 * @see #getLineNumbersEnabled()
 	 */
 	void setLineNumbersEnabled(boolean enabled) {
-		if (lineNumberList!=null) {
+		if (lineNumberList != null) {
 			if (enabled) {
 				add(lineNumberList);
-			}
-			else {
+			} else {
 				remove(lineNumberList);
 			}
 			revalidate();
 		}
 	}
 
-
 	/**
 	 * Toggles whether tool tips should be displayed showing the contents of
 	 * collapsed fold regions when the mouse hovers over a +/- icon.
 	 *
-	 * @param show Whether to show these tool tips.
+	 * @param show
+	 *            Whether to show these tool tips.
 	 * @see #getShowCollapsedRegionToolTips()
 	 */
 	public void setShowCollapsedRegionToolTips(boolean show) {
-		if (foldIndicator!=null) {
+		if (foldIndicator != null) {
 			foldIndicator.setShowCollapsedRegionToolTips(show);
 		}
 	}
 
-
 	/**
-	 * Sets the text area being displayed.  This will clear any tracking
-	 * icons currently displayed.
+	 * Sets the text area being displayed. This will clear any tracking icons
+	 * currently displayed.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 */
 	void setTextArea(RTextArea textArea) {
 
-		if (this.textArea!=null) {
+		if (this.textArea != null) {
 			listener.uninstall();
 		}
 
-		if (textArea!=null) {
+		if (textArea != null) {
 
-			RTextAreaEditorKit kit = (RTextAreaEditorKit)textArea.getUI().
-					getEditorKit(textArea);
+			RTextAreaEditorKit kit = (RTextAreaEditorKit) textArea.getUI().getEditorKit(textArea);
 
-			if (lineNumberList==null) {
+			if (lineNumberList == null) {
 				lineNumberList = kit.createLineNumberList(textArea);
 				lineNumberList.setFont(getLineNumberFont());
 				lineNumberList.setForeground(getLineNumberColor());
-				lineNumberList.setLineNumberingStartIndex(
-						getLineNumberingStartIndex());
-			}
-			else {
+				lineNumberList.setLineNumberingStartIndex(getLineNumberingStartIndex());
+			} else {
 				lineNumberList.setTextArea(textArea);
 			}
-			if (iconArea==null) {
+			if (iconArea == null) {
 				iconArea = kit.createIconRowHeader(textArea);
-				iconArea.setInheritsGutterBackground(
-						getIconRowHeaderInheritsGutterBackground());
-			}
-			else {
+				iconArea.setInheritsGutterBackground(getIconRowHeaderInheritsGutterBackground());
+			} else {
 				iconArea.setTextArea(textArea);
 			}
-			if (foldIndicator==null) {
+			if (foldIndicator == null) {
 				foldIndicator = new FoldIndicator(textArea);
-			}
-			else {
+			} else {
 				foldIndicator.setTextArea(textArea);
 			}
 
@@ -833,44 +800,44 @@ public class Gutter extends JPanel {
 
 	}
 
-
 	/**
-	 * Programatically toggles whether there is a bookmark for the specified
-	 * line.  If bookmarking is not enabled, this method does nothing.
+	 * Programatically toggles whether there is a bookmark for the specified line.
+	 * If bookmarking is not enabled, this method does nothing.
 	 *
-	 * @param line The line.
+	 * @param line
+	 *            The line.
 	 * @return Whether a bookmark is now at the specified line.
-	 * @throws BadLocationException If <code>line</code> is an invalid line
-	 *         number in the text area.
+	 * @throws BadLocationException
+	 *             If <code>line</code> is an invalid line number in the text area.
 	 * @see #getBookmarks()
 	 */
 	public boolean toggleBookmark(int line) throws BadLocationException {
 		return iconArea.toggleBookmark(line);
 	}
 
-
-//	public void setUI(ComponentUI ui) {
-//
-//		Border gutterBorder = getBorder();
-//
-//		super.setUI(ui);
-//
-//		// Some LaFs, such as WebLookAndFeel, override borders even when
-//		// they aren't UIResources.
-//		Border border = getBorder();
-//		if (border != gutterBorder) {
-//			setBorder(gutterBorder);
-//		}
-//
-//	}
-//
-//
-@Override
-public void setBorder(Border border) {
-	if (border instanceof GutterBorder) {
-		super.setBorder(border);
+	// public void setUI(ComponentUI ui) {
+	//
+	// Border gutterBorder = getBorder();
+	//
+	// super.setUI(ui);
+	//
+	// // Some LaFs, such as WebLookAndFeel, override borders even when
+	// // they aren't UIResources.
+	// Border border = getBorder();
+	// if (border != gutterBorder) {
+	// setBorder(gutterBorder);
+	// }
+	//
+	// }
+	//
+	//
+	@Override
+	public void setBorder(Border border) {
+		if (border instanceof GutterBorder) {
+			super.setBorder(border);
+		}
 	}
-}
+
 	/**
 	 * The border used by the gutter.
 	 */
@@ -890,22 +857,18 @@ public void setBorder(Border border) {
 		}
 
 		@Override
-		public void paintBorder(Component c, Graphics g, int x, int y,
-								int width, int height) {
+		public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
 
 			visibleRect = g.getClipBounds(visibleRect);
-			if (visibleRect==null) { // ???
-				visibleRect = ((JComponent)c).getVisibleRect();
+			if (visibleRect == null) { // ???
+				visibleRect = ((JComponent) c).getVisibleRect();
 			}
 
 			g.setColor(color);
-			if (left==1) {
-				g.drawLine(0,visibleRect.y,
-						0,visibleRect.y+visibleRect.height);
-			}
-			else {
-				g.drawLine(width-1,visibleRect.y,
-						width-1,visibleRect.y+visibleRect.height);
+			if (left == 1) {
+				g.drawLine(0, visibleRect.y, 0, visibleRect.y + visibleRect.height);
+			} else {
+				g.drawLine(width - 1, visibleRect.y, width - 1, visibleRect.y + visibleRect.height);
 			}
 
 		}
@@ -923,19 +886,17 @@ public void setBorder(Border border) {
 
 	}
 
-
 	/**
 	 * Listens for the text area resizing.
 	 */
 	private class TextAreaListener extends ComponentAdapter
-						implements DocumentListener, PropertyChangeListener,
-						ActiveLineRangeListener {
+			implements DocumentListener, PropertyChangeListener, ActiveLineRangeListener {
 
 		// This is necessary to keep child components the same height as the text
-		// area.  The worse case is when the user toggles word-wrap and it changes
+		// area. The worse case is when the user toggles word-wrap and it changes
 		// the height of the text area. In that case, if we listen for the
 		// "lineWrap" property change, we get notified BEFORE the text area
-		// decides on its new size, thus we cannot resize properly.  We listen
+		// decides on its new size, thus we cannot resize properly. We listen
 		// instead for ComponentEvents so we change size after the text area has
 		// resized.
 
@@ -944,20 +905,21 @@ public void setBorder(Border border) {
 		/**
 		 * Modifies the "active line range" that is painted in this component.
 		 *
-		 * @param e Information about the new "active line range."
+		 * @param e
+		 *            Information about the new "active line range."
 		 */
 		@Override
 		public void activeLineRangeChanged(ActiveLineRangeEvent e) {
-			if (e.getMin()==-1) {
+			if (e.getMin() == -1) {
 				clearActiveLineRange();
-			}
-			else {
+			} else {
 				setActiveLineRange(e.getMin(), e.getMax());
 			}
 		}
 
 		@Override
-		public void changedUpdate(DocumentEvent e) {}
+		public void changedUpdate(DocumentEvent e) {
+		}
 
 		@Override
 		public void componentResized(java.awt.event.ComponentEvent e) {
@@ -965,9 +927,8 @@ public void setBorder(Border border) {
 		}
 
 		protected void handleDocumentEvent(DocumentEvent e) {
-			for (int i=0; i<getComponentCount(); i++) {
-				AbstractGutterComponent agc =
-							(AbstractGutterComponent)getComponent(i);
+			for (int i = 0; i < getComponentCount(); i++) {
+				AbstractGutterComponent agc = (AbstractGutterComponent) getComponent(i);
 				agc.handleDocumentEvent(e);
 			}
 		}
@@ -985,7 +946,7 @@ public void setBorder(Border border) {
 			textArea.getDocument().addDocumentListener(this);
 			textArea.addPropertyChangeListener(this);
 			if (textArea instanceof RSyntaxTextArea) {
-				RSyntaxTextArea rsta = (RSyntaxTextArea)textArea;
+				RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
 				rsta.addActiveLineRangeListener(this);
 				rsta.getFoldManager().addPropertyChangeListener(this);
 			}
@@ -999,21 +960,18 @@ public void setBorder(Border border) {
 
 			// If they change the text area's font, we need to update cell
 			// heights to match the font's height.
-			if ("font".equals(name) ||
-					RSyntaxTextArea.SYNTAX_SCHEME_PROPERTY.equals(name)) {
-				for (int i=0; i<getComponentCount(); i++) {
-					AbstractGutterComponent agc =
-								(AbstractGutterComponent)getComponent(i);
+			if ("font".equals(name) || RSyntaxTextArea.SYNTAX_SCHEME_PROPERTY.equals(name)) {
+				for (int i = 0; i < getComponentCount(); i++) {
+					AbstractGutterComponent agc = (AbstractGutterComponent) getComponent(i);
 					agc.lineHeightsChanged();
 				}
 			}
 
 			// If they toggle whether code folding is enabled...
 			else if (RSyntaxTextArea.CODE_FOLDING_PROPERTY.equals(name)) {
-				boolean foldingEnabled = ((Boolean)e.getNewValue()).
-															booleanValue();
-				if (lineNumberList!=null) { // Its size depends on folding
-					//lineNumberList.revalidate();
+				boolean foldingEnabled = ((Boolean) e.getNewValue()).booleanValue();
+				if (lineNumberList != null) { // Its size depends on folding
+					// lineNumberList.revalidate();
 					lineNumberList.updateCellWidths();
 				}
 				setFoldIndicatorEnabled(foldingEnabled);
@@ -1026,11 +984,11 @@ public void setBorder(Border border) {
 
 			else if ("document".equals(name)) {
 				// The document switched out from under us
-				RDocument old = (RDocument)e.getOldValue();
+				RDocument old = (RDocument) e.getOldValue();
 				if (old != null) {
 					old.removeDocumentListener(this);
 				}
-				RDocument newDoc = (RDocument)e.getNewValue();
+				RDocument newDoc = (RDocument) e.getNewValue();
 				if (newDoc != null) {
 					newDoc.addDocumentListener(this);
 				}
@@ -1049,7 +1007,7 @@ public void setBorder(Border border) {
 				textArea.getDocument().removeDocumentListener(this);
 				textArea.removePropertyChangeListener(this);
 				if (textArea instanceof RSyntaxTextArea) {
-					RSyntaxTextArea rsta = (RSyntaxTextArea)textArea;
+					RSyntaxTextArea rsta = (RSyntaxTextArea) textArea;
 					rsta.removeActiveLineRangeListener(this);
 					rsta.getFoldManager().removePropertyChangeListener(this);
 				}
@@ -1058,6 +1016,5 @@ public void setBorder(Border border) {
 		}
 
 	}
-
 
 }

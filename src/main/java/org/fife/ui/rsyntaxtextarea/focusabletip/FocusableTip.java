@@ -34,10 +34,9 @@ import javax.swing.event.MouseInputAdapter;
 
 import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 
-
 /**
- * A focusable tool tip, similar to those found in Eclipse.  The user
- * can click in the tip and it becomes a "real," resizable window.
+ * A focusable tool tip, similar to those found in Eclipse. The user can click
+ * in the tip and it becomes a "real," resizable window.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -54,8 +53,8 @@ public class FocusableTip {
 	private Dimension maxSize; // null to automatic.
 
 	/**
-	 * The screen bounds in which the mouse has to stay for the currently
-	 * displayed tip to stay visible.
+	 * The screen bounds in which the mouse has to stay for the currently displayed
+	 * tip to stay visible.
 	 */
 	private Rectangle tipVisibleBounds;
 
@@ -69,9 +68,8 @@ public class FocusableTip {
 	 */
 	private static final int Y_MARGIN = 12;
 
-	private static final ResourceBundle MSG = ResourceBundle.getBundle(
-			"org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip");
-
+	private static final ResourceBundle MSG = ResourceBundle
+			.getBundle("org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip");
 
 	public FocusableTip(JTextArea textArea, HyperlinkListener listener) {
 		setTextArea(textArea);
@@ -80,10 +78,9 @@ public class FocusableTip {
 		tipVisibleBounds = new Rectangle();
 	}
 
-
 	/**
-	 * Compute the bounds in which the user can move the mouse without the
-	 * tip window disappearing.
+	 * Compute the bounds in which the user can move the mouse without the tip
+	 * window disappearing.
 	 */
 	private void computeTipVisibleBounds() {
 		// Compute area that the mouse can move in without hiding the
@@ -93,9 +90,8 @@ public class FocusableTip {
 		Point p = r.getLocation();
 		SwingUtilities.convertPointFromScreen(p, textArea);
 		r.setLocation(p);
-		tipVisibleBounds.setBounds(r.x,r.y-15, r.width,r.height+15*2);
+		tipVisibleBounds.setBounds(r.x, r.y - 15, r.width, r.height + 15 * 2);
 	}
-
 
 	private void createAndShowTipWindow(final MouseEvent e, final String text) {
 
@@ -105,7 +101,7 @@ public class FocusableTip {
 
 		// Give apps a chance to decorate us with drop shadows, etc.
 		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator!=null) {
+		if (decorator != null) {
 			decorator.decorate(tipWindow);
 		}
 
@@ -120,10 +116,10 @@ public class FocusableTip {
 
 				// If a new FocusableTip is requested while another one is
 				// *focused* and visible, the focused tip (i.e. "tipWindow")
-				// will be disposed of.  If this Runnable is run after the
-				// dispose(), tipWindow will be null.  All of this is done on
+				// will be disposed of. If this Runnable is run after the
+				// dispose(), tipWindow will be null. All of this is done on
 				// the EDT so no synchronization should be necessary.
-				if (tipWindow==null) {
+				if (tipWindow == null) {
 					return;
 				}
 
@@ -136,27 +132,26 @@ public class FocusableTip {
 				// Ensure tool tip is in the window bounds.
 				// Multi-monitor support - make sure the completion window (and
 				// description window, if applicable) both fit in the same
-				// window in a multi-monitor environment.  To do this, we decide
+				// window in a multi-monitor environment. To do this, we decide
 				// which monitor the rectangle "p" is in, and use that one.
 				Rectangle sb = TipUtil.getScreenBoundsForPoint(p.x, p.y);
-				//Dimension ss = tipWindow.getToolkit().getScreenSize();
+				// Dimension ss = tipWindow.getToolkit().getScreenSize();
 
 				// Try putting our stuff "below" the mouse first.
 				int y = p.y + Y_MARGIN;
-				if (y+tipWindow.getHeight()>=sb.y+sb.height) {
+				if (y + tipWindow.getHeight() >= sb.y + sb.height) {
 					y = p.y - Y_MARGIN - tipWindow.getHeight();
 				}
 
-				// Get x-coordinate of completions.  Try to align left edge
+				// Get x-coordinate of completions. Try to align left edge
 				// with the mouse first (with a slight margin).
 				int x = p.x - X_MARGIN; // ltr
 				if (!o.isLeftToRight()) {
 					x = p.x - tipWindow.getWidth() + X_MARGIN;
 				}
-				if (x<sb.x) {
+				if (x < sb.x) {
 					x = sb.x;
-				}
-				else if (x+tipWindow.getWidth()>sb.x+sb.width) { // completions don't fit
+				} else if (x + tipWindow.getWidth() > sb.x + sb.width) { // completions don't fit
 					x = sb.x + sb.width - tipWindow.getWidth();
 				}
 
@@ -172,7 +167,6 @@ public class FocusableTip {
 
 	}
 
-
 	/**
 	 * Returns the base URL to use when loading images in this focusable tip.
 	 *
@@ -183,29 +177,27 @@ public class FocusableTip {
 		return imageBase;
 	}
 
-
 	/**
 	 * The maximum size for unfocused tool tips.
 	 *
-	 * @return The maximum size for unfocused tool tips.  A value of
+	 * @return The maximum size for unfocused tool tips. A value of
 	 *         <code>null</code> will use a default size.
 	 * @see #setMaxSize(Dimension)
 	 */
 	public Dimension getMaxSize() {
-        return maxSize;
-    }
-
+		return maxSize;
+	}
 
 	/**
 	 * Returns localized text for the given key.
 	 *
-	 * @param key The key into the resource bundle.
+	 * @param key
+	 *            The key into the resource bundle.
 	 * @return The localized text.
 	 */
 	static String getString(String key) {
 		return MSG.getString(key);
 	}
-
 
 	/**
 	 * Disposes of the focusable tip currently displayed, if any.
@@ -221,35 +213,33 @@ public class FocusableTip {
 		}
 	}
 
-
 	void removeListeners() {
-		//System.out.println("DEBUG: Removing text area listeners");
+		// System.out.println("DEBUG: Removing text area listeners");
 		textAreaListener.uninstall();
 	}
-
 
 	/**
 	 * Sets the base URL to use when loading images in this focusable tip.
 	 *
-	 * @param url The base URL to use.
+	 * @param url
+	 *            The base URL to use.
 	 * @see #getImageBase()
 	 */
 	public void setImageBase(URL url) {
 		imageBase = url;
 	}
 
-
 	/**
 	 * Sets the maximum size for unfocused tool tips.
 	 *
-	 * @param maxSize The new maximum size.  A value of <code>null</code> will
-	 *        cause a default size to be used.
+	 * @param maxSize
+	 *            The new maximum size. A value of <code>null</code> will cause a
+	 *            default size to be used.
 	 * @see #getMaxSize()
 	 */
 	public void setMaxSize(Dimension maxSize) {
-        this.maxSize = maxSize;
-    }
-
+		this.maxSize = maxSize;
+	}
 
 	private void setTextArea(JTextArea textArea) {
 		this.textArea = textArea;
@@ -257,29 +247,26 @@ public class FocusableTip {
 		ToolTipManager.sharedInstance().registerComponent(textArea);
 	}
 
-
 	public void toolTipRequested(MouseEvent e, String text) {
 
-		if (text==null || text.length()==0) {
+		if (text == null || text.length() == 0) {
 			possiblyDisposeOfTipWindow();
 			lastText = text;
 			return;
 		}
 
-		if (lastText==null || text.length()!=lastText.length() ||
-				!text.equals(lastText)) {
+		if (lastText == null || text.length() != lastText.length() || !text.equals(lastText)) {
 			possiblyDisposeOfTipWindow();
 			createAndShowTipWindow(e, text);
 		}
 
 	}
 
-
 	/**
 	 * Listens for events in a text area.
 	 */
-	private class TextAreaListener extends MouseInputAdapter implements
-			CaretListener, ComponentListener, FocusListener, KeyListener {
+	private class TextAreaListener extends MouseInputAdapter
+			implements CaretListener, ComponentListener, FocusListener, KeyListener {
 
 		@Override
 		public void caretUpdate(CaretEvent e) {
@@ -320,9 +307,8 @@ public class FocusableTip {
 			// calling SwingUtilities.getWindowAncestor() to guard against an
 			// NPE.
 			Component c = e.getOppositeComponent();
-			boolean tipClicked = (c instanceof TipWindow) ||
-				(c!=null &&
-					SwingUtilities.getWindowAncestor(c) instanceof TipWindow);
+			boolean tipClicked = (c instanceof TipWindow)
+					|| (c != null && SwingUtilities.getWindowAncestor(c) instanceof TipWindow);
 			if (!tipClicked) {
 				possiblyDisposeOfTipWindow();
 			}
@@ -343,11 +329,10 @@ public class FocusableTip {
 
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode()==KeyEvent.VK_ESCAPE) {
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 				possiblyDisposeOfTipWindow();
-			}
-			else if (e.getKeyCode()==KeyEvent.VK_F2) {
-				if (tipWindow!=null && !tipWindow.getFocusableWindowState()) {
+			} else if (e.getKeyCode() == KeyEvent.VK_F2) {
+				if (tipWindow != null && !tipWindow.getFocusableWindowState()) {
 					tipWindow.actionPerformed(null);
 					e.consume(); // Don't do bookmarking stuff
 				}
@@ -369,8 +354,7 @@ public class FocusableTip {
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			if (tipVisibleBounds==null ||
-					!tipVisibleBounds.contains(e.getPoint())) {
+			if (tipVisibleBounds == null || !tipVisibleBounds.contains(e.getPoint())) {
 				possiblyDisposeOfTipWindow();
 			}
 		}
