@@ -33,6 +33,7 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.focusabletip.TipUtil;
 
+
 /**
  * A tool tip-like popup that shows the line of code containing the bracket
  * matched to that at the caret position, if it is scrolled out of the user's
@@ -49,12 +50,15 @@ class MatchedBracketPopup extends JWindow {
 
 	private static final int LEFT_EMPTY_BORDER = 5;
 
-	MatchedBracketPopup(Window parent, RSyntaxTextArea textArea, int offsToRender) {
+
+	MatchedBracketPopup(Window parent, RSyntaxTextArea textArea, int
+			offsToRender) {
 
 		super(parent);
 		this.textArea = textArea;
 		JPanel cp = new JPanel(new BorderLayout());
-		cp.setBorder(BorderFactory.createCompoundBorder(TipUtil.getToolTipBorder(),
+		cp.setBorder(BorderFactory.createCompoundBorder(
+				TipUtil.getToolTipBorder(),
 				BorderFactory.createEmptyBorder(2, LEFT_EMPTY_BORDER, 5, 5)));
 		cp.setBackground(TipUtil.getToolTipBackground());
 		setContentPane(cp);
@@ -67,17 +71,19 @@ class MatchedBracketPopup extends JWindow {
 
 	}
 
+
 	/**
 	 * Overridden to ensure this popup stays in a specific size range.
 	 */
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension size = super.getPreferredSize();
-		if (size != null) {
+		if (size!=null) {
 			size.width = Math.min(size.width, 800);
 		}
 		return size;
 	}
+
 
 	private String getText(int offsToRender) {
 
@@ -112,7 +118,7 @@ class MatchedBracketPopup extends JWindow {
 		sb.append("pt\" }</style><nobr>");
 		while (line < lastLine) {
 			Token t = textArea.getTokenListForLine(line);
-			while (t != null && t.isPaintable()) {
+			while (t!=null && t.isPaintable()) {
 				t.appendHTMLRepresentation(sb, textArea, true, true);
 				t = t.getNextToken();
 			}
@@ -124,12 +130,14 @@ class MatchedBracketPopup extends JWindow {
 
 	}
 
+
 	/**
 	 * Adds key bindings to this popup.
 	 */
 	private void installKeyBindings() {
 
-		InputMap im = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		InputMap im = getRootPane().getInputMap(
+				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		ActionMap am = getRootPane().getActionMap();
 
 		KeyStroke escapeKS = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
@@ -137,8 +145,10 @@ class MatchedBracketPopup extends JWindow {
 		am.put("onEscape", new EscapeAction());
 	}
 
+
 	/**
-	 * Positions this popup to be in the top right-hand corner of the parent editor.
+	 * Positions this popup to be in the top right-hand corner of the parent
+	 * editor.
 	 */
 	private void setLocation() {
 		Point topLeft = textArea.getVisibleRect().getLocation();
@@ -146,6 +156,7 @@ class MatchedBracketPopup extends JWindow {
 		topLeft.y = Math.max(topLeft.y - 24, 0);
 		setLocation(topLeft.x - LEFT_EMPTY_BORDER, topLeft.y);
 	}
+
 
 	/**
 	 * Action performed when Escape is pressed in this popup.
@@ -159,6 +170,7 @@ class MatchedBracketPopup extends JWindow {
 
 	}
 
+
 	/**
 	 * Listens for events in this popup.
 	 */
@@ -169,7 +181,7 @@ class MatchedBracketPopup extends JWindow {
 			addWindowFocusListener(this);
 
 			// If anything happens to the "parent" window, hide this popup
-			Window parent = (Window) getParent();
+			Window parent = (Window)getParent();
 			parent.addWindowFocusListener(this);
 			parent.addWindowListener(this);
 			parent.addComponentListener(this);
@@ -212,7 +224,7 @@ class MatchedBracketPopup extends JWindow {
 		}
 
 		private boolean checkForParentWindowEvent(WindowEvent e) {
-			if (e.getSource() == getParent()) {
+			if (e.getSource()==getParent()) {
 				uninstallAndHide();
 				return true;
 			}
@@ -220,7 +232,7 @@ class MatchedBracketPopup extends JWindow {
 		}
 
 		private void uninstallAndHide() {
-			Window parent = (Window) getParent();
+			Window parent = (Window)getParent();
 			parent.removeWindowFocusListener(this);
 			parent.removeWindowListener(this);
 			parent.removeComponentListener(this);

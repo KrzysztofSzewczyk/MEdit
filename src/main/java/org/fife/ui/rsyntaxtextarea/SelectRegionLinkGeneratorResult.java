@@ -12,10 +12,11 @@ package org.fife.ui.rsyntaxtextarea;
 
 import javax.swing.event.HyperlinkEvent;
 
+
 /**
- * A link generator result that selects a region of text in the text area. This
- * will typically be used by IDE-style applications, to provide support for
- * "linking" the use of a variable in a document to its declaration.
+ * A link generator result that selects a region of text in the text area.
+ * This will typically be used by IDE-style applications, to provide support
+ * for "linking" the use of a variable in a document to its declaration.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -28,12 +29,15 @@ public class SelectRegionLinkGeneratorResult implements LinkGeneratorResult {
 	private int selStart;
 	private int selEnd;
 
-	public SelectRegionLinkGeneratorResult(RSyntaxTextArea textArea, int sourceOffset, int selStart, int selEnd) {
+
+	public SelectRegionLinkGeneratorResult(RSyntaxTextArea textArea,
+			int sourceOffset, int selStart, int selEnd) {
 		this.textArea = textArea;
 		this.sourceOffset = sourceOffset;
 		this.selStart = selStart;
 		this.selEnd = selEnd;
 	}
+
 
 	/**
 	 * Selects the text in the text area.
@@ -44,6 +48,7 @@ public class SelectRegionLinkGeneratorResult implements LinkGeneratorResult {
 		return null;
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -51,5 +56,6 @@ public class SelectRegionLinkGeneratorResult implements LinkGeneratorResult {
 	public int getSourceOffset() {
 		return sourceOffset;
 	}
+
 
 }

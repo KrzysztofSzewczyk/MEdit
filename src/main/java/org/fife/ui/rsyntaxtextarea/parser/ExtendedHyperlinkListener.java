@@ -14,9 +14,10 @@ import javax.swing.event.HyperlinkEvent;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
+
 /**
  * Listens for hyperlink events from
- * {@link org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip}s. In addition
+ * {@link org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip}s.  In addition
  * to the link event, the text area that the tip is for is also received, which
  * allows the listener to modify the displayed content, if desired.
  *
@@ -25,15 +26,15 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
  */
 public interface ExtendedHyperlinkListener extends EventListener {
 
+
 	/**
 	 * Called when a link in a
 	 * {@link org.fife.ui.rsyntaxtextarea.focusabletip.FocusableTip} is clicked.
 	 *
-	 * @param textArea
-	 *            The text area displaying the tip.
-	 * @param e
-	 *            The event.
+	 * @param textArea The text area displaying the tip.
+	 * @param e The event.
 	 */
 	void linkClicked(RSyntaxTextArea textArea, HyperlinkEvent e);
+
 
 }

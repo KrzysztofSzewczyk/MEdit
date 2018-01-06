@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Position;
 
+
 /**
  * Manages line highlights in an <code>RTextArea</code>.
  *
@@ -34,53 +35,56 @@ class LineHighlightManager {
 	/**
 	 * Constructor.
 	 *
-	 * @param textArea
-	 *            The parent text area.
+	 * @param textArea The parent text area.
 	 */
 	LineHighlightManager(RTextArea textArea) {
 		this.textArea = textArea;
 		comparator = new LineHighlightInfoComparator();
 	}
 
+
 	/**
 	 * Highlights the specified line.
 	 *
-	 * @param line
-	 *            The line to highlight.
-	 * @param color
-	 *            The color to highlight with.
+	 * @param line The line to highlight.
+	 * @param color The color to highlight with.
 	 * @return A tag for the highlight.
-	 * @throws BadLocationException
-	 *             If <code>line</code> is not a valid line number.
+	 * @throws BadLocationException If <code>line</code> is not a valid line
+	 *         number.
 	 * @see #removeLineHighlight(Object)
 	 */
-	public Object addLineHighlight(int line, Color color) throws BadLocationException {
+	public Object addLineHighlight(int line, Color color)
+									throws BadLocationException {
 		int offs = textArea.getLineStartOffset(line);
-		LineHighlightInfo lhi = new LineHighlightInfo(textArea.getDocument().createPosition(offs), color);
-		if (lineHighlights == null) {
+		LineHighlightInfo lhi = new LineHighlightInfo(
+						textArea.getDocument().createPosition(offs), color);
+		if (lineHighlights==null) {
 			lineHighlights = new ArrayList<LineHighlightInfo>(1);
 		}
 		int index = Collections.binarySearch(lineHighlights, lhi, comparator);
-		if (index < 0) { // Common case
-			index = -(index + 1);
+		if (index<0) { // Common case
+			index = -(index+1);
 		}
 		lineHighlights.add(index, lhi);
 		repaintLine(lhi);
 		return lhi;
 	}
 
+
 	/**
 	 * Returns the current line highlights' tags.
 	 *
-	 * @return The current line highlights' tags, or an empty list if there are
-	 *         none.
+	 * @return The current line highlights' tags, or an empty list if there
+	 *         are none.
 	 */
 	protected List<Object> getCurrentLineHighlightTags() {
-		return lineHighlights == null ? Collections.emptyList() : new ArrayList<Object>(lineHighlights);
+		return lineHighlights == null ? Collections.emptyList() :
+			new ArrayList<Object>(lineHighlights);
 	}
 
+
 	/**
-	 * Returns the current number of line highlights. Useful for testing.
+	 * Returns the current number of line highlights.  Useful for testing.
 	 *
 	 * @return The current number of line highlights.
 	 */
@@ -88,16 +92,16 @@ class LineHighlightManager {
 		return lineHighlights == null ? 0 : lineHighlights.size();
 	}
 
+
 	/**
 	 * Paints any highlighted lines in the specified line range.
 	 *
-	 * @param g
-	 *            The graphics context.
+	 * @param g The graphics context.
 	 */
 	public void paintLineHighlights(Graphics g) {
 
-		int count = lineHighlights == null ? 0 : lineHighlights.size();
-		if (count > 0) {
+		int count = lineHighlights==null ? 0 : lineHighlights.size();
+		if (count>0) {
 
 			int docLen = textArea.getDocument().getLength();
 			Rectangle vr = textArea.getVisibleRect();
@@ -105,16 +109,17 @@ class LineHighlightManager {
 
 			try {
 
-				for (int i = 0; i < count; i++) {
+				for (int i=0; i<count; i++) {
 					LineHighlightInfo lhi = lineHighlights.get(i);
 					int offs = lhi.getOffset();
-					if (offs >= 0 && offs <= docLen) {
+					if (offs>=0 && offs<=docLen) {
 						int y = textArea.yForLineContaining(offs);
-						if (y > vr.y - lineHeight) {
-							if (y < vr.y + vr.height) {
+						if (y>vr.y-lineHeight) {
+							if (y<vr.y+vr.height) {
 								g.setColor(lhi.getColor());
-								g.fillRect(0, y, textArea.getWidth(), lineHeight);
-							} else {
+								g.fillRect(0,y, textArea.getWidth(),lineHeight);
+							}
+							else {
 								break; // Out of visible rect
 							}
 						}
@@ -128,52 +133,55 @@ class LineHighlightManager {
 
 	}
 
+
 	/**
 	 * Removes all line highlights.
 	 *
 	 * @see #removeLineHighlight(Object)
 	 */
 	public void removeAllLineHighlights() {
-		if (lineHighlights != null) {
+		if (lineHighlights!=null) {
 			lineHighlights.clear();
 			textArea.repaint();
 		}
 	}
 
+
 	/**
 	 * Removes a line highlight.
 	 *
-	 * @param tag
-	 *            The tag of the line highlight to remove.
+	 * @param tag The tag of the line highlight to remove.
 	 * @see #addLineHighlight(int, Color)
 	 */
 	public void removeLineHighlight(Object tag) {
 		if (tag instanceof LineHighlightInfo) {
 			lineHighlights.remove(tag);
-			repaintLine((LineHighlightInfo) tag);
+			repaintLine((LineHighlightInfo)tag);
 		}
 	}
+
 
 	/**
 	 * Repaints the line pointed to by the specified highlight information.
 	 *
-	 * @param lhi
-	 *            The highlight information.
+	 * @param lhi The highlight information.
 	 */
 	private void repaintLine(LineHighlightInfo lhi) {
 		int offs = lhi.getOffset();
 		// May be > length if they deleted text including the highlight
-		if (offs >= 0 && offs <= textArea.getDocument().getLength()) {
+		if (offs>=0 && offs<=textArea.getDocument().getLength()) {
 			try {
 				int y = textArea.yForLineContaining(offs);
-				if (y > -1) {
-					textArea.repaint(0, y, textArea.getWidth(), textArea.getLineHeight());
+				if (y>-1) {
+					textArea.repaint(0, y,
+								textArea.getWidth(), textArea.getLineHeight());
 				}
 			} catch (BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 			}
 		}
 	}
+
 
 	/**
 	 * Information about a line highlight.
@@ -203,14 +211,17 @@ class LineHighlightManager {
 
 	}
 
+
 	/**
-	 * Comparator used when adding new highlights. This is done here instead of
-	 * making <code>LineHighlightInfo</code> implement <code>Comparable</code> as
-	 * correctly implementing the latter prevents two LHI's pointing to the same
-	 * line from correctly being distinguished from one another. See:
+	 * Comparator used when adding new highlights.  This is done here instead
+	 * of making <code>LineHighlightInfo</code> implement
+	 * <code>Comparable</code> as correctly implementing the latter prevents
+	 * two LHI's pointing to the same line from correctly being distinguished
+	 * from one another.  See:
 	 * https://github.com/bobbylight/RSyntaxTextArea/issues/161
 	 */
-	private static class LineHighlightInfoComparator implements Comparator<LineHighlightInfo> {
+	private static class LineHighlightInfoComparator
+			implements Comparator<LineHighlightInfo> {
 
 		@Override
 		public int compare(LineHighlightInfo lhi1, LineHighlightInfo lhi2) {
@@ -221,5 +232,6 @@ class LineHighlightManager {
 		}
 
 	}
+
 
 }

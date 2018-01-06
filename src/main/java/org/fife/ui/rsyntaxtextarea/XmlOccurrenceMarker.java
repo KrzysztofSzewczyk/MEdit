@@ -16,6 +16,7 @@ import javax.swing.text.Element;
 
 import org.fife.ui.rtextarea.SmartHighlightPainter;
 
+
 /**
  * Marks occurrences of the current token for XML.
  *
@@ -27,13 +28,16 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 	private static final char[] CLOSE_TAG_START = { '<', '/' };
 	private static final char[] TAG_SELF_CLOSE = { '/', '>' };
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Token getTokenToMark(RSyntaxTextArea textArea) {
-		return HtmlOccurrenceMarker.getTagNameTokenForCaretOffset(textArea, this);
+		return HtmlOccurrenceMarker.getTagNameTokenForCaretOffset(
+				textArea, this);
 	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -43,11 +47,13 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 		return textArea.getMarkOccurrencesOfTokenType(t.getType());
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void markOccurrences(RSyntaxDocument doc, Token t, RSyntaxTextAreaHighlighter h, SmartHighlightPainter p) {
+	public void markOccurrences(RSyntaxDocument doc, Token t,
+			RSyntaxTextAreaHighlighter h, SmartHighlightPainter p) {
 
 		char[] lexeme = t.getLexeme().toCharArray();
 		int tokenOffs = t.getOffset();
@@ -57,16 +63,17 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 		int depth = 0;
 
 		// For now, we only check for tags on the current line, for
-		// simplicity. Tags spanning multiple lines aren't common anyway.
+		// simplicity.  Tags spanning multiple lines aren't common anyway.
 		boolean found = false;
 		boolean forward = true;
 		t = doc.getTokenListForLine(curLine);
-		while (t != null && t.isPaintable()) {
-			if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
-				if (t.isSingleChar('<') && t.getOffset() + 1 == tokenOffs) {
+		while (t!=null && t.isPaintable()) {
+			if (t.getType()==Token.MARKUP_TAG_DELIMITER) {
+				if (t.isSingleChar('<') && t.getOffset()+1==tokenOffs) {
 					found = true;
 					break;
-				} else if (t.is(CLOSE_TAG_START) && t.getOffset() + 2 == tokenOffs) {
+				}
+				else if (t.is(CLOSE_TAG_START) && t.getOffset()+2==tokenOffs) {
 					found = true;
 					forward = false;
 					break;
@@ -85,14 +92,15 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 
 			do {
 
-				while (t != null && t.isPaintable()) {
-					if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
+				while (t!=null && t.isPaintable()) {
+					if (t.getType()==Token.MARKUP_TAG_DELIMITER) {
 						if (t.is(CLOSE_TAG_START)) {
 							Token match = t.getNextToken();
-							if (match != null && match.is(lexeme)) {
-								if (depth > 0) {
+							if (match!=null && match.is(lexeme)) {
+								if (depth>0) {
 									depth--;
-								} else {
+								}
+								else {
 									try {
 										int end = match.getOffset() + match.length();
 										h.addMarkedOccurrenceHighlight(match.getOffset(), end, p);
@@ -104,28 +112,30 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 									return; // We're done!
 								}
 							}
-						} else if (t.isSingleChar('<')) {
+						}
+						else if (t.isSingleChar('<')) {
 							t = t.getNextToken();
-							if (t != null && t.is(lexeme)) {
+							if (t!=null && t.is(lexeme)) {
 								depth++;
 							}
 						}
 					}
-					t = t == null ? null : t.getNextToken();
+					t = t==null ? null : t.getNextToken();
 				}
 
-				if (++curLine < lineCount) {
+				if (++curLine<lineCount) {
 					t = doc.getTokenListForLine(curLine);
 				}
 
-			} while (curLine < lineCount);
+			} while (curLine<lineCount);
+
 
 		}
 
 		else { // !forward
 
 			// Idea: Get all opening and closing tags of the relevant type on
-			// the current line. Find the opening tag paired to the closing
+			// the current line.  Find the opening tag paired to the closing
 			// tag we found originally; if it's not on this line, keep going
 			// to the previous line.
 
@@ -136,27 +146,31 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 
 			do {
 
-				while (t != null && t.getOffset() < endBefore && t.isPaintable()) {
-					if (t.getType() == Token.MARKUP_TAG_DELIMITER) {
+				while (t!=null && t.getOffset()<endBefore && t.isPaintable()) {
+					if (t.getType()==Token.MARKUP_TAG_DELIMITER) {
 						if (t.isSingleChar('<')) {
 							Token next = t.getNextToken();
-							if (next != null) {
+							if (next!=null) {
 								if (next.is(lexeme)) {
 									openCloses.add(new Entry(true, next));
 									inPossibleMatch = true;
-								} else {
+								}
+								else {
 									inPossibleMatch = false;
 								}
 								t = next;
 							}
-						} else if (t.isSingleChar('>')) {
+						}
+						else if (t.isSingleChar('>')) {
 							inPossibleMatch = false;
-						} else if (inPossibleMatch && t.is(TAG_SELF_CLOSE)) {
-							openCloses.remove(openCloses.size() - 1);
+						}
+						else if (inPossibleMatch && t.is(TAG_SELF_CLOSE)) {
+							openCloses.remove(openCloses.size()-1);
 							inPossibleMatch = false;
-						} else if (t.is(CLOSE_TAG_START)) {
+						}
+						else if (t.is(CLOSE_TAG_START)) {
 							Token next = t.getNextToken();
-							if (next != null) {
+							if (next!=null) {
 								// Invalid XML might not have a match
 								if (next.is(lexeme)) {
 									openCloses.add(new Entry(false, next));
@@ -168,10 +182,10 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 					t = t.getNextToken();
 				}
 
-				for (int i = openCloses.size() - 1; i >= 0; i--) {
+				for (int i=openCloses.size()-1; i>=0; i--) {
 					Entry entry = openCloses.get(i);
 					depth += entry.open ? -1 : 1;
-					if (depth == -1) {
+					if (depth==-1) {
 						try {
 							Token match = entry.t;
 							int end = match.getOffset() + match.length();
@@ -187,15 +201,17 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 				}
 
 				openCloses.clear();
-				if (--curLine >= 0) {
+				if (--curLine>=0) {
 					t = doc.getTokenListForLine(curLine);
 				}
 
-			} while (curLine >= 0);
+			} while (curLine>=0);
+
 
 		}
 
 	}
+
 
 	/**
 	 * Used internally when searching backward for a matching "open" tag.
@@ -211,5 +227,6 @@ public class XmlOccurrenceMarker implements OccurrenceMarker {
 		}
 
 	}
+
 
 }

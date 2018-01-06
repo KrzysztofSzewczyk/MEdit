@@ -8,6 +8,7 @@
  */
 package org.fife.ui.rsyntaxtextarea.templates;
 
+
 /**
  * A base class to build code templates on top of.
  *
@@ -21,23 +22,24 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 	 */
 	private String id;
 
+
 	/**
 	 * This no-arg constructor is required for serialization purposes.
 	 */
 	public AbstractCodeTemplate() {
 	}
 
+
 	/**
 	 * Creates a new template.
 	 *
-	 * @param id
-	 *            The ID for this template.
-	 * @throws IllegalArgumentException
-	 *             If <code>id</code> is <code>null</code>.
+	 * @param id The ID for this template.
+	 * @throws IllegalArgumentException If <code>id</code> is <code>null</code>.
 	 */
 	public AbstractCodeTemplate(String id) {
 		setID(id);
 	}
+
 
 	/**
 	 * Creates a deep copy of this template.
@@ -47,46 +49,51 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 	@Override
 	public Object clone() {
 		// This method can't be abstract as compilers don't like concrete
-		// subclassses calling super.clone() on an abstract super.
+		// subclassses calling super.clone() on  an abstract super.
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			throw new InternalError("CodeTemplate implementation not Cloneable: " + getClass().getName());
+			throw new InternalError(
+				"CodeTemplate implementation not Cloneable: " +
+							getClass().getName());
 		}
 	}
+
+
 
 	/**
 	 * Compares the <code>StaticCodeTemplate</code> to another.
 	 *
-	 * @param o
-	 *            Another <code>StaticCodeTemplate</code> object.
-	 * @return A negative integer, zero, or a positive integer as this object is
-	 *         less than, equal-to, or greater than the passed-in object.
-	 * @throws ClassCastException
-	 *             If <code>o</code> is not an instance of
-	 *             <code>CodeTemplate</code>.
+	 * @param o Another <code>StaticCodeTemplate</code> object.
+	 * @return A negative integer, zero, or a positive integer as this
+	 *         object is less than, equal-to, or greater than the passed-in
+	 *         object.
+	 * @throws ClassCastException If <code>o</code> is
+	 *         not an instance of <code>CodeTemplate</code>.
 	 */
 	@Override
 	public int compareTo(CodeTemplate o) {
-		if (o == null) {
+		if (o==null) {
 			return -1;
 		}
 		return getID().compareTo(o.getID());
 	}
 
+
 	/**
-	 * Overridden to return "<code>true</code>" iff {@link #compareTo(CodeTemplate)}
-	 * returns <code>0</code>.
+	 * Overridden to return "<code>true</code>" iff
+	 * {@link #compareTo(CodeTemplate)} returns <code>0</code>.
 	 *
 	 * @return Whether this code template is equal to another.
 	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof CodeTemplate) {
-			return compareTo(((CodeTemplate) obj)) == 0;
+			return compareTo(((CodeTemplate)obj))==0;
 		}
 		return false;
 	}
+
 
 	/**
 	 * Returns the ID of this code template.
@@ -99,6 +106,7 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 		return id;
 	}
 
+
 	/**
 	 * Returns the hash code for this template.
 	 *
@@ -109,20 +117,20 @@ public abstract class AbstractCodeTemplate implements CodeTemplate {
 		return id.hashCode();
 	}
 
+
 	/**
 	 * Sets the ID for this template.
 	 *
-	 * @param id
-	 *            The ID for this template.
-	 * @throws IllegalArgumentException
-	 *             If <code>id</code> is <code>null</code>.
+	 * @param id The ID for this template.
+	 * @throws IllegalArgumentException If <code>id</code> is <code>null</code>.
 	 * @see #getID()
 	 */
 	public void setID(String id) {
-		if (id == null) {
+		if (id==null) {
 			throw new IllegalArgumentException("id cannot be null");
 		}
 		this.id = id;
 	}
+
 
 }

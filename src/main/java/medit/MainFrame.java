@@ -343,7 +343,7 @@ public class MainFrame extends JFrame {
 				textPane.setHyperlinksEnabled(false);
 				textPane.setPaintMatchedBracketPair(false);
 				textPane.setPaintTabLines(false);
-				textPane.setCurrentLineHighlightColor(textPane.getCurrentLineHighlightColor());
+				textPane.setCurrentLineHighlightColor(Color.white);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
 			}
 		});
@@ -354,19 +354,19 @@ public class MainFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				textPane.clearParsers();
 				textPane.setParserDelay(1);
-				textPane.setAnimateBracketMatching(false);
-				textPane.setAutoIndentEnabled(false);
-				textPane.setAntiAliasingEnabled(false);
-				textPane.setBracketMatchingEnabled(false);
-				textPane.setCloseCurlyBraces(false);
-				textPane.setCloseMarkupTags(false);
-				textPane.setCodeFoldingEnabled(false);
+				textPane.setAnimateBracketMatching(true);
+				textPane.setAutoIndentEnabled(true);
+				textPane.setAntiAliasingEnabled(true);
+				textPane.setBracketMatchingEnabled(true);
+				textPane.setCloseCurlyBraces(true);
+				textPane.setCloseMarkupTags(true);
+				textPane.setCodeFoldingEnabled(true);
 				textPane.setHyperlinkForeground(Color.pink);
-				textPane.setHyperlinksEnabled(false);
-				textPane.setPaintMatchedBracketPair(false);
-				textPane.setPaintTabLines(false);
-				textPane.setCurrentLineHighlightColor(textPane.getCurrentLineHighlightColor());
+				textPane.setHyperlinksEnabled(true);
+				textPane.setPaintMatchedBracketPair(true);
+				textPane.setPaintTabLines(true);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 
@@ -386,8 +386,8 @@ public class MainFrame extends JFrame {
 				textPane.setHyperlinksEnabled(false);
 				textPane.setPaintMatchedBracketPair(false);
 				textPane.setPaintTabLines(false);
-				textPane.setCurrentLineHighlightColor(textPane.getCurrentLineHighlightColor());
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
+				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 
@@ -407,8 +407,8 @@ public class MainFrame extends JFrame {
 				textPane.setHyperlinksEnabled(false);
 				textPane.setPaintMatchedBracketPair(false);
 				textPane.setPaintTabLines(false);
-				textPane.setCurrentLineHighlightColor(textPane.getCurrentLineHighlightColor());
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
+				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 		mnSyntaxHighlighting.add(mntmActionscript);
@@ -741,6 +741,8 @@ public class MainFrame extends JFrame {
 		btnBlack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setBackground(new Color(0, 0, 0));
+				textPane.setForeground(new Color(255,255,255));
+				textPane.setCurrentLineHighlightColor(Color.black);
 			}
 		});
 		panel_7.add(btnBlack);
@@ -749,6 +751,8 @@ public class MainFrame extends JFrame {
 		btnClassical.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setBackground(new Color(255, 255, 255));
+				textPane.setForeground(new Color(0,0,0));
+				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 		panel_7.add(btnClassical);
@@ -771,6 +775,7 @@ public class MainFrame extends JFrame {
 					System.exit(0);
 			}
 		}, 0, 1);
+		textPane.setCurrentLineHighlightColor(Color.white);
 	}
 
 }

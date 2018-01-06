@@ -6,17 +6,18 @@
  */
 package org.fife.ui.rtextarea;
 
+
 /**
  * Provides various ways to render a caret such as {@link ConfigurableCaret}..
  *
  * Currently supported renderings include:
  *
  * <ol>
- * <li>As a vertical line (like <code>DefaultCaret</code>)</li>
- * <li>As a slightly thicker vertical line (like Eclipse)</li>
- * <li>As an underline</li>
- * <li>As a "block caret"</li>
- * <li>As a rectangle around the current character</li>
+ *    <li>As a vertical line (like <code>DefaultCaret</code>)</li>
+ *    <li>As a slightly thicker vertical line (like Eclipse)</li>
+ *    <li>As an underline</li>
+ *    <li>As a "block caret"</li>
+ *    <li>As a rectangle around the current character</li>
  * </ol>
  *
  * @author Robert Futrell

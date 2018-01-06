@@ -8,6 +8,7 @@
  */
 package org.fife.ui.rtextarea;
 
+
 /**
  * Information on how to implement a regular expression "replace" operation.
  *
@@ -21,22 +22,20 @@ class RegExReplaceInfo {
 	private int endIndex;
 	private String replacement;
 
+
 	/**
 	 * Constructor.
 	 *
-	 * @param matchedText
-	 *            The text that matched the regular expression.
-	 * @param start
-	 *            The start index of the matched text in the
-	 *            <code>CharSequence</code> searched.
-	 * @param end
-	 *            The end index of the matched text in the <code>CharSequence</code>
-	 *            searched.
-	 * @param replacement
-	 *            The text to replace the matched text with. This string has any
-	 *            matched groups and character escapes replaced.
+	 * @param matchedText The text that matched the regular expression.
+	 * @param start The start index of the matched text in the
+	 *        <code>CharSequence</code> searched.
+	 * @param end The end index of the matched text in the
+	 *        <code>CharSequence</code> searched.
+	 * @param replacement The text to replace the matched text with.  This
+	 *        string has any matched groups and character escapes replaced.
 	 */
-	RegExReplaceInfo(String matchedText, int start, int end, String replacement) {
+	RegExReplaceInfo(String matchedText, int start, int end,
+						String replacement) {
 		this.matchedText = matchedText;
 		this.startIndex = start;
 		this.endIndex = end;

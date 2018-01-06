@@ -12,6 +12,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.GapContent;
 import javax.swing.text.PlainDocument;
 
+
 /**
  * The document implementation used by instances of <code>RTextArea</code>.
  *
@@ -20,6 +21,7 @@ import javax.swing.text.PlainDocument;
  */
 public class RDocument extends PlainDocument {
 
+
 	/**
 	 * Constructor.
 	 */
@@ -27,18 +29,18 @@ public class RDocument extends PlainDocument {
 		super(new RGapContent());
 	}
 
+
 	/**
 	 * Returns the character in the document at the specified offset.
 	 *
-	 * @param offset
-	 *            The offset of the character.
+	 * @param offset The offset of the character.
 	 * @return The character.
-	 * @throws BadLocationException
-	 *             If the offset is invalid.
+	 * @throws BadLocationException If the offset is invalid.
 	 */
 	public char charAt(int offset) throws BadLocationException {
-		return ((RGapContent) getContent()).charAt(offset);
+		return ((RGapContent)getContent()).charAt(offset);
 	}
+
 
 	/**
 	 * Document content that provides fast access to individual characters.
@@ -46,17 +48,18 @@ public class RDocument extends PlainDocument {
 	private static class RGapContent extends GapContent {
 
 		public char charAt(int offset) throws BadLocationException {
-			if (offset < 0 || offset >= length()) {
+			if (offset<0 || offset>=length()) {
 				throw new BadLocationException("Invalid offset", offset);
 			}
 			int g0 = getGapStart();
 			char[] array = (char[]) getArray();
-			if (offset < g0) { // below gap
+			if (offset<g0) { // below gap
 				return array[offset];
 			}
 			return array[getGapEnd() + offset - g0]; // above gap
 		}
 
 	}
+
 
 }

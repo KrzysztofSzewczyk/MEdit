@@ -12,6 +12,7 @@ package org.fife.ui.rsyntaxtextarea.modes;
 
 import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
+
 /**
  * Scanner for Less files.
  *
@@ -20,12 +21,14 @@ import org.fife.ui.rsyntaxtextarea.TokenTypes;
  */
 public class LessTokenMaker extends CSSTokenMaker {
 
+
 	/**
 	 * Constructor; overridden to enable the niceties added by Less.
 	 */
 	public LessTokenMaker() {
 		setHighlightingLess(true);
 	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -35,12 +38,15 @@ public class LessTokenMaker extends CSSTokenMaker {
 		return new String[] { "//", null };
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean getMarkOccurrencesOfTokenType(int type) {
-		return type == TokenTypes.VARIABLE || super.getMarkOccurrencesOfTokenType(type);
+		return type == TokenTypes.VARIABLE ||
+				super.getMarkOccurrencesOfTokenType(type);
 	}
+
 
 }
