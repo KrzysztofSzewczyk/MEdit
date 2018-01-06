@@ -39,6 +39,9 @@ import javax.swing.border.EmptyBorder;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import javax.swing.BoxLayout;
 import javax.swing.JTextField;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
+import java.awt.event.InputEvent;
 
 /**
  * Main frame for MEdit project.
@@ -98,6 +101,7 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnFile);
 
 		JMenuItem mntmNew = new JMenuItem("New");
+		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
 		mntmNew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				EventQueue.invokeLater(new Runnable() {
@@ -118,6 +122,7 @@ public class MainFrame extends JFrame {
 		mnFile.add(mntmNew);
 
 		JMenuItem mntmOpen = new JMenuItem("Open");
+		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mntmOpen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser chooser = new JFileChooser();
@@ -140,6 +145,7 @@ public class MainFrame extends JFrame {
 		mnFile.add(mntmOpen);
 
 		JMenuItem mntmSave = new JMenuItem("Save");
+		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		mntmSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (currentFile == null) {
@@ -200,6 +206,7 @@ public class MainFrame extends JFrame {
 		mnFile.add(mntmSave);
 
 		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		mntmSaveAs.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final JFileChooser SaveAs = new JFileChooser();
@@ -239,6 +246,7 @@ public class MainFrame extends JFrame {
 		mnFile.add(separator);
 
 		JMenuItem mntmExit = new JMenuItem("Exit");
+		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 		mntmExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (instances == 0)
@@ -252,6 +260,7 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnEdit);
 
 		JMenuItem mntmCut = new JMenuItem("Cut");
+		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
 		mntmCut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.cut();
@@ -260,6 +269,7 @@ public class MainFrame extends JFrame {
 		mnEdit.add(mntmCut);
 
 		JMenuItem mntmCopy = new JMenuItem("Copy");
+		mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
 		mntmCopy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.copy();
@@ -268,6 +278,7 @@ public class MainFrame extends JFrame {
 		mnEdit.add(mntmCopy);
 
 		JMenuItem mntmPaste = new JMenuItem("Paste");
+		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
 		mntmPaste.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.paste();
@@ -276,6 +287,7 @@ public class MainFrame extends JFrame {
 		mnEdit.add(mntmPaste);
 
 		JMenuItem mntmDelete = new JMenuItem("Delete");
+		mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
 		mntmDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.replaceSelection("");
@@ -287,6 +299,7 @@ public class MainFrame extends JFrame {
 		mnEdit.add(separator_4);
 
 		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
 		mntmUndo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.undoLastAction();
@@ -295,6 +308,7 @@ public class MainFrame extends JFrame {
 		mnEdit.add(mntmUndo);
 
 		JMenuItem mntmRedo = new JMenuItem("Redo");
+		mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
 		mntmRedo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.redoLastAction();
@@ -302,37 +316,29 @@ public class MainFrame extends JFrame {
 		});
 		mnEdit.add(mntmRedo);
 
-		JSeparator separator_2 = new JSeparator();
-		mnEdit.add(separator_2);
-
-		JMenuItem mntmFont = new JMenuItem("Font");
-		mnEdit.add(mntmFont);
-
-		JMenu mnWorkspace = new JMenu("Workspace");
-		menuBar.add(mnWorkspace);
-
-		JMenuItem mntmDocumentediting = new JMenuItem("Document editing");
-		mnWorkspace.add(mntmDocumentediting);
-
-		JMenuItem mntmProgramming = new JMenuItem("Programming");
-		mnWorkspace.add(mntmProgramming);
-
 		JMenu mnLanguage = new JMenu("Language");
 		menuBar.add(mnLanguage);
-
-		JMenuItem mntmPolish = new JMenuItem("Polish");
-		mnLanguage.add(mntmPolish);
-
-		JMenuItem mntmEnglish = new JMenuItem("English");
-		mnLanguage.add(mntmEnglish);
+		
+		JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
+		rdbtnmntmEnglish.setSelected(true);
+		mnLanguage.add(rdbtnmntmEnglish);
+		
+		JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
+		menuBar.add(mnSyntaxHighlighting);
+		
+		JRadioButtonMenuItem rdbtnmntmNo = new JRadioButtonMenuItem("No");
+		rdbtnmntmNo.setSelected(true);
+		mnSyntaxHighlighting.add(rdbtnmntmNo);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 
 		JMenuItem mntmPreferences = new JMenuItem("Preferences");
+		mntmPreferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
 		mnAbout.add(mntmPreferences);
 
 		JMenuItem mntmAbout = new JMenuItem("About MEdit");
+		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
 		mntmAbout.addActionListener(new ActionListener() {
 			/**
 			 * MEdit About Box action listener.
