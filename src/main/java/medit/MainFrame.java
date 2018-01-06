@@ -287,9 +287,19 @@ public class MainFrame extends JFrame {
 		mnEdit.add(separator_4);
 
 		JMenuItem mntmUndo = new JMenuItem("Undo");
+		mntmUndo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.undoLastAction();
+			}
+		});
 		mnEdit.add(mntmUndo);
 
 		JMenuItem mntmRedo = new JMenuItem("Redo");
+		mntmRedo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.redoLastAction();
+			}
+		});
 		mnEdit.add(mntmRedo);
 
 		JSeparator separator_2 = new JSeparator();
@@ -466,36 +476,66 @@ public class MainFrame extends JFrame {
 		toolBar.add(btnCloseButton);
 
 		JButton btnCutButton = new JButton("");
+		btnCutButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.cut();
+			}
+		});
 		btnCutButton.setToolTipText("Cut");
 		btnCutButton.setFocusPainted(false);
 		btnCutButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-cut.png")));
 		toolBar.add(btnCutButton);
 
 		JButton btnCopyButton = new JButton("");
+		btnCopyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.copy();
+			}
+		});
 		btnCopyButton.setToolTipText("Copy");
 		btnCopyButton.setFocusPainted(false);
 		btnCopyButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-copy.png")));
 		toolBar.add(btnCopyButton);
 
 		JButton btnPasteButton = new JButton("");
+		btnPasteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.paste();
+			}
+		});
 		btnPasteButton.setToolTipText("Paste");
 		btnPasteButton.setFocusPainted(false);
 		btnPasteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-paste.png")));
 		toolBar.add(btnPasteButton);
 
 		JButton btnDeleteButton = new JButton("");
+		btnDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.replaceSelection("");
+			}
+		});
 		btnDeleteButton.setToolTipText("Delete");
 		btnDeleteButton.setFocusPainted(false);
 		btnDeleteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-delete.png")));
 		toolBar.add(btnDeleteButton);
 
 		JButton btnUndoButton = new JButton("");
+		btnUndoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.undoLastAction();
+			}
+		});
 		btnUndoButton.setToolTipText("Undo");
 		btnUndoButton.setFocusPainted(false);
 		btnUndoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-undo.png")));
 		toolBar.add(btnUndoButton);
 
 		JButton btnRedoButton = new JButton("");
+		btnRedoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.redoLastAction();
+			}
+		});
 		btnRedoButton.setToolTipText("Redo");
 		btnRedoButton.setFocusPainted(false);
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
