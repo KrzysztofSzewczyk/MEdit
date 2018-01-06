@@ -30,8 +30,8 @@ public class AboutBox extends JDialog {
 	 * Create the dialog.
 	 */
 	public AboutBox() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(AboutBox.class.getResource("/medit/assets/apps/help-browser.png")));
 		setTitle("About MEdit");
-		setIconImage(Toolkit.getDefaultToolkit().getImage(AboutBox.class.getResource("/medit/assets/help.bmp")));
 		setBounds(100, 100, 632, 161);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
