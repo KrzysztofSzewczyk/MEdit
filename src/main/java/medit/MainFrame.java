@@ -91,8 +91,8 @@ public class MainFrame extends JFrame {
 				.getImage(MainFrame.class.getResource("/medit/assets/apps/accessories-text-editor.png")));
 		setTitle("MEdit");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 585, 502);
-		this.setMinimumSize(new Dimension(500, 500));
+		setBounds(100, 100, 700, 500);
+		this.setMinimumSize(new Dimension(700, 500));
 
 		JMenuBar menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -334,6 +334,13 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnAbout);
 
 		JMenuItem mntmPreferences = new JMenuItem("Preferences");
+		mntmPreferences.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PropertiesBox dialog = new PropertiesBox(instance);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		});
 		mntmPreferences.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
 		mnAbout.add(mntmPreferences);
 
@@ -548,6 +555,13 @@ public class MainFrame extends JFrame {
 		toolBar.add(btnRedoButton);
 
 		JButton btnPreferencesButton = new JButton("");
+		btnPreferencesButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				PropertiesBox dialog = new PropertiesBox(instance);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		});
 		btnPreferencesButton.setToolTipText("Preferences");
 		btnPreferencesButton.setFocusPainted(false);
 		btnPreferencesButton.setIcon(
