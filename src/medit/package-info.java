@@ -1,7 +1,6 @@
+
 /**
- * 
- */
-/**
+ * Main Application package
  * @author PC
  *
  */
