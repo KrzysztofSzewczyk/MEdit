@@ -759,6 +759,7 @@ public class MainFrame extends JFrame {
 							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
 							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
 							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
+							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
 						} catch (IOException e1) {
 							Crash dialog = new Crash(e1);
@@ -1333,6 +1334,7 @@ public class MainFrame extends JFrame {
 							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
 							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
 							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
+							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
 						} catch (IOException e1) {
 							Crash dialog = new Crash(e1);
