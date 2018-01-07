@@ -26,6 +26,10 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -74,7 +78,7 @@ public class MainFrame extends JFrame {
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
 	private Tool[] tools = new Tool[32];
-	private Script[] scrips = new Script[32];
+	private Script[] scripts = new Script[32];
 	private int scriptAmount = 0;
 	private int toolAmount = 0;
 	private JTextPane toolConsole = new JTextPane();
@@ -976,12 +980,103 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnScripts);
 		
 		JMenuItem mntmAdd_1 = new JMenuItem("Add...");
+		mntmAdd_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path = JOptionPane.showInputDialog(instance, "Path: ");
+				if (path == null)
+					return;
+				String name = JOptionPane.showInputDialog(instance, "Script Name:");
+				if (name == null)
+					return;
+				String hotkey = JOptionPane.showInputDialog(instance, "Hotkey (ALT+):");
+				if (hotkey == null)
+					return;
+				scripts[scriptAmount] = new Script();
+				scripts[scriptAmount].name = name;
+				scripts[scriptAmount].path = path;
+				scripts[scriptAmount].hotkey = hotkey;
+				ToolMenuItem tmpitem = new ToolMenuItem(scripts[scriptAmount].name);
+				tmpitem.toolid = scriptAmount;
+				tmpitem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						int toolid = tmpitem.toolid;
+						runScript(scripts[toolid]);
+					}
+				});
+				scripts[scriptAmount].item = tmpitem;
+				mnScripts.add(tmpitem);
+				toolAmount++;
+			}
+		});
 		mnScripts.add(mntmAdd_1);
 		
 		JMenuItem mntmRemove_1 = new JMenuItem("Remove...");
+		mntmRemove_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance,
+							"Input script ID (starting from 0 to 31, if exists): "));
+					if (ans >= 0 && ans < 32 && ans < toolAmount) {
+						if (scripts[ans].item == null) {
+							JOptionPane.showConfirmDialog(instance, "Invalid choice.");
+							return;
+						}
+						mnToolsPlugins.remove(scripts[ans].item);
+						if (ans == 31) {
+							scripts[ans].name = "";
+							scripts[ans].path = "";
+							scripts[ans].hotkey = "";
+							scripts[ans].item = null;
+						}
+						for (int i = ans; i < 31; i++) {
+							scripts[ans] = scripts[ans + 1];
+						}
+					} else {
+						JOptionPane.showConfirmDialog(instance, "Script ID invalid");
+						return;
+					}
+				} catch (Exception e1) {
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
 		mnScripts.add(mntmRemove_1);
 		
 		JMenuItem mntmSaveScripts = new JMenuItem("Save Scripts");
+		mntmSaveScripts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					if (new File("sconfig.txt").exists())
+						new File("sconfig.txt").delete();
+					new File("sconfig.txt").createNewFile();
+				} catch (Exception e1) {
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+				PrintWriter w = null;
+				try {
+					w = new PrintWriter(new File("sconfig.txt"));
+				} catch (FileNotFoundException e1) {
+					// WTF?
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+				for (int i = 0; i < scriptAmount; i++) {
+					if(scripts[i] == null) {
+						w.close();
+						return;
+					}
+					w.println(scripts[i].path);
+					w.println(scripts[i].name);
+					w.println(scripts[i].hotkey);
+				}
+				w.close();
+			}
+		});
 		mnScripts.add(mntmSaveScripts);
 		
 		JSeparator separator_2 = new JSeparator();
@@ -1554,6 +1649,57 @@ public class MainFrame extends JFrame {
 				counter++;
 			}
 			toolAmount = counter;
+		}
+		if (new File("sconfig.txt").exists()) {
+			Scanner s = null;
+			try {
+				s = new Scanner(new File("sconfig.txt"));
+			} catch (FileNotFoundException e1) {
+				// WTF?
+				Crash dialog = new Crash(e1);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+			int counter = 0;
+			while (s.hasNextLine()) {
+				scripts[counter] = new Script();
+				scripts[counter].path = s.nextLine();
+				scripts[counter].name = s.nextLine();
+				scripts[counter].hotkey = s.nextLine();
+				ToolMenuItem tmpitem = new ToolMenuItem(scripts[counter].name);
+				tmpitem.toolid = scriptAmount;
+				tmpitem.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						int toolid = tmpitem.toolid;
+						runScript(scripts[toolid]);
+					}
+				});
+				tools[counter].item = tmpitem;
+				mnToolsPlugins.add(tmpitem);
+				counter++;
+			}
+			toolAmount = counter;
+		}
+	}
+	
+	public void runScript(Script script) {
+		try {
+			@SuppressWarnings("resource")
+			String content = new Scanner(new File("filename")).useDelimiter("\\Z").next();
+			ScriptEngineManager mgr = new ScriptEngineManager();
+			ScriptEngine jsEngine = mgr.getEngineByName("JavaScript");
+            Invocable invocable = (Invocable) jsEngine;
+            try {
+				invocable.invokeFunction("run", this, script, instances, textPane, currentFile, lblReady, searchTextField, replaceWithTextField, tools, scripts, scriptAmount, toolAmount, toolConsole);
+			} catch (NoSuchMethodException | ScriptException e) {
+				Crash dialog = new Crash(e);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		} catch (FileNotFoundException e) {
+			Crash dialog = new Crash(e);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
 		}
 	}
 
