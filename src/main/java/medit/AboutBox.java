@@ -3,8 +3,6 @@ package medit;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,7 +12,7 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * AboutBox is dialog containing information about MEdit.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -31,43 +29,39 @@ public class AboutBox extends JDialog {
 	 * Create the dialog.
 	 */
 	public AboutBox() {
-		setIconImage(
+		this.setIconImage(
 				Toolkit.getDefaultToolkit().getImage(AboutBox.class.getResource(Messages.getString("AboutBox.0")))); //$NON-NLS-1$
-		setTitle(Messages.getString("AboutBox.1")); //$NON-NLS-1$
-		setBounds(100, 100, 632, 201);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setLayout(new FlowLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		this.setTitle(Messages.getString("AboutBox.1")); //$NON-NLS-1$
+		this.setBounds(100, 100, 632, 201);
+		this.getContentPane().setLayout(new BorderLayout());
+		this.contentPanel.setLayout(new FlowLayout());
+		this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.getContentPane().add(this.contentPanel, BorderLayout.CENTER);
 		{
-			JLabel lblMeditIsFree = new JLabel(Messages.getString("AboutBox.2")); //$NON-NLS-1$
-			contentPanel.add(lblMeditIsFree);
+			final JLabel lblMeditIsFree = new JLabel(Messages.getString("AboutBox.2")); //$NON-NLS-1$
+			this.contentPanel.add(lblMeditIsFree);
 		}
 		{
-			JLabel lblDevcppIconsWere = new JLabel(Messages.getString("AboutBox.3")); //$NON-NLS-1$
-			contentPanel.add(lblDevcppIconsWere);
+			final JLabel lblDevcppIconsWere = new JLabel(Messages.getString("AboutBox.3")); //$NON-NLS-1$
+			this.contentPanel.add(lblDevcppIconsWere);
 		}
 		{
-			JLabel lblCopyrightcBy = new JLabel(Messages.getString("AboutBox.4")); //$NON-NLS-1$
-			contentPanel.add(lblCopyrightcBy);
+			final JLabel lblCopyrightcBy = new JLabel(Messages.getString("AboutBox.4")); //$NON-NLS-1$
+			this.contentPanel.add(lblCopyrightcBy);
 		}
 		{
-			JLabel lblPleaseSeeLicense = new JLabel(Messages.getString("AboutBox.5")); //$NON-NLS-1$
-			contentPanel.add(lblPleaseSeeLicense);
+			final JLabel lblPleaseSeeLicense = new JLabel(Messages.getString("AboutBox.5")); //$NON-NLS-1$
+			this.contentPanel.add(lblPleaseSeeLicense);
 		}
 		{
-			JPanel buttonPane = new JPanel();
+			final JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton(Messages.getString("AboutBox.6")); //$NON-NLS-1$
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
+				final JButton okButton = new JButton(Messages.getString("AboutBox.6")); //$NON-NLS-1$
+				okButton.addActionListener(e -> AboutBox.this.dispose());
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				this.getRootPane().setDefaultButton(okButton);
 			}
 		}
 	}

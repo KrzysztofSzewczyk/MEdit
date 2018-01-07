@@ -14,27 +14,27 @@ public class ToolMenuItem extends JMenuItem {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(Action a) {
+	public ToolMenuItem(final Action a) {
 		super(a);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(Icon icon) {
+	public ToolMenuItem(final Icon icon) {
 		super(icon);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(String text) {
+	public ToolMenuItem(final String text) {
 		super(text);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(String text, Icon icon) {
+	public ToolMenuItem(final String text, final Icon icon) {
 		super(text, icon);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(String text, int mnemonic) {
+	public ToolMenuItem(final String text, final int mnemonic) {
 		super(text, mnemonic);
 		// TODO Auto-generated constructor stub
 	}

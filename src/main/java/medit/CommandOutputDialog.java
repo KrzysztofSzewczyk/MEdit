@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,20 +20,20 @@ public class CommandOutputDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CommandOutputDialog(String output) {
-		setIconImage(Toolkit.getDefaultToolkit()
+	public CommandOutputDialog(final String output) {
+		this.setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(CommandOutputDialog.class.getResource(Messages.getString("CommandOutputDialog.0")))); //$NON-NLS-1$
-		setTitle(Messages.getString("CommandOutputDialog.1")); //$NON-NLS-1$
-		setBounds(100, 100, 450, 300);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+		this.setTitle(Messages.getString("CommandOutputDialog.1")); //$NON-NLS-1$
+		this.setBounds(100, 100, 450, 300);
+		this.getContentPane().setLayout(new BorderLayout());
+		this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.getContentPane().add(this.contentPanel, BorderLayout.CENTER);
+		this.contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JScrollPane scrollPane = new JScrollPane();
-			contentPanel.add(scrollPane, BorderLayout.CENTER);
+			final JScrollPane scrollPane = new JScrollPane();
+			this.contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
-				JTextPane textPane = new JTextPane();
+				final JTextPane textPane = new JTextPane();
 				scrollPane.setViewportView(textPane);
 				textPane.setEditable(false);
 				textPane.setFont(new Font(Messages.getString("CommandOutputDialog.2"), Font.PLAIN, 13)); //$NON-NLS-1$
@@ -43,19 +41,15 @@ public class CommandOutputDialog extends JDialog {
 			}
 		}
 		{
-			JPanel buttonPane = new JPanel();
+			final JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton(Messages.getString("CommandOutputDialog.3")); //$NON-NLS-1$
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
+				final JButton okButton = new JButton(Messages.getString("CommandOutputDialog.3")); //$NON-NLS-1$
+				okButton.addActionListener(e -> CommandOutputDialog.this.dispose());
 				okButton.setActionCommand(Messages.getString("CommandOutputDialog.4")); //$NON-NLS-1$
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				this.getRootPane().setDefaultButton(okButton);
 			}
 		}
 	}
