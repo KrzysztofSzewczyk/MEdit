@@ -528,6 +528,54 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmLess);
+		
+		JMenuItem mntmLisp = new JMenuItem("Lisp");
+		mntmLisp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmLisp);
+		
+		JMenuItem mntmLua = new JMenuItem("Lua");
+		mntmLua.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmLua);
+		
+		JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
+		mntmMakeFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmMakeFile);
+		
+		JMenuItem mntmMxml = new JMenuItem("MXML");
+		mntmMxml.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmMxml);
+		
+		JMenuItem mntmNsis = new JMenuItem("NSIS");
+		mntmNsis.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NSIS);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmNsis);
+		
+		JMenuItem mntmPerl = new JMenuItem("Perl");
+		mntmPerl.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmPerl);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
