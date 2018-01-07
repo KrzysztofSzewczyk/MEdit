@@ -1,8 +1,7 @@
 package medit;
 
-import java.awt.EventQueue;
-
-import javax.swing.UIManager;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Main class for MEdit project. This thing is launching MainFrame window.

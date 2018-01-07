@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="MEdit:jar">
+    <output-path>$PROJECT_DIR$/</output-path>
+    <root id="archive" name="MEdit.jar">
+      <element id="module-output" name="MEdit" />
+    </root>
+  </artifact>
+</component>
