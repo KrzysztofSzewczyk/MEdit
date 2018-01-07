@@ -416,6 +416,38 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmDocker);
+		
+		JMenuItem mntmDtd = new JMenuItem("DTD");
+		mntmDtd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmDtd);
+		
+		JMenuItem mntmD = new JMenuItem("D");
+		mntmD.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmD);
+		
+		JMenuItem mntmFortan = new JMenuItem("Fortan");
+		mntmFortan.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmFortan);
+		
+		JMenuItem mntmGroovy = new JMenuItem("Groovy");
+		mntmGroovy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmGroovy);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
