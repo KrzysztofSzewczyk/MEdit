@@ -43,6 +43,8 @@ import javax.swing.border.EmptyBorder;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  * Main frame for MEdit project.
@@ -330,20 +332,6 @@ public class MainFrame extends JFrame {
 		JMenuItem mntmNo = new JMenuItem("No");
 		mntmNo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.clearParsers();
-				textPane.setParserDelay(1);
-				textPane.setAnimateBracketMatching(false);
-				textPane.setAutoIndentEnabled(false);
-				textPane.setAntiAliasingEnabled(false);
-				textPane.setBracketMatchingEnabled(false);
-				textPane.setCloseCurlyBraces(false);
-				textPane.setCloseMarkupTags(false);
-				textPane.setCodeFoldingEnabled(false);
-				textPane.setHyperlinkForeground(Color.pink);
-				textPane.setHyperlinksEnabled(false);
-				textPane.setPaintMatchedBracketPair(false);
-				textPane.setPaintTabLines(false);
-				textPane.setCurrentLineHighlightColor(Color.white);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
 			}
 		});
@@ -352,63 +340,21 @@ public class MainFrame extends JFrame {
 		JMenuItem mntmC = new JMenuItem("C");
 		mntmC.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.clearParsers();
-				textPane.setParserDelay(1);
-				textPane.setAnimateBracketMatching(true);
-				textPane.setAutoIndentEnabled(true);
-				textPane.setAntiAliasingEnabled(true);
-				textPane.setBracketMatchingEnabled(true);
-				textPane.setCloseCurlyBraces(true);
-				textPane.setCloseMarkupTags(true);
-				textPane.setCodeFoldingEnabled(true);
-				textPane.setHyperlinkForeground(Color.pink);
-				textPane.setHyperlinksEnabled(true);
-				textPane.setPaintMatchedBracketPair(true);
-				textPane.setPaintTabLines(true);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
-				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 
 		JMenuItem mntmAssembler = new JMenuItem("Assembly");
 		mntmAssembler.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.clearParsers();
-				textPane.setParserDelay(1);
-				textPane.setAnimateBracketMatching(false);
-				textPane.setAutoIndentEnabled(false);
-				textPane.setAntiAliasingEnabled(false);
-				textPane.setBracketMatchingEnabled(false);
-				textPane.setCloseCurlyBraces(false);
-				textPane.setCloseMarkupTags(false);
-				textPane.setCodeFoldingEnabled(false);
-				textPane.setHyperlinkForeground(Color.pink);
-				textPane.setHyperlinksEnabled(false);
-				textPane.setPaintMatchedBracketPair(false);
-				textPane.setPaintTabLines(false);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
-				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 
 		JMenuItem mntmActionscript = new JMenuItem("ActionScript");
 		mntmActionscript.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.clearParsers();
-				textPane.setParserDelay(1);
-				textPane.setAnimateBracketMatching(false);
-				textPane.setAutoIndentEnabled(false);
-				textPane.setAntiAliasingEnabled(false);
-				textPane.setBracketMatchingEnabled(false);
-				textPane.setCloseCurlyBraces(false);
-				textPane.setCloseMarkupTags(false);
-				textPane.setCodeFoldingEnabled(false);
-				textPane.setHyperlinkForeground(Color.pink);
-				textPane.setHyperlinksEnabled(false);
-				textPane.setPaintMatchedBracketPair(false);
-				textPane.setPaintTabLines(false);
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
-				textPane.setCurrentLineHighlightColor(Color.white);
 			}
 		});
 		mnSyntaxHighlighting.add(mntmActionscript);
@@ -634,7 +580,7 @@ public class MainFrame extends JFrame {
 
 		toolBar_1.add(lblReady);
 
-		JScrollPane scrollPane = new JScrollPane();
+		RTextScrollPane scrollPane = new RTextScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
 		textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
@@ -734,28 +680,47 @@ public class MainFrame extends JFrame {
 		JPanel panel_7 = new JPanel();
 		panel_5.add(panel_7, BorderLayout.SOUTH);
 
-		JLabel lblTheme = new JLabel("Theme:");
-		panel_7.add(lblTheme);
-
-		JButton btnBlack = new JButton("Black");
+		JButton btnBlack = new JButton("Dark");
 		btnBlack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.setBackground(new Color(0, 0, 0));
-				textPane.setForeground(new Color(255,255,255));
-				textPane.setCurrentLineHighlightColor(Color.black);
+				try {
+					Theme theme = Theme
+							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+					theme.apply(textPane);
+				} catch (IOException ioe) { // Never happens
+					Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
 			}
 		});
 		panel_7.add(btnBlack);
 
-		JButton btnClassical = new JButton("Classical");
+		JButton btnClassical = new JButton("Default");
 		btnClassical.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.setBackground(new Color(255, 255, 255));
-				textPane.setForeground(new Color(0,0,0));
-				textPane.setCurrentLineHighlightColor(Color.white);
+				try {
+					Theme theme = Theme
+							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+					theme.apply(textPane);
+				} catch (IOException ioe) { // Never happens
+					Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
 			}
 		});
 		panel_7.add(btnClassical);
+		
+		JPanel panel_8 = new JPanel();
+		panel_5.add(panel_8, BorderLayout.CENTER);
+		panel_8.setLayout(new BorderLayout(0, 0));
+		
+		JPanel panel_9 = new JPanel();
+		panel_8.add(panel_9, BorderLayout.SOUTH);
+		
+				JLabel lblTheme = new JLabel("Theme:");
+				panel_9.add(lblTheme);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -775,7 +740,30 @@ public class MainFrame extends JFrame {
 					System.exit(0);
 			}
 		}, 0, 1);
-		textPane.setCurrentLineHighlightColor(Color.white);
+		textPane.clearParsers();
+		textPane.setParserDelay(1);
+		textPane.setAnimateBracketMatching(true);
+		textPane.setAutoIndentEnabled(true);
+		textPane.setAntiAliasingEnabled(true);
+		textPane.setBracketMatchingEnabled(true);
+		textPane.setCloseCurlyBraces(true);
+		textPane.setCloseMarkupTags(true);
+		textPane.setCodeFoldingEnabled(true);
+		textPane.setHyperlinkForeground(Color.pink);
+		textPane.setHyperlinksEnabled(true);
+		textPane.setPaintMatchedBracketPair(true);
+		textPane.setPaintTabLines(true);
+		try {
+			Theme theme = Theme
+					.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+			theme.apply(textPane);
+		} catch (IOException ioe) { // Never happens
+			Crash dialog = new Crash(ioe);
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		}
+		scrollPane.setLineNumbersEnabled(true);
+		scrollPane.setFoldIndicatorEnabled(true);
 	}
 
 }
