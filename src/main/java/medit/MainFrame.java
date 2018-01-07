@@ -15,9 +15,12 @@ import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -33,7 +36,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -67,6 +69,8 @@ public class MainFrame extends JFrame {
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
+	private Tool[] tools = new Tool[32];
+	private int toolAmount = 0;
 
 	/**
 	 * Create the frame.
@@ -713,6 +717,98 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmYaml);
+		
+		JMenu mnToolsPlugins = new JMenu("Tools");
+		menuBar.add(mnToolsPlugins);
+		
+		JMenuItem mntmAdd = new JMenuItem("Add ...");
+		mntmAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String path = JOptionPane.showInputDialog(instance, "Path: ");
+				if(path==null) return;
+				String cmdl = JOptionPane.showInputDialog(instance, "Commandline (%DIR% - directory, %FN% - filename, %EXT% - extension):");
+				if(cmdl==null) return;
+				String name = JOptionPane.showInputDialog(instance, "Tool Name:");
+				if(name==null) return;
+				System.out.println(toolAmount);
+				tools[toolAmount] = new Tool();
+				tools[toolAmount].commandline = cmdl;
+				tools[toolAmount].name = name;
+				tools[toolAmount].path = path;
+				JMenuItem tmpitem = new JMenuItem(tools[toolAmount].name);
+				tools[toolAmount].item = tmpitem;
+				mnToolsPlugins.add(tmpitem);
+				toolAmount++;
+			}
+		});
+		mnToolsPlugins.add(mntmAdd);
+		
+		JMenuItem mntmRemove = new JMenuItem("Remove ...");
+		mntmRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance, "Input tool ID (starting from 0 to 31, if exists): "));
+					if(ans >= 0 && ans < 32 && ans < toolAmount) {
+						if(tools[ans].item==null) {
+							JOptionPane.showConfirmDialog(instance, "Invalid choice.");
+							return;
+						}
+						mnToolsPlugins.remove(tools[ans].item);
+						if(ans==31) {
+							tools[ans].commandline="";
+							tools[ans].name="";
+							tools[ans].path="";
+							tools[ans].item=null;
+						}
+						for(int i = ans; i < 31; i++) {
+							tools[ans] = tools[ans+1];
+						}
+					} else {
+						JOptionPane.showConfirmDialog(instance, "Tool ID invalid");
+						return;
+					}
+				} catch(Exception e1) {
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+				
+			}
+		});
+		mnToolsPlugins.add(mntmRemove);
+		
+		JMenuItem mntmSaveList = new JMenuItem("Save list");
+		mntmSaveList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if(new File("mconfig.txt").exists()) new File("mconfig.txt").delete();
+					new File("mconfig.txt").createNewFile();
+				} catch (Exception e1) {
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+				PrintWriter w = null;
+				try {
+					w = new PrintWriter(new File("mconfig.txt"));
+				} catch (FileNotFoundException e1) {
+					//WTF?
+					Crash dialog = new Crash(e1);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+				for(int i = 0; i < toolAmount; i++) {
+					w.println(tools[i].path);
+					w.println(tools[i].commandline);
+					w.println(tools[i].name);
+				}
+				w.close();
+			}
+		});
+		mnToolsPlugins.add(mntmSaveList);
+		
+		JSeparator separator_1 = new JSeparator();
+		mnToolsPlugins.add(separator_1);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
@@ -1156,6 +1252,30 @@ public class MainFrame extends JFrame {
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
+		
+		if(new File("mconfig.txt").exists()) {
+			Scanner s = null;
+			try {
+				s = new Scanner(new File("mconfig.txt"));
+			} catch (FileNotFoundException e1) {
+				// WTF?
+				Crash dialog = new Crash(e1);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+			int counter = 0;
+			while(s.hasNextLine()) {
+				tools[counter] = new Tool();
+				tools[counter].path = s.nextLine();
+				tools[counter].commandline = s.nextLine();
+				tools[counter].name = s.nextLine();
+				JMenuItem tmpitem = new JMenuItem(tools[counter].name);
+				tools[counter].item = tmpitem;
+				mnToolsPlugins.add(tmpitem);
+				counter++;
+			}
+			toolAmount = counter;
+		}
 	}
 
 }
