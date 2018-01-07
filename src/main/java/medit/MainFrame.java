@@ -1183,12 +1183,6 @@ public class MainFrame extends JFrame {
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
 		toolBar.add(btnRedoButton);
 
-		JToolBar toolBar_1 = new JToolBar();
-		toolBar_1.setFloatable(false);
-		contentPane.add(toolBar_1, BorderLayout.SOUTH);
-
-		toolBar_1.add(lblReady);
-
 		RTextScrollPane scrollPane = new RTextScrollPane();
 		contentPane.add(scrollPane, BorderLayout.CENTER);
 
@@ -1369,40 +1363,40 @@ public class MainFrame extends JFrame {
 
 		JLabel lblTheme = new JLabel("Theme:");
 		panel_11.add(lblTheme);
-
-		JPanel panel_12 = new JPanel();
-		panel_10.add(panel_12, BorderLayout.CENTER);
-		panel_12.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblToolConsole = new JLabel("Tool Console:");
-		panel_12.add(lblToolConsole, BorderLayout.NORTH);
-
-		JScrollPane scrollPane_1 = new JScrollPane();
-		panel_12.add(scrollPane_1, BorderLayout.CENTER);
-
-		toolConsole.setEditable(false);
-		scrollPane_1.setViewportView(toolConsole);
 		
-		JPanel panel_13 = new JPanel();
-		panel_12.add(panel_13, BorderLayout.SOUTH);
-		
-		JButton btnOpenInDialog = new JButton("Open in dialog");
-		btnOpenInDialog.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		panel_13.add(btnOpenInDialog);
-		
-		JButton btnClear = new JButton("Clear");
-		btnClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				toolConsole.setText("");
-			}
-		});
-		panel_13.add(btnClear);
+				JPanel panel_12 = new JPanel();
+				panel_10.add(panel_12, BorderLayout.CENTER);
+				panel_12.setLayout(new BorderLayout(0, 0));
+				
+						JLabel lblToolConsole = new JLabel("Tool Console:");
+						panel_12.add(lblToolConsole, BorderLayout.NORTH);
+						
+								JScrollPane scrollPane_1 = new JScrollPane();
+								panel_12.add(scrollPane_1, BorderLayout.CENTER);
+								
+										toolConsole.setEditable(false);
+										scrollPane_1.setViewportView(toolConsole);
+										
+										JPanel panel_13 = new JPanel();
+										panel_12.add(panel_13, BorderLayout.SOUTH);
+										
+										JButton btnOpenInDialog = new JButton("Open in dialog");
+										btnOpenInDialog.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
+												dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+												dialog.setVisible(true);
+											}
+										});
+										panel_13.add(btnOpenInDialog);
+										
+										JButton btnClear = new JButton("Clear");
+										btnClear.addActionListener(new ActionListener() {
+											public void actionPerformed(ActionEvent e) {
+												toolConsole.setText("");
+											}
+										});
+										panel_13.add(btnClear);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -1445,6 +1439,16 @@ public class MainFrame extends JFrame {
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
+		
+		JPanel panel_14 = new JPanel();
+		contentPane.add(panel_14, BorderLayout.SOUTH);
+				panel_14.setLayout(new BorderLayout(0, 0));
+		
+				JToolBar toolBar_1 = new JToolBar();
+				panel_14.add(toolBar_1);
+				toolBar_1.setFloatable(false);
+				
+						toolBar_1.add(lblReady);
 
 		if (new File("mconfig.txt").exists()) {
 			Scanner s = null;
