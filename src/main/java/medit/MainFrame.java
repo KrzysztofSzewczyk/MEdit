@@ -873,6 +873,10 @@ public class MainFrame extends JFrame {
 					dialog.setVisible(true);
 				}
 				for (int i = 0; i < toolAmount; i++) {
+					if(tools[i] == null) {
+						w.close();
+						return;
+					}
 					w.println(tools[i].path);
 					w.println(tools[i].commandline);
 					w.println(tools[i].name);
@@ -1297,6 +1301,27 @@ public class MainFrame extends JFrame {
 
 		toolConsole.setEditable(false);
 		scrollPane_1.setViewportView(toolConsole);
+		
+		JPanel panel_13 = new JPanel();
+		panel_12.add(panel_13, BorderLayout.SOUTH);
+		
+		JButton btnOpenInDialog = new JButton("Open in dialog");
+		btnOpenInDialog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		});
+		panel_13.add(btnOpenInDialog);
+		
+		JButton btnClear = new JButton("Clear");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toolConsole.setText("");
+			}
+		});
+		panel_13.add(btnClear);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
