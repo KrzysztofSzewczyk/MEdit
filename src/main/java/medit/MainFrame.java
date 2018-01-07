@@ -654,6 +654,65 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnS.add(mntmSql);
+		
+		JMenu mnT = new JMenu("T");
+		mnSyntaxHighlighting.add(mnT);
+		
+		JMenuItem mntmTcl = new JMenuItem("TCL");
+		mntmTcl.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TCL);
+			}
+		});
+		mnT.add(mntmTcl);
+		
+		JMenuItem mntmTypescript = new JMenuItem("TypeScript");
+		mntmTypescript.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT);
+			}
+		});
+		mnT.add(mntmTypescript);
+		
+		JMenuItem mntmUnixShell = new JMenuItem("Unix Shell");
+		mntmUnixShell.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmUnixShell);
+		
+		JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic");
+		mntmVisualBasic.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmVisualBasic);
+		
+		JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
+		mntmWindowsBatch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);			
+			}
+		});
+		mnSyntaxHighlighting.add(mntmWindowsBatch);
+		
+		JMenuItem mntmXml = new JMenuItem("XML");
+		mntmXml.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmXml);
+		
+		JMenuItem mntmYaml = new JMenuItem("YAML");
+		mntmYaml.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmYaml);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
