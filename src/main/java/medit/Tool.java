@@ -5,4 +5,5 @@ public class Tool {
 	String commandline;
 	String name;
 	ToolMenuItem item;
+	String hotkey;
 }

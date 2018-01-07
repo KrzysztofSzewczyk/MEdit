@@ -9,6 +9,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -19,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Scanner;
@@ -38,8 +38,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
@@ -49,8 +51,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.JScrollPane;
 
 /**
  * Main frame for MEdit project.
@@ -97,6 +97,81 @@ public class MainFrame extends JFrame {
 					System.exit(0);
 				else
 					instances--;
+			}
+		});
+		addKeyListener(new KeyAdapter() {
+			private String getFileExtension(File file) {
+				String name = file.getName();
+				try {
+					return name.substring(name.lastIndexOf(".") + 1);
+				} catch (Exception e) {
+					return "";
+				}
+			}
+			@Override
+			public void keyTyped(KeyEvent arg0) {
+				char c = arg0.getKeyChar();
+				if(!arg0.isAltDown()) return;
+				int found = -1;
+				for(int i = 0; i < tools.length; i++) {
+					if(tools[i].hotkey.charAt(0) == c) {
+						found = i;
+					}
+				}
+				if(found == -1) {
+					//Keep on dispatching, dear Java.
+				} else {
+					int toolid = found;
+					try {
+						String copy = tools[toolid].commandline;
+						copy = copy.replaceAll("%FN%", currentFile == null ? "Unnamed" : currentFile.getName());
+						copy = copy.replaceAll("%DIR%",
+								currentFile == null ? "" : currentFile.getParentFile().getAbsolutePath());
+						copy = copy.replaceAll("%EXT%", currentFile == null ? "" : getFileExtension(currentFile));
+						Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								BufferedReader stdInput = new BufferedReader(
+										new InputStreamReader(p.getInputStream()));
+
+								BufferedReader stdError = new BufferedReader(
+										new InputStreamReader(p.getErrorStream()));
+
+								toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
+								String s = null;
+								try {
+									while ((s = stdInput.readLine()) != null) {
+										toolConsole.setText(toolConsole.getText() + s);
+									}
+								} catch (IOException e1) {
+									Crash dialog = new Crash(e1);
+									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dialog.setVisible(true);
+									return;
+								}
+
+								// read any errors from the attempted command
+								toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
+								try {
+									while ((s = stdError.readLine()) != null) {
+										toolConsole.setText(toolConsole.getText() + s);
+									}
+								} catch (IOException e) {
+									Crash dialog = new Crash(e);
+									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dialog.setVisible(true);
+									return;
+								}
+								return;
+							}
+						}).start();
+					} catch (IOException e1) {
+						Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+					}
+				}
 			}
 		});
 		setIconImage(Toolkit.getDefaultToolkit()
@@ -739,11 +814,15 @@ public class MainFrame extends JFrame {
 				String name = JOptionPane.showInputDialog(instance, "Tool Name:");
 				if (name == null)
 					return;
+				String hotkey = JOptionPane.showInputDialog(instance, "Hotkey (ALT+):");
+				if (hotkey == null)
+					return;
 				System.out.println(toolAmount);
 				tools[toolAmount] = new Tool();
 				tools[toolAmount].commandline = cmdl;
 				tools[toolAmount].name = name;
 				tools[toolAmount].path = path;
+				tools[toolAmount].hotkey = hotkey;
 				ToolMenuItem tmpitem = new ToolMenuItem(tools[toolAmount].name);
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
@@ -832,6 +911,7 @@ public class MainFrame extends JFrame {
 							tools[ans].commandline = "";
 							tools[ans].name = "";
 							tools[ans].path = "";
+							tools[ans].hotkey = "";
 							tools[ans].item = null;
 						}
 						for (int i = ans; i < 31; i++) {
@@ -880,6 +960,7 @@ public class MainFrame extends JFrame {
 					w.println(tools[i].path);
 					w.println(tools[i].commandline);
 					w.println(tools[i].name);
+					w.println(tools[i].hotkey);
 				}
 				w.close();
 			}
@@ -1381,6 +1462,7 @@ public class MainFrame extends JFrame {
 				tools[counter].path = s.nextLine();
 				tools[counter].commandline = s.nextLine();
 				tools[counter].name = s.nextLine();
+				tools[counter].hotkey = s.nextLine();
 				ToolMenuItem tmpitem = new ToolMenuItem(tools[counter].name);
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
