@@ -23,8 +23,8 @@ public class CommandOutputDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public CommandOutputDialog(String output) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(CommandOutputDialog.class.getResource("/medit/assets/categories/preferences-system.png")));
-		setTitle("Tool Output");
+		setIconImage(Toolkit.getDefaultToolkit().getImage(CommandOutputDialog.class.getResource(Messages.getString("CommandOutputDialog.0")))); //$NON-NLS-1$
+		setTitle(Messages.getString("CommandOutputDialog.1")); //$NON-NLS-1$
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -37,7 +37,7 @@ public class CommandOutputDialog extends JDialog {
 				JTextPane textPane = new JTextPane();
 				scrollPane.setViewportView(textPane);
 				textPane.setEditable(false);
-				textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
+				textPane.setFont(new Font(Messages.getString("CommandOutputDialog.2"), Font.PLAIN, 13)); //$NON-NLS-1$
 				textPane.setText(output);
 			}
 		}
@@ -46,13 +46,13 @@ public class CommandOutputDialog extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
+				JButton okButton = new JButton(Messages.getString("CommandOutputDialog.3")); //$NON-NLS-1$
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
 					}
 				});
-				okButton.setActionCommand("OK");
+				okButton.setActionCommand(Messages.getString("CommandOutputDialog.4")); //$NON-NLS-1$
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}

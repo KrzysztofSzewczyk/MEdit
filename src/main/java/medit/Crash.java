@@ -35,15 +35,15 @@ public class Crash extends JDialog {
 	 */
 	public Crash(Exception E1) {
 		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(Crash.class.getResource("/medit/assets/actions/process-stop.png")));
-		setTitle("MEdit");
+				.getImage(Crash.class.getResource(Messages.getString("Crash.0")))); //$NON-NLS-1$
+		setTitle(Messages.getString("Crash.1")); //$NON-NLS-1$
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JLabel lblAnErrorOccured = new JLabel("An error occured.");
+			JLabel lblAnErrorOccured = new JLabel(Messages.getString("Crash.2")); //$NON-NLS-1$
 			lblAnErrorOccured.setHorizontalAlignment(SwingConstants.CENTER);
 			contentPanel.add(lblAnErrorOccured, BorderLayout.NORTH);
 		}
@@ -57,7 +57,7 @@ public class Crash extends JDialog {
 				E1.printStackTrace(pw);
 				String sStackTrace = sw.toString();
 				txtr.setText(sStackTrace);
-				txtr.setFont(new Font("Monospaced", Font.PLAIN, 13));
+				txtr.setFont(new Font(Messages.getString("Crash.3"), Font.PLAIN, 13)); //$NON-NLS-1$
 				scrollPane.setViewportView(txtr);
 			}
 		}
@@ -66,7 +66,7 @@ public class Crash extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("Exit");
+				JButton okButton = new JButton(Messages.getString("Crash.4")); //$NON-NLS-1$
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						System.exit(0);
@@ -76,7 +76,7 @@ public class Crash extends JDialog {
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
-				JButton cancelButton = new JButton("Continue");
+				JButton cancelButton = new JButton(Messages.getString("Crash.5")); //$NON-NLS-1$
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();

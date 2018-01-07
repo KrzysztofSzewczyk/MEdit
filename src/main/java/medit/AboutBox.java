@@ -32,28 +32,28 @@ public class AboutBox extends JDialog {
 	 */
 	public AboutBox() {
 		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(AboutBox.class.getResource("/medit/assets/apps/help-browser.png")));
-		setTitle("About MEdit");
+				.getImage(AboutBox.class.getResource(Messages.getString("AboutBox.0")))); //$NON-NLS-1$
+		setTitle(Messages.getString("AboutBox.1")); //$NON-NLS-1$
 		setBounds(100, 100, 632, 201);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
-			JLabel lblMeditIsFree = new JLabel("MEdit is free software redistributed under MIT license");
+			JLabel lblMeditIsFree = new JLabel(Messages.getString("AboutBox.2")); //$NON-NLS-1$
 			contentPanel.add(lblMeditIsFree);
 		}
 		{
 			JLabel lblDevcppIconsWere = new JLabel(
-					"Tango Icon Library was used. It belongs to it's author(s) and it's redistributed under GPLv2 license.");
+					Messages.getString("AboutBox.3")); //$NON-NLS-1$
 			contentPanel.add(lblDevcppIconsWere);
 		}
 		{
-			JLabel lblCopyrightcBy = new JLabel("Copyright (C) by Krzysztof Szewczyk 2018. All rights reserved.");
+			JLabel lblCopyrightcBy = new JLabel(Messages.getString("AboutBox.4")); //$NON-NLS-1$
 			contentPanel.add(lblCopyrightcBy);
 		}
 		{
-			JLabel lblPleaseSeeLicense = new JLabel(" Please see LICENSE for details");
+			JLabel lblPleaseSeeLicense = new JLabel(Messages.getString("AboutBox.5")); //$NON-NLS-1$
 			contentPanel.add(lblPleaseSeeLicense);
 		}
 		{
@@ -61,7 +61,7 @@ public class AboutBox extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
+				JButton okButton = new JButton(Messages.getString("AboutBox.6")); //$NON-NLS-1$
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						dispose();
