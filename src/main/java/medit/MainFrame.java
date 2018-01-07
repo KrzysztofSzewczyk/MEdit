@@ -496,6 +496,38 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmJava);
+		
+		JMenuItem mntmJshintrc = new JMenuItem("JSON");
+		mntmJshintrc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmJshintrc);
+		
+		JMenuItem mntmJsp = new JMenuItem("JSP");
+		mntmJsp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmJsp);
+		
+		JMenuItem mntmLatex = new JMenuItem("Latex");
+		mntmLatex.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmLatex);
+		
+		JMenuItem mntmLess = new JMenuItem("Less");
+		mntmLess.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmLess);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
