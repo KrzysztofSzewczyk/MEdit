@@ -337,13 +337,6 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmNo);
 
-		JMenuItem mntmC = new JMenuItem("C");
-		mntmC.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
-			}
-		});
-
 		JMenuItem mntmAssembler = new JMenuItem("Assembly");
 		mntmAssembler.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -359,7 +352,44 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmActionscript);
 		mnSyntaxHighlighting.add(mntmAssembler);
-		mnSyntaxHighlighting.add(mntmC);
+		
+		JMenuItem mntmBbcode = new JMenuItem("BBCode");
+		mntmBbcode.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmBbcode);
+		
+				JMenuItem mntmC = new JMenuItem("C");
+				mntmC.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+					}
+				});
+				mnSyntaxHighlighting.add(mntmC);
+		
+		JMenuItem mntmC_1 = new JMenuItem("C++");
+		mntmC_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmC_1);
+		
+		JMenuItem mntmC_2 = new JMenuItem("C#");
+		mntmC_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmC_2);
+		
+		JMenuItem mntmClojure = new JMenuItem("Clojure");
+		mnSyntaxHighlighting.add(mntmClojure);
+		
+		JMenuItem mntmDart = new JMenuItem("Dart");
+		mnSyntaxHighlighting.add(mntmDart);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
@@ -719,8 +749,47 @@ public class MainFrame extends JFrame {
 		JPanel panel_9 = new JPanel();
 		panel_8.add(panel_9, BorderLayout.SOUTH);
 		
-				JLabel lblTheme = new JLabel("Theme:");
-				panel_9.add(lblTheme);
+		JButton btnNewButton_1 = new JButton("Extra Default");
+		btnNewButton_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					Theme theme = Theme
+							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
+					theme.apply(textPane);
+				} catch (IOException ioe) { // Never happens
+					Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		panel_9.add(btnNewButton_1);
+		
+		JButton btnMonokai = new JButton("Monokai");
+		btnMonokai.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Theme theme = Theme
+							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+					theme.apply(textPane);
+				} catch (IOException ioe) { // Never happens
+					Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		panel_9.add(btnMonokai);
+				
+				JPanel panel_10 = new JPanel();
+				panel_8.add(panel_10, BorderLayout.CENTER);
+				panel_10.setLayout(new BorderLayout(0, 0));
+				
+				JPanel panel_11 = new JPanel();
+				panel_10.add(panel_11, BorderLayout.SOUTH);
+				
+						JLabel lblTheme = new JLabel("Theme:");
+						panel_11.add(lblTheme);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

@@ -15,6 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * Crash dialog that appears after some exception is thrown.
@@ -65,13 +67,21 @@ public class Crash extends JDialog {
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				JButton okButton = new JButton("Exit");
-				okButton.setActionCommand("OK");
+				okButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.exit(0);
+					}
+				});
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
 			{
 				JButton cancelButton = new JButton("Continue");
-				cancelButton.setActionCommand("Cancel");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						dispose();
+					}
+				});
 				buttonPane.add(cancelButton);
 			}
 		}
