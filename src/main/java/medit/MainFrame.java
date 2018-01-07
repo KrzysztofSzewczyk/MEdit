@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Timer;
@@ -73,6 +74,7 @@ public class MainFrame extends JFrame {
 	private JTextField replaceWithTextField;
 	private Tool[] tools = new Tool[32];
 	private int toolAmount = 0;
+	private JTextPane toolConsole = new JTextPane();
 
 	/**
 	 * Create the frame.
@@ -761,6 +763,23 @@ public class MainFrame extends JFrame {
 							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
 							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
+							InputStream s = p.getInputStream();
+							new Thread(new Runnable(){
+								@Override
+								public void run() {
+									while(p.isAlive()) {
+										try {
+											if(s.available()>=1) {
+												toolConsole.setText(toolConsole.getText() + (char)s.read());
+											}
+										} catch (IOException e) {
+											//Nothing to do, return.
+											return;
+										}
+									}
+									return;
+								}
+							}).start();
 						} catch (IOException e1) {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -1254,7 +1273,6 @@ public class MainFrame extends JFrame {
 		JScrollPane scrollPane_1 = new JScrollPane();
 		panel_12.add(scrollPane_1, BorderLayout.CENTER);
 
-		JTextPane toolConsole = new JTextPane();
 		toolConsole.setEditable(false);
 		scrollPane_1.setViewportView(toolConsole);
 
@@ -1336,6 +1354,23 @@ public class MainFrame extends JFrame {
 							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
 							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
+							InputStream s = p.getInputStream();
+							new Thread(new Runnable(){
+								@Override
+								public void run() {
+									while(p.isAlive()) {
+										try {
+											if(s.available()>=1) {
+												toolConsole.setText(toolConsole.getText() + (char)s.read());
+											}
+										} catch (IOException e) {
+											//Nothing to do, return.
+											return;
+										}
+									}
+									return;
+								}
+							}).start();
 						} catch (IOException e1) {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
