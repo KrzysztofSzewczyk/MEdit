@@ -34,8 +34,7 @@ public class Crash extends JDialog {
 	 * Create the dialog.
 	 */
 	public Crash(Exception E1) {
-		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(Crash.class.getResource(Messages.getString("Crash.0")))); //$NON-NLS-1$
+		setIconImage(Toolkit.getDefaultToolkit().getImage(Crash.class.getResource(Messages.getString("Crash.0")))); //$NON-NLS-1$
 		setTitle(Messages.getString("Crash.1")); //$NON-NLS-1$
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());

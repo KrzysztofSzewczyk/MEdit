@@ -23,7 +23,8 @@ public class CommandOutputDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public CommandOutputDialog(String output) {
-		setIconImage(Toolkit.getDefaultToolkit().getImage(CommandOutputDialog.class.getResource(Messages.getString("CommandOutputDialog.0")))); //$NON-NLS-1$
+		setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(CommandOutputDialog.class.getResource(Messages.getString("CommandOutputDialog.0")))); //$NON-NLS-1$
 		setTitle(Messages.getString("CommandOutputDialog.1")); //$NON-NLS-1$
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());

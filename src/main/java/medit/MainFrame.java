@@ -74,8 +74,7 @@ public class MainFrame extends JFrame {
 	private MainFrame instance;
 	private RSyntaxTextArea textPane = new RSyntaxTextArea();
 	private File currentFile = null;
-	private JLabel lblReady = new JLabel(
-			Messages.getString("MainFrame.0")); //$NON-NLS-1$
+	private JLabel lblReady = new JLabel(Messages.getString("MainFrame.0")); //$NON-NLS-1$
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
 	private Tool[] tools = new Tool[32];
@@ -115,35 +114,40 @@ public class MainFrame extends JFrame {
 					return Messages.getString("MainFrame.2"); //$NON-NLS-1$
 				}
 			}
+
 			@Override
 			public void keyTyped(KeyEvent arg0) {
 				char c = arg0.getKeyChar();
-				if(!arg0.isAltDown()) return;
+				if (!arg0.isAltDown())
+					return;
 				int found = -1;
-				for(int i = 0; i < tools.length; i++) {
-					if(tools[i].hotkey.charAt(0) == c) {
+				for (int i = 0; i < tools.length; i++) {
+					if (tools[i].hotkey.charAt(0) == c) {
 						found = i;
 					}
 				}
-				if(found == -1) {
-					//Keep on dispatching, dear Java.
+				if (found == -1) {
+					// Keep on dispatching, dear Java.
 				} else {
 					int toolid = found;
 					try {
 						String copy = tools[toolid].commandline;
-						copy = copy.replaceAll(Messages.getString("MainFrame.3"), currentFile == null ? Messages.getString("MainFrame.4") : currentFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+						copy = copy.replaceAll(Messages.getString("MainFrame.3"), //$NON-NLS-1$
+								currentFile == null ? Messages.getString("MainFrame.4") : currentFile.getName()); //$NON-NLS-1$
 						copy = copy.replaceAll(Messages.getString("MainFrame.5"), //$NON-NLS-1$
-								currentFile == null ? Messages.getString("MainFrame.6") : currentFile.getParentFile().getAbsolutePath()); //$NON-NLS-1$
-						copy = copy.replaceAll(Messages.getString("MainFrame.7"), currentFile == null ? Messages.getString("MainFrame.8") : getFileExtension(currentFile)); //$NON-NLS-1$ //$NON-NLS-2$
-						Process p = Runtime.getRuntime().exec(tools[toolid].path + Messages.getString("MainFrame.9") + tools[toolid].commandline); //$NON-NLS-1$
+								currentFile == null ? Messages.getString("MainFrame.6") //$NON-NLS-1$
+										: currentFile.getParentFile().getAbsolutePath());
+						copy = copy.replaceAll(Messages.getString("MainFrame.7"), //$NON-NLS-1$
+								currentFile == null ? Messages.getString("MainFrame.8") //$NON-NLS-1$
+										: getFileExtension(currentFile));
+						Process p = Runtime.getRuntime().exec(
+								tools[toolid].path + Messages.getString("MainFrame.9") + tools[toolid].commandline); //$NON-NLS-1$
 						new Thread(new Runnable() {
 							@Override
 							public void run() {
-								BufferedReader stdInput = new BufferedReader(
-										new InputStreamReader(p.getInputStream()));
+								BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-								BufferedReader stdError = new BufferedReader(
-										new InputStreamReader(p.getErrorStream()));
+								BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
 								toolConsole.setText(toolConsole.getText() + Messages.getString("MainFrame.10")); //$NON-NLS-1$
 								String s = null;
@@ -181,8 +185,8 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
-		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(MainFrame.class.getResource(Messages.getString("MainFrame.12")))); //$NON-NLS-1$
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(MainFrame.class.getResource(Messages.getString("MainFrame.12")))); //$NON-NLS-1$
 		setTitle(Messages.getString("MainFrame.13")); //$NON-NLS-1$
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 700, 500);
@@ -814,8 +818,7 @@ public class MainFrame extends JFrame {
 				String path = JOptionPane.showInputDialog(instance, Messages.getString("MainFrame.90")); //$NON-NLS-1$
 				if (path == null)
 					return;
-				String cmdl = JOptionPane.showInputDialog(instance,
-						Messages.getString("MainFrame.91")); //$NON-NLS-1$
+				String cmdl = JOptionPane.showInputDialog(instance, Messages.getString("MainFrame.91")); //$NON-NLS-1$
 				if (cmdl == null)
 					return;
 				String name = JOptionPane.showInputDialog(instance, Messages.getString("MainFrame.92")); //$NON-NLS-1$
@@ -846,11 +849,16 @@ public class MainFrame extends JFrame {
 						int toolid = tmpitem.toolid;
 						try {
 							String copy = tools[toolid].commandline;
-							copy = copy.replaceAll(Messages.getString("MainFrame.96"), currentFile == null ? Messages.getString("MainFrame.97") : currentFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+							copy = copy.replaceAll(Messages.getString("MainFrame.96"), //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.97") : currentFile.getName()); //$NON-NLS-1$
 							copy = copy.replaceAll(Messages.getString("MainFrame.98"), //$NON-NLS-1$
-									currentFile == null ? Messages.getString("MainFrame.99") : currentFile.getParentFile().getAbsolutePath()); //$NON-NLS-1$
-							copy = copy.replaceAll(Messages.getString("MainFrame.100"), currentFile == null ? Messages.getString("MainFrame.101") : getFileExtension(currentFile)); //$NON-NLS-1$ //$NON-NLS-2$
-							Process p = Runtime.getRuntime().exec(tools[toolid].path + Messages.getString("MainFrame.102") + tools[toolid].commandline); //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.99") //$NON-NLS-1$
+											: currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll(Messages.getString("MainFrame.100"), //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.101") //$NON-NLS-1$
+											: getFileExtension(currentFile));
+							Process p = Runtime.getRuntime().exec(tools[toolid].path
+									+ Messages.getString("MainFrame.102") + tools[toolid].commandline); //$NON-NLS-1$
 							new Thread(new Runnable() {
 								@Override
 								public void run() {
@@ -906,8 +914,8 @@ public class MainFrame extends JFrame {
 		mntmRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance,
-							Messages.getString("MainFrame.106"))); //$NON-NLS-1$
+					int ans = Integer
+							.parseInt(JOptionPane.showInputDialog(instance, Messages.getString("MainFrame.106"))); //$NON-NLS-1$
 					if (ans >= 0 && ans < 32 && ans < toolAmount) {
 						if (tools[ans].item == null) {
 							JOptionPane.showConfirmDialog(instance, Messages.getString("MainFrame.107")); //$NON-NLS-1$
@@ -960,7 +968,7 @@ public class MainFrame extends JFrame {
 					dialog.setVisible(true);
 				}
 				for (int i = 0; i < toolAmount; i++) {
-					if(tools[i] == null) {
+					if (tools[i] == null) {
 						w.close();
 						return;
 					}
@@ -976,10 +984,10 @@ public class MainFrame extends JFrame {
 
 		JSeparator separator_1 = new JSeparator();
 		mnToolsPlugins.add(separator_1);
-		
+
 		JMenu mnScripts = new JMenu(Messages.getString("MainFrame.118")); //$NON-NLS-1$
 		menuBar.add(mnScripts);
-		
+
 		JMenuItem mntmAdd_1 = new JMenuItem(Messages.getString("MainFrame.119")); //$NON-NLS-1$
 		mntmAdd_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1010,13 +1018,13 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnScripts.add(mntmAdd_1);
-		
+
 		JMenuItem mntmRemove_1 = new JMenuItem(Messages.getString("MainFrame.123")); //$NON-NLS-1$
 		mntmRemove_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance,
-							Messages.getString("MainFrame.124"))); //$NON-NLS-1$
+					int ans = Integer
+							.parseInt(JOptionPane.showInputDialog(instance, Messages.getString("MainFrame.124"))); //$NON-NLS-1$
 					if (ans >= 0 && ans < 32 && ans < toolAmount) {
 						if (scripts[ans].item == null) {
 							JOptionPane.showConfirmDialog(instance, Messages.getString("MainFrame.125")); //$NON-NLS-1$
@@ -1044,7 +1052,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnScripts.add(mntmRemove_1);
-		
+
 		JMenuItem mntmSaveScripts = new JMenuItem(Messages.getString("MainFrame.130")); //$NON-NLS-1$
 		mntmSaveScripts.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -1067,7 +1075,7 @@ public class MainFrame extends JFrame {
 					dialog.setVisible(true);
 				}
 				for (int i = 0; i < scriptAmount; i++) {
-					if(scripts[i] == null) {
+					if (scripts[i] == null) {
 						w.close();
 						return;
 					}
@@ -1079,7 +1087,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnScripts.add(mntmSaveScripts);
-		
+
 		JSeparator separator_2 = new JSeparator();
 		mnScripts.add(separator_2);
 
@@ -1343,7 +1351,8 @@ public class MainFrame extends JFrame {
 				final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
 				final int l2 = searchTextField.getText().length();
 				if (l1 == -1) {
-					JOptionPane.showMessageDialog(instance, Messages.getString("MainFrame.173") + searchTextField.getText() + Messages.getString("MainFrame.174")); //$NON-NLS-1$ //$NON-NLS-2$
+					JOptionPane.showMessageDialog(instance, Messages.getString("MainFrame.173") //$NON-NLS-1$
+							+ searchTextField.getText() + Messages.getString("MainFrame.174")); //$NON-NLS-1$
 				} else {
 					textPane.select(l1, l2 + l1);
 				}
@@ -1357,7 +1366,8 @@ public class MainFrame extends JFrame {
 				final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
 				final int l2 = searchTextField.getText().length();
 				if (l1 == -1) {
-					JOptionPane.showMessageDialog(instance, Messages.getString("MainFrame.176") + searchTextField.getText() + Messages.getString("MainFrame.177")); //$NON-NLS-1$ //$NON-NLS-2$
+					JOptionPane.showMessageDialog(instance, Messages.getString("MainFrame.176") //$NON-NLS-1$
+							+ searchTextField.getText() + Messages.getString("MainFrame.177")); //$NON-NLS-1$
 				} else {
 					textPane.select(l1, l2 + l1);
 					textPane.replaceSelection(replaceWithTextField.getText());
@@ -1388,7 +1398,8 @@ public class MainFrame extends JFrame {
 						amount++;
 					}
 				}
-				JOptionPane.showMessageDialog(instance, Messages.getString("MainFrame.179") + amount + Messages.getString("MainFrame.180")); //$NON-NLS-1$ //$NON-NLS-2$
+				JOptionPane.showMessageDialog(instance,
+						Messages.getString("MainFrame.179") + amount + Messages.getString("MainFrame.180")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		});
 		panel_6.add(btnCountOccurences);
@@ -1400,8 +1411,7 @@ public class MainFrame extends JFrame {
 		btnBlack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream(Messages.getString("MainFrame.182"))); //$NON-NLS-1$
+					Theme theme = Theme.load(getClass().getResourceAsStream(Messages.getString("MainFrame.182"))); //$NON-NLS-1$
 					theme.apply(textPane);
 				} catch (IOException ioe) { // Never happens
 					Crash dialog = new Crash(ioe);
@@ -1416,8 +1426,7 @@ public class MainFrame extends JFrame {
 		btnClassical.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream(Messages.getString("MainFrame.184"))); //$NON-NLS-1$
+					Theme theme = Theme.load(getClass().getResourceAsStream(Messages.getString("MainFrame.184"))); //$NON-NLS-1$
 					theme.apply(textPane);
 				} catch (IOException ioe) { // Never happens
 					Crash dialog = new Crash(ioe);
@@ -1439,8 +1448,7 @@ public class MainFrame extends JFrame {
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					Theme theme = Theme.load(
-							getClass().getResourceAsStream(Messages.getString("MainFrame.186"))); //$NON-NLS-1$
+					Theme theme = Theme.load(getClass().getResourceAsStream(Messages.getString("MainFrame.186"))); //$NON-NLS-1$
 					theme.apply(textPane);
 				} catch (IOException ioe) { // Never happens
 					Crash dialog = new Crash(ioe);
@@ -1455,8 +1463,7 @@ public class MainFrame extends JFrame {
 		btnMonokai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream(Messages.getString("MainFrame.188"))); //$NON-NLS-1$
+					Theme theme = Theme.load(getClass().getResourceAsStream(Messages.getString("MainFrame.188"))); //$NON-NLS-1$
 					theme.apply(textPane);
 				} catch (IOException ioe) { // Never happens
 					Crash dialog = new Crash(ioe);
@@ -1476,54 +1483,61 @@ public class MainFrame extends JFrame {
 
 		JLabel lblTheme = new JLabel(Messages.getString("MainFrame.189")); //$NON-NLS-1$
 		panel_11.add(lblTheme);
-		
-				JPanel panel_12 = new JPanel();
-				panel_10.add(panel_12, BorderLayout.CENTER);
-				panel_12.setLayout(new BorderLayout(0, 0));
-				
-						JLabel lblToolConsole = new JLabel(Messages.getString("MainFrame.190")); //$NON-NLS-1$
-						panel_12.add(lblToolConsole, BorderLayout.NORTH);
-						
-								JScrollPane scrollPane_1 = new JScrollPane();
-								panel_12.add(scrollPane_1, BorderLayout.CENTER);
-								
-										toolConsole.setEditable(false);
-										scrollPane_1.setViewportView(toolConsole);
-										
-										JPanel panel_13 = new JPanel();
-										panel_12.add(panel_13, BorderLayout.SOUTH);
-										
-										JButton btnOpenInDialog = new JButton(Messages.getString("MainFrame.191")); //$NON-NLS-1$
-										btnOpenInDialog.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-												dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-												dialog.setVisible(true);
-											}
-										});
-										panel_13.add(btnOpenInDialog);
-										
-										JButton btnClear = new JButton(Messages.getString("MainFrame.192")); //$NON-NLS-1$
-										btnClear.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												toolConsole.setText(Messages.getString("MainFrame.193")); //$NON-NLS-1$
-											}
-										});
-										panel_13.add(btnClear);
+
+		JPanel panel_12 = new JPanel();
+		panel_10.add(panel_12, BorderLayout.CENTER);
+		panel_12.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblToolConsole = new JLabel(Messages.getString("MainFrame.190")); //$NON-NLS-1$
+		panel_12.add(lblToolConsole, BorderLayout.NORTH);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panel_12.add(scrollPane_1, BorderLayout.CENTER);
+
+		toolConsole.setEditable(false);
+		scrollPane_1.setViewportView(toolConsole);
+
+		JPanel panel_13 = new JPanel();
+		panel_12.add(panel_13, BorderLayout.SOUTH);
+
+		JButton btnOpenInDialog = new JButton(Messages.getString("MainFrame.191")); //$NON-NLS-1$
+		btnOpenInDialog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		});
+		panel_13.add(btnOpenInDialog);
+
+		JButton btnClear = new JButton(Messages.getString("MainFrame.192")); //$NON-NLS-1$
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toolConsole.setText(Messages.getString("MainFrame.193")); //$NON-NLS-1$
+			}
+		});
+		panel_13.add(btnClear);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			public void run() {
-				lblReady.setText(Messages.getString("MainFrame.194") + textPane.getText().length() + Messages.getString("MainFrame.195") //$NON-NLS-1$ //$NON-NLS-2$
-						+ (currentFile == null ? Messages.getString("MainFrame.196") : currentFile.getAbsolutePath()) + Messages.getString("MainFrame.197") //$NON-NLS-1$ //$NON-NLS-2$
-						+ (currentFile == null ? Messages.getString("MainFrame.198") : currentFile.getFreeSpace() / 1024) + Messages.getString("MainFrame.199") //$NON-NLS-1$ //$NON-NLS-2$
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true ? Messages.getString("MainFrame.200") //$NON-NLS-1$
+				lblReady.setText(Messages.getString("MainFrame.194") + textPane.getText().length() //$NON-NLS-1$
+						+ Messages.getString("MainFrame.195") //$NON-NLS-1$
+						+ (currentFile == null ? Messages.getString("MainFrame.196") : currentFile.getAbsolutePath()) //$NON-NLS-1$
+						+ Messages.getString("MainFrame.197") //$NON-NLS-1$
+						+ (currentFile == null ? Messages.getString("MainFrame.198") //$NON-NLS-1$
+								: currentFile.getFreeSpace() / 1024)
+						+ Messages.getString("MainFrame.199") //$NON-NLS-1$
+						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true
+								? Messages.getString("MainFrame.200") //$NON-NLS-1$
 								: Messages.getString("MainFrame.201")) //$NON-NLS-1$
 						+ Messages.getString("MainFrame.202") //$NON-NLS-1$
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_SCROLL_LOCK) == true ? Messages.getString("MainFrame.203") //$NON-NLS-1$
+						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_SCROLL_LOCK) == true
+								? Messages.getString("MainFrame.203") //$NON-NLS-1$
 								: Messages.getString("MainFrame.204")) //$NON-NLS-1$
 						+ Messages.getString("MainFrame.205") //$NON-NLS-1$
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK) == true ? Messages.getString("MainFrame.206") //$NON-NLS-1$
+						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK) == true
+								? Messages.getString("MainFrame.206") //$NON-NLS-1$
 								: Messages.getString("MainFrame.207"))); //$NON-NLS-1$
 				if (instances == 0)
 					System.exit(0);
@@ -1552,16 +1566,16 @@ public class MainFrame extends JFrame {
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
-		
+
 		JPanel panel_14 = new JPanel();
 		contentPane.add(panel_14, BorderLayout.SOUTH);
-				panel_14.setLayout(new BorderLayout(0, 0));
-		
-				JToolBar toolBar_1 = new JToolBar();
-				panel_14.add(toolBar_1);
-				toolBar_1.setFloatable(false);
-				
-						toolBar_1.add(lblReady);
+		panel_14.setLayout(new BorderLayout(0, 0));
+
+		JToolBar toolBar_1 = new JToolBar();
+		panel_14.add(toolBar_1);
+		toolBar_1.setFloatable(false);
+
+		toolBar_1.add(lblReady);
 
 		if (new File(Messages.getString("MainFrame.209")).exists()) { //$NON-NLS-1$
 			Scanner s = null;
@@ -1596,11 +1610,16 @@ public class MainFrame extends JFrame {
 						int toolid = tmpitem.toolid;
 						try {
 							String copy = tools[toolid].commandline;
-							copy = copy.replaceAll(Messages.getString("MainFrame.213"), currentFile == null ? Messages.getString("MainFrame.214") : currentFile.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+							copy = copy.replaceAll(Messages.getString("MainFrame.213"), //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.214") : currentFile.getName()); //$NON-NLS-1$
 							copy = copy.replaceAll(Messages.getString("MainFrame.215"), //$NON-NLS-1$
-									currentFile == null ? Messages.getString("MainFrame.216") : currentFile.getParentFile().getAbsolutePath()); //$NON-NLS-1$
-							copy = copy.replaceAll(Messages.getString("MainFrame.217"), currentFile == null ? Messages.getString("MainFrame.218") : getFileExtension(currentFile)); //$NON-NLS-1$ //$NON-NLS-2$
-							Process p = Runtime.getRuntime().exec(tools[toolid].path + Messages.getString("MainFrame.219") + tools[toolid].commandline); //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.216") //$NON-NLS-1$
+											: currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll(Messages.getString("MainFrame.217"), //$NON-NLS-1$
+									currentFile == null ? Messages.getString("MainFrame.218") //$NON-NLS-1$
+											: getFileExtension(currentFile));
+							Process p = Runtime.getRuntime().exec(tools[toolid].path
+									+ Messages.getString("MainFrame.219") + tools[toolid].commandline); //$NON-NLS-1$
 							new Thread(new Runnable() {
 								@Override
 								public void run() {
@@ -1682,16 +1701,19 @@ public class MainFrame extends JFrame {
 			toolAmount = counter;
 		}
 	}
-	
+
 	public void runScript(Script script) {
 		try {
 			@SuppressWarnings("resource")
-			String content = new Scanner(new File(Messages.getString("MainFrame.224"))).useDelimiter(Messages.getString("MainFrame.225")).next(); //$NON-NLS-1$ //$NON-NLS-2$
+			String content = new Scanner(new File(Messages.getString("MainFrame.224"))) //$NON-NLS-1$
+					.useDelimiter(Messages.getString("MainFrame.225")).next(); //$NON-NLS-1$
 			ScriptEngineManager mgr = new ScriptEngineManager();
 			ScriptEngine jsEngine = mgr.getEngineByName(Messages.getString("MainFrame.226")); //$NON-NLS-1$
-            Invocable invocable = (Invocable) jsEngine;
-            try {
-				invocable.invokeFunction(Messages.getString("MainFrame.227"), this, script, instances, textPane, currentFile, lblReady, searchTextField, replaceWithTextField, tools, scripts, scriptAmount, toolAmount, toolConsole); //$NON-NLS-1$
+			Invocable invocable = (Invocable) jsEngine;
+			try {
+				invocable.invokeFunction(Messages.getString("MainFrame.227"), this, script, instances, textPane, //$NON-NLS-1$
+						currentFile, lblReady, searchTextField, replaceWithTextField, tools, scripts, scriptAmount,
+						toolAmount, toolConsole);
 			} catch (NoSuchMethodException | ScriptException e) {
 				Crash dialog = new Crash(e);
 				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

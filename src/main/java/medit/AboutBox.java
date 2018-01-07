@@ -31,8 +31,8 @@ public class AboutBox extends JDialog {
 	 * Create the dialog.
 	 */
 	public AboutBox() {
-		setIconImage(Toolkit.getDefaultToolkit()
-				.getImage(AboutBox.class.getResource(Messages.getString("AboutBox.0")))); //$NON-NLS-1$
+		setIconImage(
+				Toolkit.getDefaultToolkit().getImage(AboutBox.class.getResource(Messages.getString("AboutBox.0")))); //$NON-NLS-1$
 		setTitle(Messages.getString("AboutBox.1")); //$NON-NLS-1$
 		setBounds(100, 100, 632, 201);
 		getContentPane().setLayout(new BorderLayout());
@@ -44,8 +44,7 @@ public class AboutBox extends JDialog {
 			contentPanel.add(lblMeditIsFree);
 		}
 		{
-			JLabel lblDevcppIconsWere = new JLabel(
-					Messages.getString("AboutBox.3")); //$NON-NLS-1$
+			JLabel lblDevcppIconsWere = new JLabel(Messages.getString("AboutBox.3")); //$NON-NLS-1$
 			contentPanel.add(lblDevcppIconsWere);
 		}
 		{

@@ -36,7 +36,7 @@ public class ToolMenuItem extends JMenuItem {
 		super(text, mnemonic);
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public int toolid;
 
 }
