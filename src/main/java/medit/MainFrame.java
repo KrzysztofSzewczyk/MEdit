@@ -481,14 +481,6 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmIni);
 		
-		JMenuItem mntmJava = new JMenuItem("Java");
-		mntmJava.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmJava);
-		
 		JMenuItem mntmJavascript = new JMenuItem("JavaScript");
 		mntmJavascript.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -496,6 +488,14 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmJavascript);
+		
+		JMenuItem mntmJava = new JMenuItem("Java");
+		mntmJava.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmJava);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
