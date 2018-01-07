@@ -386,10 +386,36 @@ public class MainFrame extends JFrame {
 		mnSyntaxHighlighting.add(mntmC_2);
 		
 		JMenuItem mntmClojure = new JMenuItem("Clojure");
+		mntmClojure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
+			}
+		});
 		mnSyntaxHighlighting.add(mntmClojure);
 		
 		JMenuItem mntmDart = new JMenuItem("Dart");
+		mntmDart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
+			}
+		});
 		mnSyntaxHighlighting.add(mntmDart);
+		
+		JMenuItem mntmDelphi = new JMenuItem("Delphi");
+		mntmDelphi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmDelphi);
+		
+		JMenuItem mntmDocker = new JMenuItem("Docker");
+		mntmDocker.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmDocker);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
