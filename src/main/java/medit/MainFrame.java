@@ -464,6 +464,38 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmHtaccess);
+		
+		JMenuItem mntmHtml = new JMenuItem("HTML");
+		mntmHtml.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmHtml);
+		
+		JMenuItem mntmIni = new JMenuItem("INI");
+		mntmIni.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_INI);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmIni);
+		
+		JMenuItem mntmJava = new JMenuItem("Java");
+		mntmJava.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmJava);
+		
+		JMenuItem mntmJavascript = new JMenuItem("JavaScript");
+		mntmJavascript.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmJavascript);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
