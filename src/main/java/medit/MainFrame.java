@@ -47,6 +47,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
 
 /**
  * Main frame for MEdit project.
@@ -340,26 +342,26 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmNo);
-		
+
 		JMenu mnA = new JMenu("A");
 		mnSyntaxHighlighting.add(mnA);
-		
-				JMenuItem mntmActionscript = new JMenuItem("ActionScript");
-				mnA.add(mntmActionscript);
-				
-						JMenuItem mntmAssembler = new JMenuItem("Assembly");
-						mnA.add(mntmAssembler);
-						mntmAssembler.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
-							}
-						});
-				mntmActionscript.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
-					}
-				});
-		
+
+		JMenuItem mntmActionscript = new JMenuItem("ActionScript");
+		mnA.add(mntmActionscript);
+
+		JMenuItem mntmAssembler = new JMenuItem("Assembly");
+		mnA.add(mntmAssembler);
+		mntmAssembler.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
+			}
+		});
+		mntmActionscript.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
+			}
+		});
+
 		JMenuItem mntmBbcode = new JMenuItem("BBCode");
 		mntmBbcode.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -367,57 +369,57 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmBbcode);
-				
-				JMenu mnC = new JMenu("C");
-				mnSyntaxHighlighting.add(mnC);
-				
-						JMenuItem mntmC = new JMenuItem("C");
-						mnC.add(mntmC);
-						
-						JMenuItem mntmC_1 = new JMenuItem("C++");
-						mnC.add(mntmC_1);
-						
-						JMenuItem mntmC_2 = new JMenuItem("C#");
-						mnC.add(mntmC_2);
-						
-						JMenuItem mntmClojure = new JMenuItem("Clojure");
-						mnC.add(mntmClojure);
-						mntmClojure.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
-							}
-						});
-						mntmC_2.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
-							}
-						});
-						mntmC_1.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
-							}
-						});
-						mntmC.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
-							}
-						});
-		
+
+		JMenu mnC = new JMenu("C");
+		mnSyntaxHighlighting.add(mnC);
+
+		JMenuItem mntmC = new JMenuItem("C");
+		mnC.add(mntmC);
+
+		JMenuItem mntmC_1 = new JMenuItem("C++");
+		mnC.add(mntmC_1);
+
+		JMenuItem mntmC_2 = new JMenuItem("C#");
+		mnC.add(mntmC_2);
+
+		JMenuItem mntmClojure = new JMenuItem("Clojure");
+		mnC.add(mntmClojure);
+		mntmClojure.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
+			}
+		});
+		mntmC_2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
+			}
+		});
+		mntmC_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+			}
+		});
+		mntmC.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+			}
+		});
+
 		JMenu mnD = new JMenu("D");
 		mnSyntaxHighlighting.add(mnD);
-		
+
 		JMenuItem mntmDart = new JMenuItem("Dart");
 		mnD.add(mntmDart);
-		
+
 		JMenuItem mntmDelphi = new JMenuItem("Delphi");
 		mnD.add(mntmDelphi);
-		
+
 		JMenuItem mntmDocker = new JMenuItem("Docker");
 		mnD.add(mntmDocker);
-		
+
 		JMenuItem mntmDtd = new JMenuItem("DTD");
 		mnD.add(mntmDtd);
-		
+
 		JMenuItem mntmD = new JMenuItem("D");
 		mnD.add(mntmD);
 		mntmD.addActionListener(new ActionListener() {
@@ -445,7 +447,7 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
 			}
 		});
-		
+
 		JMenuItem mntmFortan = new JMenuItem("Fortan");
 		mntmFortan.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -453,7 +455,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmFortan);
-		
+
 		JMenuItem mntmGroovy = new JMenuItem("Groovy");
 		mntmGroovy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -461,10 +463,10 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmGroovy);
-		
+
 		JMenu mnH = new JMenu("H");
 		mnSyntaxHighlighting.add(mnH);
-		
+
 		JMenuItem mntmHtaccess = new JMenuItem("HTAccess");
 		mnH.add(mntmHtaccess);
 		mntmHtaccess.addActionListener(new ActionListener() {
@@ -472,10 +474,10 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
 			}
 		});
-		
+
 		JMenuItem mntmHosts = new JMenuItem("Hosts");
 		mnH.add(mntmHosts);
-		
+
 		JMenuItem mntmHtml = new JMenuItem("HTML");
 		mnH.add(mntmHtml);
 		mntmHtml.addActionListener(new ActionListener() {
@@ -488,7 +490,7 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
 			}
 		});
-		
+
 		JMenuItem mntmIni = new JMenuItem("INI");
 		mntmIni.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -496,19 +498,19 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmIni);
-		
+
 		JMenu mnJ = new JMenu("J");
 		mnSyntaxHighlighting.add(mnJ);
-		
+
 		JMenuItem mntmJavascript = new JMenuItem("JavaScript");
 		mnJ.add(mntmJavascript);
-		
+
 		JMenuItem mntmJava = new JMenuItem("Java");
 		mnJ.add(mntmJava);
-		
+
 		JMenuItem mntmJshintrc = new JMenuItem("JSON");
 		mnJ.add(mntmJshintrc);
-		
+
 		JMenuItem mntmJsp = new JMenuItem("JSP");
 		mnJ.add(mntmJsp);
 		mntmJsp.addActionListener(new ActionListener() {
@@ -531,19 +533,19 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 			}
 		});
-		
+
 		JMenu mnL = new JMenu("L");
 		mnSyntaxHighlighting.add(mnL);
-		
+
 		JMenuItem mntmLatex = new JMenuItem("Latex");
 		mnL.add(mntmLatex);
-		
+
 		JMenuItem mntmLess = new JMenuItem("Less");
 		mnL.add(mntmLess);
-		
+
 		JMenuItem mntmLisp = new JMenuItem("Lisp");
 		mnL.add(mntmLisp);
-		
+
 		JMenuItem mntmLua = new JMenuItem("Lua");
 		mnL.add(mntmLua);
 		mntmLua.addActionListener(new ActionListener() {
@@ -566,13 +568,13 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
 			}
 		});
-		
+
 		JMenu mnM = new JMenu("M");
 		mnSyntaxHighlighting.add(mnM);
-		
+
 		JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
 		mnM.add(mntmMakeFile);
-		
+
 		JMenuItem mntmMxml = new JMenuItem("MXML");
 		mnM.add(mntmMxml);
 		mntmMxml.addActionListener(new ActionListener() {
@@ -585,7 +587,7 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
 			}
 		});
-		
+
 		JMenuItem mntmNsis = new JMenuItem("NSIS");
 		mntmNsis.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -593,13 +595,13 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmNsis);
-		
+
 		JMenu mnP = new JMenu("P");
 		mnSyntaxHighlighting.add(mnP);
-		
+
 		JMenuItem mntmPerl = new JMenuItem("Perl");
 		mnP.add(mntmPerl);
-		
+
 		JMenuItem mntmPropertiesFile = new JMenuItem("Properties File");
 		mntmPropertiesFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -607,7 +609,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnP.add(mntmPropertiesFile);
-		
+
 		JMenuItem mntmPython = new JMenuItem("Python");
 		mntmPython.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -620,21 +622,21 @@ public class MainFrame extends JFrame {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL);
 			}
 		});
-		
+
 		JMenu mnR = new JMenu("R");
 		mnSyntaxHighlighting.add(mnR);
-		
-		JMenuItem mntmRuby = new JMenuItem("Ruby"); //Forever alone, Ruby.
+
+		JMenuItem mntmRuby = new JMenuItem("Ruby"); // Forever alone, Ruby.
 		mntmRuby.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
 			}
 		});
 		mnR.add(mntmRuby);
-		
+
 		JMenu mnS = new JMenu("S");
 		mnSyntaxHighlighting.add(mnS);
-		
+
 		JMenuItem mntmSas = new JMenuItem("SAS");
 		mntmSas.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -642,7 +644,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnS.add(mntmSas);
-		
+
 		JMenuItem mntmSacala = new JMenuItem("Scala");
 		mntmSacala.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -650,7 +652,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnS.add(mntmSacala);
-		
+
 		JMenuItem mntmSql = new JMenuItem("SQL");
 		mntmSql.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -658,10 +660,10 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnS.add(mntmSql);
-		
+
 		JMenu mnT = new JMenu("T");
 		mnSyntaxHighlighting.add(mnT);
-		
+
 		JMenuItem mntmTcl = new JMenuItem("TCL");
 		mntmTcl.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -669,7 +671,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnT.add(mntmTcl);
-		
+
 		JMenuItem mntmTypescript = new JMenuItem("TypeScript");
 		mntmTypescript.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -677,7 +679,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnT.add(mntmTypescript);
-		
+
 		JMenuItem mntmUnixShell = new JMenuItem("Unix Shell");
 		mntmUnixShell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -685,7 +687,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmUnixShell);
-		
+
 		JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic");
 		mntmVisualBasic.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -693,15 +695,15 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmVisualBasic);
-		
+
 		JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
 		mntmWindowsBatch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);			
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
 			}
 		});
 		mnSyntaxHighlighting.add(mntmWindowsBatch);
-		
+
 		JMenuItem mntmXml = new JMenuItem("XML");
 		mntmXml.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -709,7 +711,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmXml);
-		
+
 		JMenuItem mntmYaml = new JMenuItem("YAML");
 		mntmYaml.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -717,71 +719,102 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmYaml);
-		
+
 		JMenu mnToolsPlugins = new JMenu("Tools");
 		menuBar.add(mnToolsPlugins);
-		
+
 		JMenuItem mntmAdd = new JMenuItem("Add ...");
 		mntmAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String path = JOptionPane.showInputDialog(instance, "Path: ");
-				if(path==null) return;
-				String cmdl = JOptionPane.showInputDialog(instance, "Commandline (%DIR% - directory, %FN% - filename, %EXT% - extension):");
-				if(cmdl==null) return;
+				if (path == null)
+					return;
+				String cmdl = JOptionPane.showInputDialog(instance,
+						"Commandline (%DIR% - directory, %FN% - filename, %EXT% - extension):");
+				if (cmdl == null)
+					return;
 				String name = JOptionPane.showInputDialog(instance, "Tool Name:");
-				if(name==null) return;
+				if (name == null)
+					return;
 				System.out.println(toolAmount);
 				tools[toolAmount] = new Tool();
 				tools[toolAmount].commandline = cmdl;
 				tools[toolAmount].name = name;
 				tools[toolAmount].path = path;
-				JMenuItem tmpitem = new JMenuItem(tools[toolAmount].name);
+				ToolMenuItem tmpitem = new ToolMenuItem(tools[toolAmount].name);
+				tmpitem.toolid = toolAmount;
+				tmpitem.addActionListener(new ActionListener() {
+					private String getFileExtension(File file) {
+					    String name = file.getName();
+					    try {
+					        return name.substring(name.lastIndexOf(".") + 1);
+					    } catch (Exception e) {
+					        return "";
+					    }
+					}
+					public void actionPerformed(ActionEvent e) {
+						int toolid = tmpitem.toolid;
+						try {
+							String copy = tools[toolid].commandline;
+							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
+							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
+							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
+						} catch (IOException e1) {
+							Crash dialog = new Crash(e1);
+							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+						}  
+					}
+				});
 				tools[toolAmount].item = tmpitem;
 				mnToolsPlugins.add(tmpitem);
 				toolAmount++;
 			}
 		});
 		mnToolsPlugins.add(mntmAdd);
-		
+
 		JMenuItem mntmRemove = new JMenuItem("Remove ...");
 		mntmRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance, "Input tool ID (starting from 0 to 31, if exists): "));
-					if(ans >= 0 && ans < 32 && ans < toolAmount) {
-						if(tools[ans].item==null) {
+					int ans = Integer.parseInt(JOptionPane.showInputDialog(instance,
+							"Input tool ID (starting from 0 to 31, if exists): "));
+					if (ans >= 0 && ans < 32 && ans < toolAmount) {
+						if (tools[ans].item == null) {
 							JOptionPane.showConfirmDialog(instance, "Invalid choice.");
 							return;
 						}
 						mnToolsPlugins.remove(tools[ans].item);
-						if(ans==31) {
-							tools[ans].commandline="";
-							tools[ans].name="";
-							tools[ans].path="";
-							tools[ans].item=null;
+						if (ans == 31) {
+							tools[ans].commandline = "";
+							tools[ans].name = "";
+							tools[ans].path = "";
+							tools[ans].item = null;
 						}
-						for(int i = ans; i < 31; i++) {
-							tools[ans] = tools[ans+1];
+						for (int i = ans; i < 31; i++) {
+							tools[ans] = tools[ans + 1];
 						}
 					} else {
 						JOptionPane.showConfirmDialog(instance, "Tool ID invalid");
 						return;
 					}
-				} catch(Exception e1) {
+				} catch (Exception e1) {
 					Crash dialog = new Crash(e1);
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
-				
+
 			}
 		});
 		mnToolsPlugins.add(mntmRemove);
-		
+
 		JMenuItem mntmSaveList = new JMenuItem("Save list");
 		mntmSaveList.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if(new File("mconfig.txt").exists()) new File("mconfig.txt").delete();
+					if (new File("mconfig.txt").exists())
+						new File("mconfig.txt").delete();
 					new File("mconfig.txt").createNewFile();
 				} catch (Exception e1) {
 					Crash dialog = new Crash(e1);
@@ -792,12 +825,12 @@ public class MainFrame extends JFrame {
 				try {
 					w = new PrintWriter(new File("mconfig.txt"));
 				} catch (FileNotFoundException e1) {
-					//WTF?
+					// WTF?
 					Crash dialog = new Crash(e1);
 					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
-				for(int i = 0; i < toolAmount; i++) {
+				for (int i = 0; i < toolAmount; i++) {
 					w.println(tools[i].path);
 					w.println(tools[i].commandline);
 					w.println(tools[i].name);
@@ -806,7 +839,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnToolsPlugins.add(mntmSaveList);
-		
+
 		JSeparator separator_1 = new JSeparator();
 		mnToolsPlugins.add(separator_1);
 
@@ -1160,20 +1193,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 		panel_7.add(btnClassical);
-		
+
 		JPanel panel_8 = new JPanel();
 		panel_5.add(panel_8, BorderLayout.CENTER);
 		panel_8.setLayout(new BorderLayout(0, 0));
-		
+
 		JPanel panel_9 = new JPanel();
 		panel_8.add(panel_9, BorderLayout.SOUTH);
-		
+
 		JButton btnNewButton_1 = new JButton("Extra Default");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
+					Theme theme = Theme.load(
+							getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
 					theme.apply(textPane);
 				} catch (IOException ioe) { // Never happens
 					Crash dialog = new Crash(ioe);
@@ -1183,7 +1216,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 		panel_9.add(btnNewButton_1);
-		
+
 		JButton btnMonokai = new JButton("Monokai");
 		btnMonokai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1199,16 +1232,30 @@ public class MainFrame extends JFrame {
 			}
 		});
 		panel_9.add(btnMonokai);
-				
-				JPanel panel_10 = new JPanel();
-				panel_8.add(panel_10, BorderLayout.CENTER);
-				panel_10.setLayout(new BorderLayout(0, 0));
-				
-				JPanel panel_11 = new JPanel();
-				panel_10.add(panel_11, BorderLayout.SOUTH);
-				
-						JLabel lblTheme = new JLabel("Theme:");
-						panel_11.add(lblTheme);
+
+		JPanel panel_10 = new JPanel();
+		panel_8.add(panel_10, BorderLayout.CENTER);
+		panel_10.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_11 = new JPanel();
+		panel_10.add(panel_11, BorderLayout.SOUTH);
+
+		JLabel lblTheme = new JLabel("Theme:");
+		panel_11.add(lblTheme);
+
+		JPanel panel_12 = new JPanel();
+		panel_10.add(panel_12, BorderLayout.CENTER);
+		panel_12.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblToolConsole = new JLabel("Tool Console:");
+		panel_12.add(lblToolConsole, BorderLayout.NORTH);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panel_12.add(scrollPane_1, BorderLayout.CENTER);
+
+		JTextPane toolConsole = new JTextPane();
+		toolConsole.setEditable(false);
+		scrollPane_1.setViewportView(toolConsole);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -1242,8 +1289,7 @@ public class MainFrame extends JFrame {
 		textPane.setPaintMatchedBracketPair(true);
 		textPane.setPaintTabLines(true);
 		try {
-			Theme theme = Theme
-					.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+			Theme theme = Theme.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
 			theme.apply(textPane);
 		} catch (IOException ioe) { // Never happens
 			Crash dialog = new Crash(ioe);
@@ -1252,8 +1298,8 @@ public class MainFrame extends JFrame {
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
-		
-		if(new File("mconfig.txt").exists()) {
+
+		if (new File("mconfig.txt").exists()) {
 			Scanner s = null;
 			try {
 				s = new Scanner(new File("mconfig.txt"));
@@ -1264,12 +1310,37 @@ public class MainFrame extends JFrame {
 				dialog.setVisible(true);
 			}
 			int counter = 0;
-			while(s.hasNextLine()) {
+			while (s.hasNextLine()) {
 				tools[counter] = new Tool();
 				tools[counter].path = s.nextLine();
 				tools[counter].commandline = s.nextLine();
 				tools[counter].name = s.nextLine();
-				JMenuItem tmpitem = new JMenuItem(tools[counter].name);
+				ToolMenuItem tmpitem = new ToolMenuItem(tools[counter].name);
+				tmpitem.toolid = toolAmount;
+				tmpitemtmpitem.addActionListener(new ActionListener() {
+					private String getFileExtension(File file) {
+					    String name = file.getName();
+					    try {
+					        return name.substring(name.lastIndexOf(".") + 1);
+					    } catch (Exception e) {
+					        return "";
+					    }
+					}
+					public void actionPerformed(ActionEvent e) {
+						int toolid = tmpitem.toolid;
+						try {
+							String copy = tools[toolid].commandline;
+							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
+							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
+							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
+						} catch (IOException e1) {
+							Crash dialog = new Crash(e1);
+							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+						}  
+					}
+				});
 				tools[counter].item = tmpitem;
 				mnToolsPlugins.add(tmpitem);
 				counter++;
