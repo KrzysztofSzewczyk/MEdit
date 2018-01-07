@@ -1317,7 +1317,7 @@ public class MainFrame extends JFrame {
 				tools[counter].name = s.nextLine();
 				ToolMenuItem tmpitem = new ToolMenuItem(tools[counter].name);
 				tmpitem.toolid = toolAmount;
-				tmpitemtmpitem.addActionListener(new ActionListener() {
+				tmpitem.addActionListener(new ActionListener() {
 					private String getFileExtension(File file) {
 					    String name = file.getName();
 					    try {
