@@ -74,6 +74,8 @@ public class MainFrame extends JFrame {
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
 	private Tool[] tools = new Tool[32];
+	private Script[] scrips = new Script[32];
+	private int scriptAmount = 0;
 	private int toolAmount = 0;
 	private JTextPane toolConsole = new JTextPane();
 
@@ -969,6 +971,21 @@ public class MainFrame extends JFrame {
 
 		JSeparator separator_1 = new JSeparator();
 		mnToolsPlugins.add(separator_1);
+		
+		JMenu mnScripts = new JMenu("Scripts");
+		menuBar.add(mnScripts);
+		
+		JMenuItem mntmAdd_1 = new JMenuItem("Add...");
+		mnScripts.add(mntmAdd_1);
+		
+		JMenuItem mntmRemove_1 = new JMenuItem("Remove...");
+		mnScripts.add(mntmRemove_1);
+		
+		JMenuItem mntmSaveScripts = new JMenuItem("Save Scripts");
+		mnScripts.add(mntmSaveScripts);
+		
+		JSeparator separator_2 = new JSeparator();
+		mnScripts.add(separator_2);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
