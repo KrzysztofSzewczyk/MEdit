@@ -448,6 +448,22 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmGroovy);
+		
+		JMenuItem mntmHosts = new JMenuItem("Hosts");
+		mntmHosts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmHosts);
+		
+		JMenuItem mntmHtaccess = new JMenuItem("HTAccess");
+		mntmHtaccess.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
+			}
+		});
+		mnSyntaxHighlighting.add(mntmHtaccess);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
