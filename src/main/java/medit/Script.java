@@ -1,8 +1,8 @@
 package medit;
 
 public class Script {
-	String hotkey;
-	ToolMenuItem item;
-	String name;
 	String path;
+	String name;
+	ToolMenuItem item;
+	String hotkey;
 }

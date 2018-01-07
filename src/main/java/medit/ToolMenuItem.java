@@ -8,35 +8,35 @@ public class ToolMenuItem extends JMenuItem {
 
 	private static final long serialVersionUID = -5890593284327977455L;
 
-	public int toolid;
-
 	public ToolMenuItem() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(final Action a) {
-		super(a);
-		// TODO Auto-generated constructor stub
-	}
-
-	public ToolMenuItem(final Icon icon) {
+	public ToolMenuItem(Icon icon) {
 		super(icon);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(final String text) {
+	public ToolMenuItem(String text) {
 		super(text);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(final String text, final Icon icon) {
+	public ToolMenuItem(Action a) {
+		super(a);
+		// TODO Auto-generated constructor stub
+	}
+
+	public ToolMenuItem(String text, Icon icon) {
 		super(text, icon);
 		// TODO Auto-generated constructor stub
 	}
 
-	public ToolMenuItem(final String text, final int mnemonic) {
+	public ToolMenuItem(String text, int mnemonic) {
 		super(text, mnemonic);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public int toolid;
 
 }

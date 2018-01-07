@@ -1,9 +1,9 @@
 package medit;
 
 public class Tool {
-	String commandline;
-	String hotkey;
-	ToolMenuItem item;
-	String name;
 	String path;
+	String commandline;
+	String name;
+	ToolMenuItem item;
+	String hotkey;
 }
