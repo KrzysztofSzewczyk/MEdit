@@ -55,7 +55,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import java.util.ResourceBundle;
 
 /**
  * Main frame for MEdit project.
@@ -65,23 +64,23 @@ import java.util.ResourceBundle;
 
 public class MainFrame extends JFrame {
 
+	private static int instances = 1;
 	/**
 	 * Serial version UID required by Eclipse
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static int instances = 1;
-	private MainFrame instance;
-	private RSyntaxTextArea textPane = new RSyntaxTextArea();
 	private File currentFile = null;
+	private MainFrame instance;
 	private JLabel lblReady = new JLabel(Messages.getString("MainFrame.0")); //$NON-NLS-1$
-	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
-	private Tool[] tools = new Tool[32];
-	private Script[] scripts = new Script[32];
 	private int scriptAmount = 0;
+	private Script[] scripts = new Script[32];
+	private JTextField searchTextField;
+	private RSyntaxTextArea textPane = new RSyntaxTextArea();
 	private int toolAmount = 0;
 	private JTextPane toolConsole = new JTextPane();
+	private Tool[] tools = new Tool[32];
 
 	/**
 	 * Create the frame.
@@ -90,7 +89,7 @@ public class MainFrame extends JFrame {
 		instance = this;
 		addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent arg0) {
+			public void windowClosed(WindowEvent arg0) {
 				if (instances == 0)
 					System.exit(0);
 				else
@@ -98,7 +97,7 @@ public class MainFrame extends JFrame {
 			}
 
 			@Override
-			public void windowClosed(WindowEvent arg0) {
+			public void windowClosing(WindowEvent arg0) {
 				if (instances == 0)
 					System.exit(0);
 				else
@@ -836,15 +835,6 @@ public class MainFrame extends JFrame {
 				ToolMenuItem tmpitem = new ToolMenuItem(tools[toolAmount].name);
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
-					private String getFileExtension(File file) {
-						String name = file.getName();
-						try {
-							return name.substring(name.lastIndexOf(Messages.getString("MainFrame.94")) + 1); //$NON-NLS-1$
-						} catch (Exception e) {
-							return Messages.getString("MainFrame.95"); //$NON-NLS-1$
-						}
-					}
-
 					public void actionPerformed(ActionEvent e) {
 						int toolid = tmpitem.toolid;
 						try {
@@ -900,6 +890,15 @@ public class MainFrame extends JFrame {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
+						}
+					}
+
+					private String getFileExtension(File file) {
+						String name = file.getName();
+						try {
+							return name.substring(name.lastIndexOf(Messages.getString("MainFrame.94")) + 1); //$NON-NLS-1$
+						} catch (Exception e) {
+							return Messages.getString("MainFrame.95"); //$NON-NLS-1$
 						}
 					}
 				});
@@ -1597,15 +1596,6 @@ public class MainFrame extends JFrame {
 				ToolMenuItem tmpitem = new ToolMenuItem(tools[counter].name);
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
-					private String getFileExtension(File file) {
-						String name = file.getName();
-						try {
-							return name.substring(name.lastIndexOf(Messages.getString("MainFrame.211")) + 1); //$NON-NLS-1$
-						} catch (Exception e) {
-							return Messages.getString("MainFrame.212"); //$NON-NLS-1$
-						}
-					}
-
 					public void actionPerformed(ActionEvent e) {
 						int toolid = tmpitem.toolid;
 						try {
@@ -1661,6 +1651,15 @@ public class MainFrame extends JFrame {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
+						}
+					}
+
+					private String getFileExtension(File file) {
+						String name = file.getName();
+						try {
+							return name.substring(name.lastIndexOf(Messages.getString("MainFrame.211")) + 1); //$NON-NLS-1$
+						} catch (Exception e) {
+							return Messages.getString("MainFrame.212"); //$NON-NLS-1$
 						}
 					}
 				});
