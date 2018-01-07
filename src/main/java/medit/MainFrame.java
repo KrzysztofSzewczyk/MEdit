@@ -336,22 +336,25 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmNo);
-
-		JMenuItem mntmAssembler = new JMenuItem("Assembly");
-		mntmAssembler.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
-			}
-		});
-
-		JMenuItem mntmActionscript = new JMenuItem("ActionScript");
-		mntmActionscript.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmActionscript);
-		mnSyntaxHighlighting.add(mntmAssembler);
+		
+		JMenu mnA = new JMenu("A");
+		mnSyntaxHighlighting.add(mnA);
+		
+				JMenuItem mntmActionscript = new JMenuItem("ActionScript");
+				mnA.add(mntmActionscript);
+				
+						JMenuItem mntmAssembler = new JMenuItem("Assembly");
+						mnA.add(mntmAssembler);
+						mntmAssembler.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
+							}
+						});
+				mntmActionscript.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
+					}
+				});
 		
 		JMenuItem mntmBbcode = new JMenuItem("BBCode");
 		mntmBbcode.addActionListener(new ActionListener() {
@@ -360,78 +363,84 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmBbcode);
+				
+				JMenu mnC = new JMenu("C");
+				mnSyntaxHighlighting.add(mnC);
+				
+						JMenuItem mntmC = new JMenuItem("C");
+						mnC.add(mntmC);
+						
+						JMenuItem mntmC_1 = new JMenuItem("C++");
+						mnC.add(mntmC_1);
+						
+						JMenuItem mntmC_2 = new JMenuItem("C#");
+						mnC.add(mntmC_2);
+						
+						JMenuItem mntmClojure = new JMenuItem("Clojure");
+						mnC.add(mntmClojure);
+						mntmClojure.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
+							}
+						});
+						mntmC_2.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
+							}
+						});
+						mntmC_1.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
+							}
+						});
+						mntmC.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
+							}
+						});
 		
-				JMenuItem mntmC = new JMenuItem("C");
-				mntmC.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
-					}
-				});
-				mnSyntaxHighlighting.add(mntmC);
-		
-		JMenuItem mntmC_1 = new JMenuItem("C++");
-		mntmC_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmC_1);
-		
-		JMenuItem mntmC_2 = new JMenuItem("C#");
-		mntmC_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmC_2);
-		
-		JMenuItem mntmClojure = new JMenuItem("Clojure");
-		mntmClojure.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmClojure);
+		JMenu mnD = new JMenu("D");
+		mnSyntaxHighlighting.add(mnD);
 		
 		JMenuItem mntmDart = new JMenuItem("Dart");
-		mntmDart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmDart);
+		mnD.add(mntmDart);
 		
 		JMenuItem mntmDelphi = new JMenuItem("Delphi");
-		mntmDelphi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmDelphi);
+		mnD.add(mntmDelphi);
 		
 		JMenuItem mntmDocker = new JMenuItem("Docker");
-		mntmDocker.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmDocker);
+		mnD.add(mntmDocker);
 		
 		JMenuItem mntmDtd = new JMenuItem("DTD");
-		mntmDtd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmDtd);
+		mnD.add(mntmDtd);
 		
 		JMenuItem mntmD = new JMenuItem("D");
+		mnD.add(mntmD);
 		mntmD.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmD);
+		mntmDtd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD);
+			}
+		});
+		mntmDocker.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
+			}
+		});
+		mntmDelphi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
+			}
+		});
+		mntmDart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
+			}
+		});
 		
 		JMenuItem mntmFortan = new JMenuItem("Fortan");
 		mntmFortan.addActionListener(new ActionListener() {
@@ -449,29 +458,32 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmGroovy);
 		
-		JMenuItem mntmHosts = new JMenuItem("Hosts");
-		mntmHosts.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmHosts);
+		JMenu mnH = new JMenu("H");
+		mnSyntaxHighlighting.add(mnH);
 		
 		JMenuItem mntmHtaccess = new JMenuItem("HTAccess");
+		mnH.add(mntmHtaccess);
 		mntmHtaccess.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmHtaccess);
+		
+		JMenuItem mntmHosts = new JMenuItem("Hosts");
+		mnH.add(mntmHosts);
 		
 		JMenuItem mntmHtml = new JMenuItem("HTML");
+		mnH.add(mntmHtml);
 		mntmHtml.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmHtml);
+		mntmHosts.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
+			}
+		});
 		
 		JMenuItem mntmIni = new JMenuItem("INI");
 		mntmIni.addActionListener(new ActionListener() {
@@ -481,85 +493,94 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmIni);
 		
+		JMenu mnJ = new JMenu("J");
+		mnSyntaxHighlighting.add(mnJ);
+		
 		JMenuItem mntmJavascript = new JMenuItem("JavaScript");
-		mntmJavascript.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmJavascript);
+		mnJ.add(mntmJavascript);
 		
 		JMenuItem mntmJava = new JMenuItem("Java");
-		mntmJava.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmJava);
+		mnJ.add(mntmJava);
 		
 		JMenuItem mntmJshintrc = new JMenuItem("JSON");
-		mntmJshintrc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmJshintrc);
+		mnJ.add(mntmJshintrc);
 		
 		JMenuItem mntmJsp = new JMenuItem("JSP");
+		mnJ.add(mntmJsp);
 		mntmJsp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmJsp);
+		mntmJshintrc.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
+			}
+		});
+		mntmJava.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+			}
+		});
+		mntmJavascript.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
+			}
+		});
+		
+		JMenu mnL = new JMenu("L");
+		mnSyntaxHighlighting.add(mnL);
 		
 		JMenuItem mntmLatex = new JMenuItem("Latex");
-		mntmLatex.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmLatex);
+		mnL.add(mntmLatex);
 		
 		JMenuItem mntmLess = new JMenuItem("Less");
-		mntmLess.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmLess);
+		mnL.add(mntmLess);
 		
 		JMenuItem mntmLisp = new JMenuItem("Lisp");
-		mntmLisp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP);
-			}
-		});
-		mnSyntaxHighlighting.add(mntmLisp);
+		mnL.add(mntmLisp);
 		
 		JMenuItem mntmLua = new JMenuItem("Lua");
+		mnL.add(mntmLua);
 		mntmLua.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmLua);
-		
-		JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
-		mntmMakeFile.addActionListener(new ActionListener() {
+		mntmLisp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmMakeFile);
+		mntmLess.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS);
+			}
+		});
+		mntmLatex.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
+			}
+		});
+		
+		JMenu mnM = new JMenu("M");
+		mnSyntaxHighlighting.add(mnM);
+		
+		JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
+		mnM.add(mntmMakeFile);
 		
 		JMenuItem mntmMxml = new JMenuItem("MXML");
+		mnM.add(mntmMxml);
 		mntmMxml.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmMxml);
+		mntmMakeFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
+			}
+		});
 		
 		JMenuItem mntmNsis = new JMenuItem("NSIS");
 		mntmNsis.addActionListener(new ActionListener() {
@@ -569,13 +590,70 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmNsis);
 		
+		JMenu mnP = new JMenu("P");
+		mnSyntaxHighlighting.add(mnP);
+		
 		JMenuItem mntmPerl = new JMenuItem("Perl");
+		mnP.add(mntmPerl);
+		
+		JMenuItem mntmPropertiesFile = new JMenuItem("Properties File");
+		mntmPropertiesFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
+			}
+		});
+		mnP.add(mntmPropertiesFile);
+		
+		JMenuItem mntmPython = new JMenuItem("Python");
+		mntmPython.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON);
+			}
+		});
+		mnP.add(mntmPython);
 		mntmPerl.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL);
 			}
 		});
-		mnSyntaxHighlighting.add(mntmPerl);
+		
+		JMenu mnR = new JMenu("R");
+		mnSyntaxHighlighting.add(mnR);
+		
+		JMenuItem mntmRuby = new JMenuItem("Ruby"); //Forever alone, Ruby.
+		mntmRuby.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
+			}
+		});
+		mnR.add(mntmRuby);
+		
+		JMenu mnS = new JMenu("S");
+		mnSyntaxHighlighting.add(mnS);
+		
+		JMenuItem mntmSas = new JMenuItem("SAS");
+		mntmSas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SAS);
+			}
+		});
+		mnS.add(mntmSas);
+		
+		JMenuItem mntmSacala = new JMenuItem("Scala");
+		mntmSacala.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA);
+			}
+		});
+		mnS.add(mntmSacala);
+		
+		JMenuItem mntmSql = new JMenuItem("SQL");
+		mntmSql.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
+			}
+		});
+		mnS.add(mntmSql);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
