@@ -20,6 +20,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Timer;
@@ -747,35 +748,56 @@ public class MainFrame extends JFrame {
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
 					private String getFileExtension(File file) {
-					    String name = file.getName();
-					    try {
-					        return name.substring(name.lastIndexOf(".") + 1);
-					    } catch (Exception e) {
-					        return "";
-					    }
+						String name = file.getName();
+						try {
+							return name.substring(name.lastIndexOf(".") + 1);
+						} catch (Exception e) {
+							return "";
+						}
 					}
+
 					public void actionPerformed(ActionEvent e) {
 						int toolid = tmpitem.toolid;
 						try {
 							String copy = tools[toolid].commandline;
-							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
-							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
-							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
-							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
+							copy = copy.replaceAll("%FN%", currentFile == null ? "Unnamed" : currentFile.getName());
+							copy = copy.replaceAll("%DIR%",
+									currentFile == null ? "" : currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll("%EXT%", currentFile == null ? "" : getFileExtension(currentFile));
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
-							InputStream s = p.getInputStream();
-							new Thread(new Runnable(){
+							new Thread(new Runnable() {
 								@Override
 								public void run() {
-									while(p.isAlive()) {
-										try {
-											if(s.available()>=1) {
-												toolConsole.setText(toolConsole.getText() + (char)s.read());
-											}
-										} catch (IOException e) {
-											//Nothing to do, return.
-											return;
+									BufferedReader stdInput = new BufferedReader(
+											new InputStreamReader(p.getInputStream()));
+
+									BufferedReader stdError = new BufferedReader(
+											new InputStreamReader(p.getErrorStream()));
+
+									toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
+									String s = null;
+									try {
+										while ((s = stdInput.readLine()) != null) {
+											toolConsole.setText(toolConsole.getText() + s);
 										}
+									} catch (IOException e1) {
+										Crash dialog = new Crash(e1);
+										dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+										dialog.setVisible(true);
+										return;
+									}
+
+									// read any errors from the attempted command
+									toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
+									try {
+										while ((s = stdError.readLine()) != null) {
+											toolConsole.setText(toolConsole.getText() + s);
+										}
+									} catch (IOException e) {
+										Crash dialog = new Crash(e);
+										dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+										dialog.setVisible(true);
+										return;
 									}
 									return;
 								}
@@ -784,7 +806,7 @@ public class MainFrame extends JFrame {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
-						}  
+						}
 					}
 				});
 				tools[toolAmount].item = tmpitem;
@@ -1338,35 +1360,56 @@ public class MainFrame extends JFrame {
 				tmpitem.toolid = toolAmount;
 				tmpitem.addActionListener(new ActionListener() {
 					private String getFileExtension(File file) {
-					    String name = file.getName();
-					    try {
-					        return name.substring(name.lastIndexOf(".") + 1);
-					    } catch (Exception e) {
-					        return "";
-					    }
+						String name = file.getName();
+						try {
+							return name.substring(name.lastIndexOf(".") + 1);
+						} catch (Exception e) {
+							return "";
+						}
 					}
+
 					public void actionPerformed(ActionEvent e) {
 						int toolid = tmpitem.toolid;
 						try {
 							String copy = tools[toolid].commandline;
-							copy = copy.replaceAll("%FN%", currentFile==null?"Unnamed":currentFile.getName());
-							copy = copy.replaceAll("%DIR%", currentFile==null?"":currentFile.getParentFile().getAbsolutePath());
-							copy = copy.replaceAll("%EXT%", currentFile==null?"":getFileExtension(currentFile));
-							System.out.println("Executing " + tools[toolid].path + " " + tools[toolid].commandline);
+							copy = copy.replaceAll("%FN%", currentFile == null ? "Unnamed" : currentFile.getName());
+							copy = copy.replaceAll("%DIR%",
+									currentFile == null ? "" : currentFile.getParentFile().getAbsolutePath());
+							copy = copy.replaceAll("%EXT%", currentFile == null ? "" : getFileExtension(currentFile));
 							Process p = Runtime.getRuntime().exec(tools[toolid].path + " " + tools[toolid].commandline);
-							InputStream s = p.getInputStream();
-							new Thread(new Runnable(){
+							new Thread(new Runnable() {
 								@Override
 								public void run() {
-									while(p.isAlive()) {
-										try {
-											if(s.available()>=1) {
-												toolConsole.setText(toolConsole.getText() + (char)s.read());
-											}
-										} catch (IOException e) {
-											//Nothing to do, return.
-											return;
+									BufferedReader stdInput = new BufferedReader(
+											new InputStreamReader(p.getInputStream()));
+
+									BufferedReader stdError = new BufferedReader(
+											new InputStreamReader(p.getErrorStream()));
+
+									toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
+									String s = null;
+									try {
+										while ((s = stdInput.readLine()) != null) {
+											toolConsole.setText(toolConsole.getText() + s);
 										}
+									} catch (IOException e1) {
+										Crash dialog = new Crash(e1);
+										dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+										dialog.setVisible(true);
+										return;
+									}
+
+									// read any errors from the attempted command
+									toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
+									try {
+										while ((s = stdError.readLine()) != null) {
+											toolConsole.setText(toolConsole.getText() + s);
+										}
+									} catch (IOException e) {
+										Crash dialog = new Crash(e);
+										dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+										dialog.setVisible(true);
+										return;
 									}
 									return;
 								}
@@ -1375,7 +1418,7 @@ public class MainFrame extends JFrame {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
-						}  
+						}
 					}
 				});
 				tools[counter].item = tmpitem;
