@@ -1,10 +1,16 @@
 package medit;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.Toolkit;
+import javax.swing.JLabel;
 import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 /**
  * AboutBox is dialog containing information about MEdit.
