@@ -1,6 +1,5 @@
 package medit;
 
-import java.awt.AWTKeyStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,7 +9,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -22,15 +20,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -80,6 +73,7 @@ public class MainFrame extends JFrame {
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
 	private JTextPane toolConsole = new JTextPane();
+	private Compiler[] compilers;
 
 	/**
 	 * Create the frame.
@@ -103,7 +97,7 @@ public class MainFrame extends JFrame {
 					instances--;
 			}
 		});
-		
+
 		setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(MainFrame.class.getResource("/medit/assets/apps/accessories-text-editor.png")));
 		setTitle("MEdit");
@@ -728,6 +722,16 @@ public class MainFrame extends JFrame {
 		});
 		mnSyntaxHighlighting.add(mntmYaml);
 
+		JMenu Compilers = new JMenu("Run/Compile");
+		menuBar.add(Compilers);
+		
+		JMenu mnManageCompilers = new JMenu("Manage Compilers");
+		mnManageCompilers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		menuBar.add(mnManageCompilers);
+
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 
@@ -1121,42 +1125,42 @@ public class MainFrame extends JFrame {
 
 		JLabel lblTheme = new JLabel("Theme:");
 		panel_11.add(lblTheme);
-		
-				JPanel panel_12 = new JPanel();
-				panel_10.add(panel_12, BorderLayout.CENTER);
-				panel_12.setLayout(new BorderLayout(0, 0));
-				
-						JLabel lblToolConsole = new JLabel("Tool Console:");
-						panel_12.add(lblToolConsole, BorderLayout.NORTH);
-						
-								JScrollPane scrollPane_1 = new JScrollPane();
-								scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-								scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-								panel_12.add(scrollPane_1, BorderLayout.CENTER);
-								
-										toolConsole.setEditable(false);
-										scrollPane_1.setViewportView(toolConsole);
-										
-										JPanel panel_13 = new JPanel();
-										panel_12.add(panel_13, BorderLayout.SOUTH);
-										
-										JButton btnOpenInDialog = new JButton("Open in dialog");
-										btnOpenInDialog.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-												dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-												dialog.setVisible(true);
-											}
-										});
-										panel_13.add(btnOpenInDialog);
-										
-										JButton btnClear = new JButton("Clear");
-										btnClear.addActionListener(new ActionListener() {
-											public void actionPerformed(ActionEvent e) {
-												toolConsole.setText("");
-											}
-										});
-										panel_13.add(btnClear);
+
+		JPanel panel_12 = new JPanel();
+		panel_10.add(panel_12, BorderLayout.CENTER);
+		panel_12.setLayout(new BorderLayout(0, 0));
+
+		JLabel lblToolConsole = new JLabel("Run Console:");
+		panel_12.add(lblToolConsole, BorderLayout.NORTH);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		panel_12.add(scrollPane_1, BorderLayout.CENTER);
+
+		toolConsole.setEditable(false);
+		scrollPane_1.setViewportView(toolConsole);
+
+		JPanel panel_13 = new JPanel();
+		panel_12.add(panel_13, BorderLayout.SOUTH);
+
+		JButton btnOpenInDialog = new JButton("Open in dialog");
+		btnOpenInDialog.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		});
+		panel_13.add(btnOpenInDialog);
+
+		JButton btnClear = new JButton("Clear");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				toolConsole.setText("");
+			}
+		});
+		panel_13.add(btnClear);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -1199,16 +1203,93 @@ public class MainFrame extends JFrame {
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
-		
+
 		JPanel panel_14 = new JPanel();
 		contentPane.add(panel_14, BorderLayout.SOUTH);
-				panel_14.setLayout(new BorderLayout(0, 0));
+		panel_14.setLayout(new BorderLayout(0, 0));
+
+		JToolBar toolBar_1 = new JToolBar();
+		panel_14.add(toolBar_1);
+		toolBar_1.setFloatable(false);
+
+		toolBar_1.add(lblReady);
 		
-				JToolBar toolBar_1 = new JToolBar();
-				panel_14.add(toolBar_1);
-				toolBar_1.setFloatable(false);
-				
-						toolBar_1.add(lblReady);
+		if(new File("compilers.txt").exists()) {
+			try {
+				Scanner s = new Scanner(new File("compilers.txt"));
+				int iterator = 0;
+				compilers = new Compiler[8];
+				while(s.hasNextLine()) {
+					if(iterator>=8) break;
+					String name = s.nextLine();
+					if(name=="") continue;
+					compilers[iterator].file = new File(s.nextLine());
+					compilers[iterator].name = name;
+					CompilerMenuItem item = new CompilerMenuItem();
+					item.CompilerID = iterator;
+					item.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							System.out.println(e.getSource());
+							String arg0=compilers[item.CompilerID].name + (currentFile==null?"Unnamed":currentFile.getAbsolutePath());
+							ProcessBuilder pb = new ProcessBuilder(arg0);
+							pb.directory(new File(currentFile.getParent()));
+							try {
+								Process p = pb.start();
+								new Thread(new Runnable() {
+									@Override
+									public void run() {
+										BufferedReader stdInput = new BufferedReader(
+												new InputStreamReader(p.getInputStream()));
+
+										BufferedReader stdError = new BufferedReader(
+												new InputStreamReader(p.getErrorStream()));
+
+										toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
+										String s = null;
+										try {
+											while ((s = stdInput.readLine()) != null) {
+												toolConsole.setText(toolConsole.getText() + s);
+											}
+										} catch (IOException e1) {
+											Crash dialog = new Crash(e1);
+											dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+											dialog.setVisible(true);
+											return;
+										}
+
+										// read any errors from the attempted command
+										toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
+										try {
+											while ((s = stdError.readLine()) != null) {
+												toolConsole.setText(toolConsole.getText() + s);
+											}
+										} catch (IOException e) {
+											Crash dialog = new Crash(e);
+											dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+											dialog.setVisible(true);
+											return;
+										}
+										return;
+									}
+								}).start();
+							} catch (IOException e1) {
+								Crash dialog = new Crash(e1);
+								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								dialog.setVisible(true);
+							}
+						}
+					});
+					Compilers.add(item);
+					iterator++;
+				}
+				s.close();
+			} catch (FileNotFoundException e1) {
+				Crash dialog = new Crash(e1);
+				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+			
+		}
 	}
 
 }
