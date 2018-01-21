@@ -1,5 +1,7 @@
 # MEdit
 
+[![Build Status](https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master)](https://travis-ci.org/KrzysztofSzewczyk/MEdit)
+
 This project is my attempt to create useful and full-featured java editor.
 Im thinking about it as editor focused on programming, but I might add something
 like Eclipse workspaces. GUI library that will be used for development is Java
