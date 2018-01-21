@@ -27,12 +27,16 @@ public class CompilerSetup extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private JTextField textField_1;
-	private Compiler[] compilers = new Compiler[8];
+	private int currentCompilerNO = 0;
+	private Compiler[] compilers;
 
 	/**
 	 * Create the dialog.
 	 */
 	public CompilerSetup() {
+		compilers = new Compiler[8];
+		for(int i = 0; i < 8; i++) compilers[i] = new Compiler();
+		for(int i = 0; i < 8; i++) compilers[i].name = "[EMPTY]";
 		setResizable(false);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(CompilerSetup.class.getResource("/medit/assets/actions/window-new.png")));
 		setTitle("Compiler setup");
@@ -46,9 +50,31 @@ public class CompilerSetup extends JDialog {
 		contentPanel.add(panel, BorderLayout.NORTH);
 		
 		JButton button_1 = new JButton("< ");
+		button_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				compilers[currentCompilerNO] = new Compiler();
+				compilers[currentCompilerNO].file = new File(textField.getText());
+				compilers[currentCompilerNO].name = textField_1.getText();
+				if(currentCompilerNO == 0) return;
+				currentCompilerNO--;
+				textField.setText(compilers[currentCompilerNO].file.getAbsolutePath());
+				textField_1.setText(compilers[currentCompilerNO].name);
+			}
+		});
 		panel.add(button_1);
 		
 		JButton button = new JButton(" >");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				compilers[currentCompilerNO] = new Compiler();
+				compilers[currentCompilerNO].file = new File(textField.getText());
+				compilers[currentCompilerNO].name = textField_1.getText();
+				if(currentCompilerNO == 7) return;
+				currentCompilerNO++;
+				textField.setText(compilers[currentCompilerNO]==null?"":compilers[currentCompilerNO].file.getAbsolutePath());
+				textField_1.setText(compilers[currentCompilerNO]==null?"":compilers[currentCompilerNO].name);
+			}
+		});
 		panel.add(button);
 		
 		JPanel panel_1 = new JPanel();
@@ -86,11 +112,8 @@ public class CompilerSetup extends JDialog {
 		JPanel panel_6 = new JPanel();
 		panel_5.add(panel_6, BorderLayout.NORTH);
 		
-		JButton btnAddNew = new JButton("Add New");
-		panel_6.add(btnAddNew);
-		
-		JButton btnRemoveCurrent = new JButton("Remove current");
-		panel_6.add(btnRemoveCurrent);
+		JLabel lblLeaveBlankTo = new JLabel("Leave [EMPTY] to remove");
+		panel_6.add(lblLeaveBlankTo);
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -107,6 +130,7 @@ public class CompilerSetup extends JDialog {
 								w.println(compilers[i].name);
 								w.println(compilers[i].file.getAbsolutePath());
 							}
+							w.close();
 						} catch (FileNotFoundException e1) {
 							Crash dialog = new Crash(e1);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -128,10 +152,8 @@ public class CompilerSetup extends JDialog {
 		if(new File("compilers.txt").exists()) {
 			try {
 				Scanner s = new Scanner(new File("compilers.txt"));
-				int i = s.nextShort(), iterator = 0;
-				compilers = new Compiler[i];
+				int iterator = 0;
 				while(s.hasNextLine()) {
-					if(iterator>=i) break;
 					compilers[iterator].file = new File(s.nextLine());
 					compilers[iterator].name = s.nextLine();
 					iterator++;
