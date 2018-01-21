@@ -5,11 +5,7 @@ box:
 dev:
   steps:
     - install-packages:
-        packages: ant 
-    - script:
-      name: ant compile jar
-      code: |
-        ant compile jar
+        packages: ant
 build:
   steps:
     - script:
