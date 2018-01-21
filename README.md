@@ -1,6 +1,7 @@
 # MEdit
 
 [![Build Status](https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master)](https://travis-ci.org/KrzysztofSzewczyk/MEdit)
+[![wercker status](https://app.wercker.com/status/91d3762acc455ca396941f6a1ab63f5d/m/master "wercker status")](https://app.wercker.com/project/byKey/91d3762acc455ca396941f6a1ab63f5d)
 
 This project is my attempt to create useful and full-featured java editor.
 Im thinking about it as editor focused on programming, but I might add something
