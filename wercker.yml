@@ -1,9 +1,11 @@
 box:
-  id: openjdk
+  id: java
   ports:
     - "8080"
 dev:
   steps:
+    - install-packages:
+        packages: ant 
     - script:
       name: ant compile jar
       code: |
