@@ -1,7 +1,16 @@
-box: debian
+box:
+  id: openjdk
+  ports:
+    - "8080"
+dev:
+  steps:
+    - script:
+      name: ant compile jar
+      code: |
+        ant compile jar
 build:
   steps:
     - script:
-        name: ant
+        name: ant compile jar
         code: |
-          echo ant compile jar
+          ant compile jar
