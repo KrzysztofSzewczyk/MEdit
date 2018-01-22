@@ -1,16 +1,16 @@
-Dummy Tool
-D:\MEdit\dummy.bat
-[EMPTY]
+
 D:\MEdit
-[EMPTY]
 D:\MEdit
-[EMPTY]
 D:\MEdit
-[EMPTY]
 D:\MEdit
-[EMPTY]
 D:\MEdit
-[EMPTY]
 D:\MEdit
-[EMPTY]
+D:\MEdit
+D:\MEdit
+D:\MEdit
+D:\MEdit
+D:\MEdit
+D:\MEdit
+D:\MEdit
+D:\MEdit
 D:\MEdit
