@@ -19,7 +19,7 @@
     </target>
 
     <target name="run">
- -     <java jar="build/jar/MEdit.jar" fork="true"/>
- -  </target>
+       <java jar="build/jar/MEdit.jar" fork="true"/>
+    </target>
     
 </project>
