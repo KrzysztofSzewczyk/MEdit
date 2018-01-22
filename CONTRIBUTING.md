@@ -1,7 +1,7 @@
 # Contributing
 
 We'd love pull requests from everyone. By participating in this project, you
-agree to abide by the thoughtbot [code of conduct].
+agree to abide by the MEdit [code of conduct].
 
 [code of conduct]: https://github.com/KrzysztofSzewczyk/CODE_OF_CONDUCT.MD
 
