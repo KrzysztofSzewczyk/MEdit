@@ -18,4 +18,5 @@ build:
     - script:
         name: run ant
         code: |
+          sudo apt-get install ant
           ant compile run
