@@ -72,8 +72,7 @@ public class MainFrame extends JFrame {
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
-	private JTextPane toolConsole = new JTextPane();
-	private Compiler[] compilers;
+	JTextPane toolConsole;
 
 	/**
 	 * Create the frame.
@@ -721,23 +720,82 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmYaml);
-
-		JMenu Compilers = new JMenu("Run/Compile");
-		menuBar.add(Compilers);
 		
 		JMenu mnManageCompilers = new JMenu("Compilers");
 		menuBar.add(mnManageCompilers);
 		
-		JMenuItem mntmManage = new JMenuItem("Manage");
-		mntmManage.addActionListener(new ActionListener() {
+		JMenu mnAssembly = new JMenu("Assembly");
+		mnManageCompilers.add(mnAssembly);
+		
+		JMenuItem mntmNasm = new JMenuItem("NASM");
+		mntmNasm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Manager running");
-				CompilerSetup dialog = new CompilerSetup();
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
+				if(currentFile == null) {
+					JOptionPane.showMessageDialog(instance, "Please save your work in order to compile.", "Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
+				} else {
+					String[] command = {"cmd.exe", "/c", "", "\"" + currentFile.getAbsolutePath() + "\""};
+					System.out.println(command);
+					ProcessBuilder pb = new ProcessBuilder(command);
+					try {
+						pb.directory(new File(currentFile.getAbsoluteFile().getParent()));
+					} catch(Exception e1) {
+						//I Don't care
+					}
+					try {
+						Process p = pb.start();
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								BufferedReader stdInput = new BufferedReader(
+										new InputStreamReader(p.getInputStream()));
+
+								BufferedReader stdError = new BufferedReader(
+										new InputStreamReader(p.getErrorStream()));
+
+								toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
+								String s = null;
+								try {
+									while ((s = stdInput.readLine()) != null) {
+										toolConsole.setText(toolConsole.getText() + s);
+									}
+								} catch (IOException e1) {
+									Crash dialog = new Crash(e1);
+									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dialog.setVisible(true);
+									return;
+								}
+								
+								// read any errors from the attempted command
+								toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
+								try {
+									while ((s = stdError.readLine()) != null) {
+										toolConsole.setText(toolConsole.getText() + s);
+									}
+								} catch (IOException e) {
+									Crash dialog = new Crash(e);
+									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+									dialog.setVisible(true);
+									return;
+								}
+								
+								CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
+								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								dialog.setVisible(true);
+								
+								toolConsole.setText("");
+								
+								return;
+							}
+						}).start();
+					} catch (IOException e1) {
+						Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+					}
+				}
 			}
 		});
-		mnManageCompilers.add(mntmManage);
+		mnAssembly.add(mntmNasm);
 
 		JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
@@ -1137,42 +1195,10 @@ public class MainFrame extends JFrame {
 		JPanel panel_12 = new JPanel();
 		panel_10.add(panel_12, BorderLayout.CENTER);
 		panel_12.setLayout(new BorderLayout(0, 0));
-
-		JLabel lblToolConsole = new JLabel("Run Console:");
-		panel_12.add(lblToolConsole, BorderLayout.NORTH);
-		lblToolConsole.setVisible(false);
-
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setVisible(false);
-		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		panel_12.add(scrollPane_1, BorderLayout.CENTER);
-
-		toolConsole.setEditable(false);
-		scrollPane_1.setViewportView(toolConsole);
-
-		JPanel panel_13 = new JPanel();
-		panel_12.add(panel_13, BorderLayout.SOUTH);
-
-		JButton btnOpenInDialog = new JButton("Open in dialog");
-		btnOpenInDialog.setVisible(false);
-		btnOpenInDialog.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		panel_13.add(btnOpenInDialog);
-
-		JButton btnClear = new JButton("Clear");
-		btnClear.setVisible(false);
-		btnClear.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				toolConsole.setText("");
-			}
-		});
-		panel_13.add(btnClear);
+		
+		toolConsole = new JTextPane();
+		panel_12.add(toolConsole, BorderLayout.CENTER);
+		toolConsole.setVisible(false);
 
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -1225,104 +1251,6 @@ public class MainFrame extends JFrame {
 		toolBar_1.setFloatable(false);
 
 		toolBar_1.add(lblReady);
-		
-		if(new File("compilers.txt").exists()) {
-			try {
-				Scanner s = new Scanner(new File("compilers.txt"));
-				int iterator = 0;
-				compilers = new Compiler[8];
-				for(int i = 0; i < 8; i++) compilers[i] = new Compiler();
-				for(int i = 0; i < 8; i++) compilers[i].name = "";
-				wloop: while(s.hasNextLine()) {
-					if(iterator>=8) break;
-					String name = s.nextLine();
-					if(name.equalsIgnoreCase("[EMPTY]")) {
-						s.nextLine();
-						continue wloop;
-					}
-					else {
-						compilers[iterator].file = new File(s.nextLine());
-						compilers[iterator].name = name;
-						CompilerMenuItem item = new CompilerMenuItem();
-						item.CompilerID = iterator;
-						item.setText(name);
-						item.addActionListener(new ActionListener() {
-							public void actionPerformed(ActionEvent e) {
-								System.out.println(e.getSource());
-								String[] command = {"cmd.exe", "/c", "\"" + compilers[item.CompilerID].file.getAbsolutePath() + "\"", "" + (currentFile==null?"Unnamed":currentFile.getAbsolutePath()) + ""};
-								System.out.println(command);
-								ProcessBuilder pb = new ProcessBuilder(command);
-								try {
-									pb.directory(new File(currentFile.getAbsoluteFile().getParent()));
-								} catch(Exception e1) {
-									//I Don't care
-								}
-								try {
-									Process p = pb.start();
-									new Thread(new Runnable() {
-										@Override
-										public void run() {
-											BufferedReader stdInput = new BufferedReader(
-													new InputStreamReader(p.getInputStream()));
-
-											BufferedReader stdError = new BufferedReader(
-													new InputStreamReader(p.getErrorStream()));
-
-											toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
-											String s = null;
-											try {
-												while ((s = stdInput.readLine()) != null) {
-													toolConsole.setText(toolConsole.getText() + s);
-												}
-											} catch (IOException e1) {
-												Crash dialog = new Crash(e1);
-												dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-												dialog.setVisible(true);
-												return;
-											}
-
-											// read any errors from the attempted command
-											toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
-											try {
-												while ((s = stdError.readLine()) != null) {
-													toolConsole.setText(toolConsole.getText() + s);
-												}
-											} catch (IOException e) {
-												Crash dialog = new Crash(e);
-												dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-												dialog.setVisible(true);
-												return;
-											}
-											
-											CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-											dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-											dialog.setVisible(true);
-											
-											toolConsole.setText("");
-											
-											return;
-										}
-									}).start();
-								} catch (IOException e1) {
-									Crash dialog = new Crash(e1);
-									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dialog.setVisible(true);
-								}
-							}
-						});
-						Compilers.add(item);
-						iterator++;
-					}
-				}
-				s.close();
-			} catch (FileNotFoundException e1) {
-				Crash dialog = new Crash(e1);
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-			
-		}
-		toolConsole.setVisible(false);
 	}
 
 }

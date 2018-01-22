@@ -1,1 +1,0 @@
-echo Compile %1% here!

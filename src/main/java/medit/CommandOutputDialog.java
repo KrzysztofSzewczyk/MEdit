@@ -23,6 +23,7 @@ public class CommandOutputDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public CommandOutputDialog(String output) {
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(CommandOutputDialog.class.getResource("/medit/assets/categories/preferences-system.png")));
 		setTitle("Tool Output");
 		setBounds(100, 100, 450, 300);
