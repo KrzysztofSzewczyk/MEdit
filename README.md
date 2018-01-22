@@ -72,3 +72,6 @@ affect you, the GPL work is only useful as reference material.
 Quoted from work of Paul Edwards:
 Date:     2007-08-14
 Internet: fight.subjugation@gmail.com
+
+Actually, in my opinion GPL can be used to non-reference code - that
+means, useless code that author meant to be not-free.
