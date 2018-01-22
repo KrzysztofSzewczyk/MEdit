@@ -1,5 +1,7 @@
 # MEdit
 
+[![Join the chat at https://gitter.im/MITEdit/Lobby](https://badges.gitter.im/MITEdit/Lobby.svg)](https://gitter.im/MITEdit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master)](https://travis-ci.org/KrzysztofSzewczyk/MEdit)
 [![wercker status](https://app.wercker.com/status/91d3762acc455ca396941f6a1ab63f5d/m/master "wercker status")](https://app.wercker.com/project/byKey/91d3762acc455ca396941f6a1ab63f5d)
 
