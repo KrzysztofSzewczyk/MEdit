@@ -20,4 +20,4 @@ build:
         code: |
           sudo apt-get update
           echo Y | sudo apt-get install ant
-          ant compile run
+          ant compile jar
