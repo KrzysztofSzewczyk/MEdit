@@ -3,13 +3,7 @@ box:
   ports:
     - "8080"
 
-# defining the dev pipeline
-dev:
-  steps:
-    - script:
-      name: ant setup
-      code: |
-        sudo apt-get install ant
+
 
 # Build definition
 build:
