@@ -6,17 +6,15 @@ box:
 # defining the dev pipeline
 dev:
   steps:
-    # A step that executes `gradle bootRun` command
     - script:
-      name: run ant
+      name: ant setup
       code: |
-        ant compile run
+        sudo apt-get install ant
 
 # Build definition
 build:
   # The steps that will be executed on build
   steps:
-    # A step that executes `gradle build` command
     - script:
         name: run ant
         code: |
