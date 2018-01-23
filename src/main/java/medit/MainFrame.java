@@ -12,18 +12,29 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -36,13 +47,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
@@ -720,37 +729,134 @@ public class MainFrame extends JFrame {
 			}
 		});
 		mnSyntaxHighlighting.add(mntmYaml);
-		
+
 		JMenu mnManageCompilers = new JMenu("Compilers");
 		menuBar.add(mnManageCompilers);
-		
+
 		JMenu mnAssembly = new JMenu("Assembly");
 		mnManageCompilers.add(mnAssembly);
-		
+
 		JMenuItem mntmNasm = new JMenuItem("NASM");
 		mntmNasm.addActionListener(new ActionListener() {
+			private static final int BUFFER_SIZE = 4096;
+
+			public void unzip(String zipFilePath, String destDirectory) throws IOException {
+				File destDir = new File(destDirectory);
+				if (!destDir.exists()) {
+					destDir.mkdir();
+				}
+				ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+				ZipEntry entry = zipIn.getNextEntry();
+				// iterates over entries in the zip file
+				while (entry != null) {
+					String filePath = destDirectory + File.separator + entry.getName();
+					if (!entry.isDirectory()) {
+						// if the entry is a file, extracts it
+						extractFile(zipIn, filePath);
+					} else {
+						// if the entry is a directory, make the directory
+						File dir = new File(filePath);
+						dir.mkdir();
+					}
+					zipIn.closeEntry();
+					entry = zipIn.getNextEntry();
+				}
+				zipIn.close();
+			}
+
+			private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
+				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1) {
+					bos.write(bytesIn, 0, read);
+				}
+				bos.close();
+			}
+
+			@SuppressWarnings("unchecked")
+			public <T> T[] concatAll(T[] first, T[]... rest) {
+				int totalLength = first.length;
+				for (T[] array : rest) {
+					totalLength += array.length;
+				}
+				T[] result = Arrays.copyOf(first, totalLength);
+				int offset = first.length;
+				for (T[] array : rest) {
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+				return result;
+			}
+
 			public void actionPerformed(ActionEvent arg0) {
-				if(currentFile == null) {
-					JOptionPane.showMessageDialog(instance, "Please save your work in order to compile.", "Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
+				String name = "nasm", compilername = "nasm";
+				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
+					JOptionPane.showMessageDialog(instance, "Please install " + name + " package.", "Error",
+							JOptionPane.ERROR_MESSAGE);
+					if (JOptionPane.showConfirmDialog(instance,
+							"Do you want to download and install " + name
+									+ " package?\n (By installing it you accept License provided with software)",
+							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						URL url = null;
+						try {
+							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
+									+ name + ".zip");
+						} catch (MalformedURLException e) {
+							Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+						try {
+							HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+							new File("packages//" + name).mkdirs();
+							try (InputStream stream = con.getInputStream()) {
+								Files.copy(stream, Paths.get("packages//" + name + "//package.zip"));
+							}
+							unzip("packages//" + name + "//package.zip", "packages//" + name);
+							new File("packages//" + name + "//package.zip").delete();
+						} catch (IOException e) {
+							Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+					} else
+						return;
+				}
+				if (currentFile == null) {
+					JOptionPane.showMessageDialog(instance, "Please save your work in order to compile.",
+							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
 				} else {
-					String[] command = {"cmd.exe", "/c", "", "\"" + currentFile.getAbsolutePath() + "\""};
-					System.out.println(command);
+					String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
+							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
+					FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
+					String[] lines = null;
+					try {
+						lines = fap.readLines("compilers\\" + name + "\\" + osString + "\\options.txt");
+					} catch (IOException e2) {
+						Crash dialog = new Crash(e2);
+						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+						return;
+					}
+					String[] command = concatAll(new String[] { "compilers\\" + name + "\\" + osString + "\\" + compilername }, lines, new String[] { "\"" + currentFile.getAbsolutePath() + "\"" });
+					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
 					ProcessBuilder pb = new ProcessBuilder(command);
 					try {
 						pb.directory(new File(currentFile.getAbsoluteFile().getParent()));
-					} catch(Exception e1) {
-						//I Don't care
+					} catch (Exception e1) {
+						// I Don't care
 					}
 					try {
 						Process p = pb.start();
 						new Thread(new Runnable() {
 							@Override
 							public void run() {
-								BufferedReader stdInput = new BufferedReader(
-										new InputStreamReader(p.getInputStream()));
+								BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
-								BufferedReader stdError = new BufferedReader(
-										new InputStreamReader(p.getErrorStream()));
+								BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
 								toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
 								String s = null;
@@ -764,7 +870,7 @@ public class MainFrame extends JFrame {
 									dialog.setVisible(true);
 									return;
 								}
-								
+
 								// read any errors from the attempted command
 								toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
 								try {
@@ -777,13 +883,13 @@ public class MainFrame extends JFrame {
 									dialog.setVisible(true);
 									return;
 								}
-								
+
 								CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
 								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 								dialog.setVisible(true);
-								
+
 								toolConsole.setText("");
-								
+
 								return;
 							}
 						}).start();
@@ -1195,7 +1301,7 @@ public class MainFrame extends JFrame {
 		JPanel panel_12 = new JPanel();
 		panel_10.add(panel_12, BorderLayout.CENTER);
 		panel_12.setLayout(new BorderLayout(0, 0));
-		
+
 		toolConsole = new JTextPane();
 		panel_12.add(toolConsole, BorderLayout.CENTER);
 		toolConsole.setVisible(false);
