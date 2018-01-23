@@ -810,12 +810,12 @@ public class MainFrame extends JFrame {
 						}
 						try {
 							HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-							new File("packages//" + name).mkdirs();
+							new File("compilers/" + name).mkdirs();
 							try (InputStream stream = con.getInputStream()) {
-								Files.copy(stream, Paths.get("packages//" + name + "//package.zip"));
+								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
 							}
-							unzip("packages//" + name + "//package.zip", "packages//" + name);
-							new File("packages//" + name + "//package.zip").delete();
+							unzip("compilers/" + name + "/package.zip", "compilers/");
+							new File("compilers/" + name + "/package.zip").delete();
 						} catch (IOException e) {
 							Crash dialog = new Crash(e);
 							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -834,14 +834,14 @@ public class MainFrame extends JFrame {
 					FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
 					String[] lines = null;
 					try {
-						lines = fap.readLines("compilers\\" + name + "\\" + osString + "\\options.txt");
+						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
 					} catch (IOException e2) {
 						Crash dialog = new Crash(e2);
 						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 						return;
 					}
-					String[] command = concatAll(new String[] { "compilers\\" + name + "\\" + osString + "\\" + compilername }, lines, new String[] { "\"" + currentFile.getAbsolutePath() + "\"" });
+					String[] command = concatAll(new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines, new String[] { "\"" + currentFile.getAbsolutePath() + "\"" });
 					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
 					ProcessBuilder pb = new ProcessBuilder(command);
 					try {
