@@ -26,7 +26,8 @@ on building, (and eventually contributing to repository) using ant.
 
 There are no depedencies for actually building this project (JDK, Eclipse and JRE
 should be installed, but it's rather obvious). To make changes to form, you are
-recommended to use Eclipse WindowBuilder. 
+recommended to use Eclipse WindowBuilder. If you'd prefer to build it using ANT,
+you have to install JDK, JRE, and ANT only.
 
 ## Why not GPL?
 
