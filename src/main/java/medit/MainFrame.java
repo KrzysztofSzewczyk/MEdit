@@ -36,7 +36,6 @@ import java.util.zip.ZipInputStream;
 import javax.net.ssl.HttpsURLConnection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -52,6 +51,7 @@ import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -61,739 +61,505 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  * Main frame for MEdit project.
- * 
+ *
  * @author Krzysztof Szewczyk
  */
 
 public class MainFrame extends JFrame {
 
+	private static int instances = 1;
 	/**
 	 * Serial version UID required by Eclipse
 	 */
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private static int instances = 1;
-	private MainFrame instance;
-	private RSyntaxTextArea textPane = new RSyntaxTextArea();
 	private File currentFile = null;
-	private JLabel lblReady = new JLabel(
+	private MainFrame instance;
+	private final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
-	private JTextField searchTextField;
 	private JTextField replaceWithTextField;
+	private JTextField searchTextField;
+	private final RSyntaxTextArea textPane = new RSyntaxTextArea();
 	JTextPane toolConsole;
 
 	/**
 	 * Create the frame.
 	 */
 	public MainFrame() {
-		instance = this;
-		addWindowListener(new WindowAdapter() {
+		this.instance = this;
+		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing(WindowEvent arg0) {
-				if (instances == 0)
+			public void windowClosed(final WindowEvent arg0) {
+				if (MainFrame.instances == 0)
 					System.exit(0);
 				else
-					instances--;
+					MainFrame.instances--;
 			}
 
 			@Override
-			public void windowClosed(WindowEvent arg0) {
-				if (instances == 0)
+			public void windowClosing(final WindowEvent arg0) {
+				if (MainFrame.instances == 0)
 					System.exit(0);
 				else
-					instances--;
+					MainFrame.instances--;
 			}
 		});
 
-		setIconImage(Toolkit.getDefaultToolkit()
+		this.setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(MainFrame.class.getResource("/medit/assets/apps/accessories-text-editor.png")));
-		setTitle("MEdit");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 700, 500);
+		this.setTitle("MEdit");
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setBounds(100, 100, 700, 500);
 		this.setMinimumSize(new Dimension(700, 500));
 
-		JMenuBar menuBar = new JMenuBar();
-		setJMenuBar(menuBar);
+		final JMenuBar menuBar = new JMenuBar();
+		this.setJMenuBar(menuBar);
 
-		JMenu mnFile = new JMenu("File");
+		final JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 
-		JMenuItem mntmNew = new JMenuItem("New");
+		final JMenuItem mntmNew = new JMenuItem("New");
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
-		mntmNew.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-							MainFrame frame = new MainFrame();
-							frame.setVisible(true);
-							instances++;
-							textPane.requestFocus();
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				});
+		mntmNew.addActionListener(arg0 -> EventQueue.invokeLater(() -> {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				final MainFrame frame = new MainFrame();
+				frame.setVisible(true);
+				MainFrame.instances++;
+				MainFrame.this.textPane.requestFocus();
+			} catch (final Exception e) {
+				e.printStackTrace();
 			}
-		});
+		}));
 		mnFile.add(mntmNew);
 
-		JMenuItem mntmOpen = new JMenuItem("Open");
+		final JMenuItem mntmOpen = new JMenuItem("Open");
 		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
-		mntmOpen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser = new JFileChooser();
-				if (chooser.showOpenDialog(instance) != JFileChooser.APPROVE_OPTION)
-					return;
-				try {
-					FileReader reader = new FileReader(chooser.getSelectedFile());
-					BufferedReader br = new BufferedReader(reader);
-					textPane.read(br, null);
-					br.close();
-					textPane.requestFocus();
-					currentFile = chooser.getSelectedFile();
-				} catch (Exception e2) {
-					Crash dialog = new Crash(e2);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
+		mntmOpen.addActionListener(arg0 -> {
+			final JFileChooser chooser = new JFileChooser();
+			if (chooser.showOpenDialog(MainFrame.this.instance) != JFileChooser.APPROVE_OPTION)
+				return;
+			try {
+				final FileReader reader = new FileReader(chooser.getSelectedFile());
+				final BufferedReader br = new BufferedReader(reader);
+				MainFrame.this.textPane.read(br, null);
+				br.close();
+				MainFrame.this.textPane.requestFocus();
+				MainFrame.this.currentFile = chooser.getSelectedFile();
+			} catch (final Exception e2) {
+				final Crash dialog = new Crash(e2);
+				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
 			}
 		});
 		mnFile.add(mntmOpen);
 
-		JMenuItem mntmSave = new JMenuItem("Save");
+		final JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		mntmSave.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (currentFile == null) {
-					final JFileChooser SaveAs = new JFileChooser();
-					SaveAs.setApproveButtonText("Save");
-					int actionDialog = SaveAs.showSaveDialog(instance);
-					if (actionDialog != JFileChooser.APPROVE_OPTION) {
-						return;
-					}
+		mntmSave.addActionListener(e -> {
+			if (MainFrame.this.currentFile == null) {
+				final JFileChooser SaveAs = new JFileChooser();
+				SaveAs.setApproveButtonText("Save");
+				final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
+				if (actionDialog != JFileChooser.APPROVE_OPTION)
+					return;
 
-					File fileName = SaveAs.getSelectedFile();
-					BufferedWriter outFile = null;
-					try {
-						outFile = new BufferedWriter(new FileWriter(fileName));
-						textPane.write(outFile);
-					} catch (IOException ex) {
-						Crash dialog = new Crash(ex);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					} finally {
-						if (outFile != null) {
-							try {
-								outFile.close();
-							} catch (IOException e1) {
-								Crash dialog = new Crash(e1);
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-							}
+				final File fileName1 = SaveAs.getSelectedFile();
+				BufferedWriter outFile1 = null;
+				try {
+					outFile1 = new BufferedWriter(new FileWriter(fileName1));
+					MainFrame.this.textPane.write(outFile1);
+				} catch (final IOException ex1) {
+					final Crash dialog1 = new Crash(ex1);
+					dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog1.setVisible(true);
+				} finally {
+					if (outFile1 != null)
+						try {
+							outFile1.close();
+						} catch (final IOException e11) {
+							final Crash dialog2 = new Crash(e11);
+							dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog2.setVisible(true);
 						}
-					}
-					currentFile = fileName;
-					textPane.requestFocus();
-				} else {
-					File fileName = currentFile;
-					BufferedWriter outFile = null;
-					try {
-						outFile = new BufferedWriter(new FileWriter(fileName));
-						textPane.write(outFile);
-					} catch (IOException ex) {
-						Crash dialog = new Crash(ex);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					} finally {
-						if (outFile != null) {
-							try {
-								outFile.close();
-							} catch (IOException e1) {
-								Crash dialog = new Crash(e1);
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-							}
-						}
-					}
-					textPane.requestFocus();
 				}
+				MainFrame.this.currentFile = fileName1;
+				MainFrame.this.textPane.requestFocus();
+			} else {
+				final File fileName2 = MainFrame.this.currentFile;
+				BufferedWriter outFile2 = null;
+				try {
+					outFile2 = new BufferedWriter(new FileWriter(fileName2));
+					MainFrame.this.textPane.write(outFile2);
+				} catch (final IOException ex2) {
+					final Crash dialog3 = new Crash(ex2);
+					dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog3.setVisible(true);
+				} finally {
+					if (outFile2 != null)
+						try {
+							outFile2.close();
+						} catch (final IOException e12) {
+							final Crash dialog4 = new Crash(e12);
+							dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog4.setVisible(true);
+						}
+				}
+				MainFrame.this.textPane.requestFocus();
 			}
 		});
 		mnFile.add(mntmSave);
 
-		JMenuItem mntmSaveAs = new JMenuItem("Save As...");
+		final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
-		mntmSaveAs.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final JFileChooser SaveAs = new JFileChooser();
-				SaveAs.setApproveButtonText("Save");
-				int actionDialog = SaveAs.showSaveDialog(instance);
-				if (actionDialog != JFileChooser.APPROVE_OPTION) {
-					return;
-				}
+		mntmSaveAs.addActionListener(e -> {
+			final JFileChooser SaveAs = new JFileChooser();
+			SaveAs.setApproveButtonText("Save");
+			final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
+			if (actionDialog != JFileChooser.APPROVE_OPTION)
+				return;
 
-				File fileName = SaveAs.getSelectedFile();
-				BufferedWriter outFile = null;
-				try {
-					outFile = new BufferedWriter(new FileWriter(fileName));
-					textPane.write(outFile);
-				} catch (IOException ex) {
-					Crash dialog = new Crash(ex);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				} finally {
-					if (outFile != null) {
-						try {
-							outFile.close();
-						} catch (IOException e1) {
-							Crash dialog = new Crash(e1);
-							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-						}
+			final File fileName = SaveAs.getSelectedFile();
+			BufferedWriter outFile = null;
+			try {
+				outFile = new BufferedWriter(new FileWriter(fileName));
+				MainFrame.this.textPane.write(outFile);
+			} catch (final IOException ex) {
+				final Crash dialog1 = new Crash(ex);
+				dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				dialog1.setVisible(true);
+			} finally {
+				if (outFile != null)
+					try {
+						outFile.close();
+					} catch (final IOException e1) {
+						final Crash dialog2 = new Crash(e1);
+						dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog2.setVisible(true);
 					}
-				}
-				currentFile = fileName;
-				textPane.requestFocus();
 			}
+			MainFrame.this.currentFile = fileName;
+			MainFrame.this.textPane.requestFocus();
 		});
 		mnFile.add(mntmSaveAs);
 
-		JSeparator separator = new JSeparator();
+		final JSeparator separator = new JSeparator();
 		mnFile.add(separator);
 
-		JMenuItem mntmExit = new JMenuItem("Exit");
+		final JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
-		mntmExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (instances == 0)
-					return;
-				instance.dispose();
-			}
+		mntmExit.addActionListener(e -> {
+			if (MainFrame.instances == 0)
+				return;
+			MainFrame.this.instance.dispose();
 		});
 		mnFile.add(mntmExit);
 
-		JMenu mnEdit = new JMenu("Edit");
+		final JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
 
-		JMenuItem mntmCut = new JMenuItem("Cut");
+		final JMenuItem mntmCut = new JMenuItem("Cut");
 		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
-		mntmCut.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.cut();
-			}
-		});
+		mntmCut.addActionListener(e -> MainFrame.this.textPane.cut());
 		mnEdit.add(mntmCut);
 
-		JMenuItem mntmCopy = new JMenuItem("Copy");
+		final JMenuItem mntmCopy = new JMenuItem("Copy");
 		mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-		mntmCopy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.copy();
-			}
-		});
+		mntmCopy.addActionListener(e -> MainFrame.this.textPane.copy());
 		mnEdit.add(mntmCopy);
 
-		JMenuItem mntmPaste = new JMenuItem("Paste");
+		final JMenuItem mntmPaste = new JMenuItem("Paste");
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-		mntmPaste.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.paste();
-			}
-		});
+		mntmPaste.addActionListener(e -> MainFrame.this.textPane.paste());
 		mnEdit.add(mntmPaste);
 
-		JMenuItem mntmDelete = new JMenuItem("Delete");
+		final JMenuItem mntmDelete = new JMenuItem("Delete");
 		mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
-		mntmDelete.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.replaceSelection("");
-			}
-		});
+		mntmDelete.addActionListener(e -> MainFrame.this.textPane.replaceSelection(""));
 		mnEdit.add(mntmDelete);
 
-		JSeparator separator_4 = new JSeparator();
+		final JSeparator separator_4 = new JSeparator();
 		mnEdit.add(separator_4);
 
-		JMenuItem mntmUndo = new JMenuItem("Undo");
+		final JMenuItem mntmUndo = new JMenuItem("Undo");
 		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
-		mntmUndo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.undoLastAction();
-			}
-		});
+		mntmUndo.addActionListener(e -> MainFrame.this.textPane.undoLastAction());
 		mnEdit.add(mntmUndo);
 
-		JMenuItem mntmRedo = new JMenuItem("Redo");
+		final JMenuItem mntmRedo = new JMenuItem("Redo");
 		mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
-		mntmRedo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.redoLastAction();
-			}
-		});
+		mntmRedo.addActionListener(e -> MainFrame.this.textPane.redoLastAction());
 		mnEdit.add(mntmRedo);
 
-		JMenu mnLanguage = new JMenu("Language");
+		final JMenu mnLanguage = new JMenu("Language");
 		menuBar.add(mnLanguage);
 
-		JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
+		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
 
-		JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
+		final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
 		menuBar.add(mnSyntaxHighlighting);
 
-		JMenuItem mntmNo = new JMenuItem("No");
-		mntmNo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
-			}
-		});
+		final JMenuItem mntmNo = new JMenuItem("No");
+		mntmNo.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE));
 		mnSyntaxHighlighting.add(mntmNo);
 
-		JMenu mnA = new JMenu("A");
+		final JMenu mnA = new JMenu("A");
 		mnSyntaxHighlighting.add(mnA);
 
-		JMenuItem mntmActionscript = new JMenuItem("ActionScript");
+		final JMenuItem mntmActionscript = new JMenuItem("ActionScript");
 		mnA.add(mntmActionscript);
 
-		JMenuItem mntmAssembler = new JMenuItem("Assembly");
+		final JMenuItem mntmAssembler = new JMenuItem("Assembly");
 		mnA.add(mntmAssembler);
-		mntmAssembler.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
-			}
-		});
-		mntmActionscript.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
-			}
-		});
+		mntmAssembler.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86));
+		mntmActionscript.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT));
 
-		JMenuItem mntmBbcode = new JMenuItem("BBCode");
-		mntmBbcode.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE);
-			}
-		});
+		final JMenuItem mntmBbcode = new JMenuItem("BBCode");
+		mntmBbcode.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE));
 		mnSyntaxHighlighting.add(mntmBbcode);
 
-		JMenu mnC = new JMenu("C");
+		final JMenu mnC = new JMenu("C");
 		mnSyntaxHighlighting.add(mnC);
 
-		JMenuItem mntmC = new JMenuItem("C");
+		final JMenuItem mntmC = new JMenuItem("C");
 		mnC.add(mntmC);
 
-		JMenuItem mntmC_1 = new JMenuItem("C++");
+		final JMenuItem mntmC_1 = new JMenuItem("C++");
 		mnC.add(mntmC_1);
 
-		JMenuItem mntmC_2 = new JMenuItem("C#");
+		final JMenuItem mntmC_2 = new JMenuItem("C#");
 		mnC.add(mntmC_2);
 
-		JMenuItem mntmClojure = new JMenuItem("Clojure");
+		final JMenuItem mntmClojure = new JMenuItem("Clojure");
 		mnC.add(mntmClojure);
-		mntmClojure.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
-			}
-		});
-		mntmC_2.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
-			}
-		});
-		mntmC_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
-			}
-		});
-		mntmC.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
-			}
-		});
+		mntmClojure.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE));
+		mntmC_2.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP));
+		mntmC_1.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS));
+		mntmC.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C));
 
-		JMenu mnD = new JMenu("D");
+		final JMenu mnD = new JMenu("D");
 		mnSyntaxHighlighting.add(mnD);
 
-		JMenuItem mntmDart = new JMenuItem("Dart");
+		final JMenuItem mntmDart = new JMenuItem("Dart");
 		mnD.add(mntmDart);
 
-		JMenuItem mntmDelphi = new JMenuItem("Delphi");
+		final JMenuItem mntmDelphi = new JMenuItem("Delphi");
 		mnD.add(mntmDelphi);
 
-		JMenuItem mntmDocker = new JMenuItem("Docker");
+		final JMenuItem mntmDocker = new JMenuItem("Docker");
 		mnD.add(mntmDocker);
 
-		JMenuItem mntmDtd = new JMenuItem("DTD");
+		final JMenuItem mntmDtd = new JMenuItem("DTD");
 		mnD.add(mntmDtd);
 
-		JMenuItem mntmD = new JMenuItem("D");
+		final JMenuItem mntmD = new JMenuItem("D");
 		mnD.add(mntmD);
-		mntmD.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D);
-			}
-		});
-		mntmDtd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD);
-			}
-		});
-		mntmDocker.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
-			}
-		});
-		mntmDelphi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
-			}
-		});
-		mntmDart.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
-			}
-		});
+		mntmD.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D));
+		mntmDtd.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD));
+		mntmDocker.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE));
+		mntmDelphi.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI));
+		mntmDart.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART));
 
-		JMenuItem mntmFortan = new JMenuItem("Fortan");
-		mntmFortan.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN);
-			}
-		});
+		final JMenuItem mntmFortan = new JMenuItem("Fortan");
+		mntmFortan.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN));
 		mnSyntaxHighlighting.add(mntmFortan);
 
-		JMenuItem mntmGroovy = new JMenuItem("Groovy");
-		mntmGroovy.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
-			}
-		});
+		final JMenuItem mntmGroovy = new JMenuItem("Groovy");
+		mntmGroovy.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY));
 		mnSyntaxHighlighting.add(mntmGroovy);
 
-		JMenu mnH = new JMenu("H");
+		final JMenu mnH = new JMenu("H");
 		mnSyntaxHighlighting.add(mnH);
 
-		JMenuItem mntmHtaccess = new JMenuItem("HTAccess");
+		final JMenuItem mntmHtaccess = new JMenuItem("HTAccess");
 		mnH.add(mntmHtaccess);
-		mntmHtaccess.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
-			}
-		});
+		mntmHtaccess.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS));
 
-		JMenuItem mntmHosts = new JMenuItem("Hosts");
+		final JMenuItem mntmHosts = new JMenuItem("Hosts");
 		mnH.add(mntmHosts);
 
-		JMenuItem mntmHtml = new JMenuItem("HTML");
+		final JMenuItem mntmHtml = new JMenuItem("HTML");
 		mnH.add(mntmHtml);
-		mntmHtml.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
-			}
-		});
-		mntmHosts.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
-			}
-		});
+		mntmHtml.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML));
+		mntmHosts.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS));
 
-		JMenuItem mntmIni = new JMenuItem("INI");
-		mntmIni.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_INI);
-			}
-		});
+		final JMenuItem mntmIni = new JMenuItem("INI");
+		mntmIni.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_INI));
 		mnSyntaxHighlighting.add(mntmIni);
 
-		JMenu mnJ = new JMenu("J");
+		final JMenu mnJ = new JMenu("J");
 		mnSyntaxHighlighting.add(mnJ);
 
-		JMenuItem mntmJavascript = new JMenuItem("JavaScript");
+		final JMenuItem mntmJavascript = new JMenuItem("JavaScript");
 		mnJ.add(mntmJavascript);
 
-		JMenuItem mntmJava = new JMenuItem("Java");
+		final JMenuItem mntmJava = new JMenuItem("Java");
 		mnJ.add(mntmJava);
 
-		JMenuItem mntmJshintrc = new JMenuItem("JSON");
+		final JMenuItem mntmJshintrc = new JMenuItem("JSON");
 		mnJ.add(mntmJshintrc);
 
-		JMenuItem mntmJsp = new JMenuItem("JSP");
+		final JMenuItem mntmJsp = new JMenuItem("JSP");
 		mnJ.add(mntmJsp);
-		mntmJsp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP);
-			}
-		});
-		mntmJshintrc.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
-			}
-		});
-		mntmJava.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-			}
-		});
-		mntmJavascript.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
-			}
-		});
+		mntmJsp.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP));
+		mntmJshintrc.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON));
+		mntmJava.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA));
+		mntmJavascript.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT));
 
-		JMenu mnL = new JMenu("L");
+		final JMenu mnL = new JMenu("L");
 		mnSyntaxHighlighting.add(mnL);
 
-		JMenuItem mntmLatex = new JMenuItem("Latex");
+		final JMenuItem mntmLatex = new JMenuItem("Latex");
 		mnL.add(mntmLatex);
 
-		JMenuItem mntmLess = new JMenuItem("Less");
+		final JMenuItem mntmLess = new JMenuItem("Less");
 		mnL.add(mntmLess);
 
-		JMenuItem mntmLisp = new JMenuItem("Lisp");
+		final JMenuItem mntmLisp = new JMenuItem("Lisp");
 		mnL.add(mntmLisp);
 
-		JMenuItem mntmLua = new JMenuItem("Lua");
+		final JMenuItem mntmLua = new JMenuItem("Lua");
 		mnL.add(mntmLua);
-		mntmLua.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
-			}
-		});
-		mntmLisp.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP);
-			}
-		});
-		mntmLess.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS);
-			}
-		});
-		mntmLatex.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
-			}
-		});
+		mntmLua.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA));
+		mntmLisp.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP));
+		mntmLess.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS));
+		mntmLatex.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX));
 
-		JMenu mnM = new JMenu("M");
+		final JMenu mnM = new JMenu("M");
 		mnSyntaxHighlighting.add(mnM);
 
-		JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
+		final JMenuItem mntmMakeFile = new JMenuItem("MakeFile");
 		mnM.add(mntmMakeFile);
 
-		JMenuItem mntmMxml = new JMenuItem("MXML");
+		final JMenuItem mntmMxml = new JMenuItem("MXML");
 		mnM.add(mntmMxml);
-		mntmMxml.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML);
-			}
-		});
-		mntmMakeFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
-			}
-		});
+		mntmMxml.addActionListener(
+				arg0 -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML));
+		mntmMakeFile.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE));
 
-		JMenuItem mntmNsis = new JMenuItem("NSIS");
-		mntmNsis.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NSIS);
-			}
-		});
+		final JMenuItem mntmNsis = new JMenuItem("NSIS");
+		mntmNsis.addActionListener(
+				arg0 -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NSIS));
 		mnSyntaxHighlighting.add(mntmNsis);
 
-		JMenu mnP = new JMenu("P");
+		final JMenu mnP = new JMenu("P");
 		mnSyntaxHighlighting.add(mnP);
 
-		JMenuItem mntmPerl = new JMenuItem("Perl");
+		final JMenuItem mntmPerl = new JMenuItem("Perl");
 		mnP.add(mntmPerl);
 
-		JMenuItem mntmPropertiesFile = new JMenuItem("Properties File");
-		mntmPropertiesFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
-			}
-		});
+		final JMenuItem mntmPropertiesFile = new JMenuItem("Properties File");
+		mntmPropertiesFile.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE));
 		mnP.add(mntmPropertiesFile);
 
-		JMenuItem mntmPython = new JMenuItem("Python");
-		mntmPython.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON);
-			}
-		});
+		final JMenuItem mntmPython = new JMenuItem("Python");
+		mntmPython.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON));
 		mnP.add(mntmPython);
-		mntmPerl.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL);
-			}
-		});
+		mntmPerl.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL));
 
-		JMenu mnR = new JMenu("R");
+		final JMenu mnR = new JMenu("R");
 		mnSyntaxHighlighting.add(mnR);
 
-		JMenuItem mntmRuby = new JMenuItem("Ruby"); // Forever alone, Ruby.
-		mntmRuby.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
-			}
-		});
+		final JMenuItem mntmRuby = new JMenuItem("Ruby"); // Forever alone, Ruby.
+		mntmRuby.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY));
 		mnR.add(mntmRuby);
 
-		JMenu mnS = new JMenu("S");
+		final JMenu mnS = new JMenu("S");
 		mnSyntaxHighlighting.add(mnS);
 
-		JMenuItem mntmSas = new JMenuItem("SAS");
-		mntmSas.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SAS);
-			}
-		});
+		final JMenuItem mntmSas = new JMenuItem("SAS");
+		mntmSas.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SAS));
 		mnS.add(mntmSas);
 
-		JMenuItem mntmSacala = new JMenuItem("Scala");
-		mntmSacala.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA);
-			}
-		});
+		final JMenuItem mntmSacala = new JMenuItem("Scala");
+		mntmSacala.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA));
 		mnS.add(mntmSacala);
 
-		JMenuItem mntmSql = new JMenuItem("SQL");
-		mntmSql.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
-			}
-		});
+		final JMenuItem mntmSql = new JMenuItem("SQL");
+		mntmSql.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL));
 		mnS.add(mntmSql);
 
-		JMenu mnT = new JMenu("T");
+		final JMenu mnT = new JMenu("T");
 		mnSyntaxHighlighting.add(mnT);
 
-		JMenuItem mntmTcl = new JMenuItem("TCL");
-		mntmTcl.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TCL);
-			}
-		});
+		final JMenuItem mntmTcl = new JMenuItem("TCL");
+		mntmTcl.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TCL));
 		mnT.add(mntmTcl);
 
-		JMenuItem mntmTypescript = new JMenuItem("TypeScript");
-		mntmTypescript.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT);
-			}
-		});
+		final JMenuItem mntmTypescript = new JMenuItem("TypeScript");
+		mntmTypescript.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT));
 		mnT.add(mntmTypescript);
 
-		JMenuItem mntmUnixShell = new JMenuItem("Unix Shell");
-		mntmUnixShell.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
-			}
-		});
+		final JMenuItem mntmUnixShell = new JMenuItem("Unix Shell");
+		mntmUnixShell.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL));
 		mnSyntaxHighlighting.add(mntmUnixShell);
 
-		JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic");
-		mntmVisualBasic.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC);
-			}
-		});
+		final JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic");
+		mntmVisualBasic.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC));
 		mnSyntaxHighlighting.add(mntmVisualBasic);
 
-		JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
-		mntmWindowsBatch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
-			}
-		});
+		final JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
+		mntmWindowsBatch.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH));
 		mnSyntaxHighlighting.add(mntmWindowsBatch);
 
-		JMenuItem mntmXml = new JMenuItem("XML");
-		mntmXml.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
-			}
-		});
+		final JMenuItem mntmXml = new JMenuItem("XML");
+		mntmXml.addActionListener(e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML));
 		mnSyntaxHighlighting.add(mntmXml);
 
-		JMenuItem mntmYaml = new JMenuItem("YAML");
-		mntmYaml.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML);
-			}
-		});
+		final JMenuItem mntmYaml = new JMenuItem("YAML");
+		mntmYaml.addActionListener(
+				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML));
 		mnSyntaxHighlighting.add(mntmYaml);
 
-		JMenu mnManageCompilers = new JMenu("Compilers");
+		final JMenu mnManageCompilers = new JMenu("Compilers");
 		menuBar.add(mnManageCompilers);
 
-		JMenu mnAssembly = new JMenu("Assembly");
+		final JMenu mnAssembly = new JMenu("Assembly");
 		mnManageCompilers.add(mnAssembly);
 
-		JMenuItem mntmNasm = new JMenuItem("NASM");
+		final JMenuItem mntmNasm = new JMenuItem("NASM");
 		mntmNasm.addActionListener(new ActionListener() {
 			private static final int BUFFER_SIZE = 4096;
 
-			public void unzip(String zipFilePath, String destDirectory) throws IOException {
-				File destDir = new File(destDirectory);
-				if (!destDir.exists()) {
-					destDir.mkdir();
-				}
-				ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory()) {
-						// if the entry is a file, extracts it
-						extractFile(zipIn, filePath);
-					} else {
-						// if the entry is a directory, make the directory
-						File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-
-			private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(T[] first, T[]... rest) {
-				int totalLength = first.length;
-				for (T[] array : rest) {
-					totalLength += array.length;
-				}
-				T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			public void actionPerformed(ActionEvent arg0) {
-				String name = "nasm", compilername = "nasm";
+			@Override
+			public void actionPerformed(final ActionEvent arg0) {
+				final String name = "nasm", compilername = "nasm";
 				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(instance, "Please install " + name + " package.", "Error",
-							JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(instance,
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
+							"Error", JOptionPane.ERROR_MESSAGE);
+					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
 							"Do you want to download and install " + name
 									+ " package?\n (By installing it you accept License provided with software)",
 							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -801,166 +567,164 @@ public class MainFrame extends JFrame {
 						try {
 							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
 									+ name + ".zip");
-						} catch (MalformedURLException e) {
-							Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						} catch (final MalformedURLException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
 							return;
 						}
 						try {
-							HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 							new File("compilers/" + name).mkdirs();
 							try (InputStream stream = con.getInputStream()) {
 								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
 							}
-							unzip("compilers/" + name + "/package.zip", "compilers/");
+							this.unzip("compilers/" + name + "/package.zip", "compilers/");
 							new File("compilers/" + name + "/package.zip").delete();
-						} catch (IOException e) {
-							Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						} catch (final IOException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
 							return;
 						}
 					} else
 						return;
 				}
-				if (currentFile == null) {
-					JOptionPane.showMessageDialog(instance, "Please save your work in order to compile.",
+				if (MainFrame.this.currentFile == null)
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
 							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				} else {
-					String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
+				else {
+					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
 							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
+					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
 					String[] lines = null;
 					try {
 						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (IOException e2) {
-						Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					} catch (final IOException e2) {
+						final Crash dialog = new Crash(e2);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 						return;
 					}
-					String[] command = concatAll(new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines, new String[] { "\"" + currentFile.getAbsolutePath() + "\"" });
+					final String[] command = this.concatAll(
+							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
+							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
 					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					ProcessBuilder pb = new ProcessBuilder(command);
+					final ProcessBuilder pb = new ProcessBuilder(command);
 					try {
-						pb.directory(new File(currentFile.getAbsoluteFile().getParent()));
-					} catch (Exception e1) {
+						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
+					} catch (final Exception e1) {
 						// I Don't care
 					}
 					try {
-						Process p = pb.start();
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+						final Process p = pb.start();
+						new Thread(() -> {
+							final BufferedReader stdInput = new BufferedReader(
+									new InputStreamReader(p.getInputStream()));
 
-								BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+							final BufferedReader stdError = new BufferedReader(
+									new InputStreamReader(p.getErrorStream()));
 
-								toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
-								String s = null;
-								try {
-									while ((s = stdInput.readLine()) != null) {
-										toolConsole.setText(toolConsole.getText() + s);
-									}
-								} catch (IOException e1) {
-									Crash dialog = new Crash(e1);
-									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dialog.setVisible(true);
-									return;
-								}
-
-								// read any errors from the attempted command
-								toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
-								try {
-									while ((s = stdError.readLine()) != null) {
-										toolConsole.setText(toolConsole.getText() + s);
-									}
-								} catch (IOException e) {
-									Crash dialog = new Crash(e);
-									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dialog.setVisible(true);
-									return;
-								}
-
-								CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-
-								toolConsole.setText("");
-
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
+							String s = null;
+							try {
+								while ((s = stdInput.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e1) {
+								final Crash dialog1 = new Crash(e1);
+								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog1.setVisible(true);
 								return;
 							}
+
+							// read any errors from the attempted command
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
+							try {
+								while ((s = stdError.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e) {
+								final Crash dialog2 = new Crash(e);
+								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog2.setVisible(true);
+								return;
+							}
+
+							final CommandOutputDialog dialog3 = new CommandOutputDialog(
+									MainFrame.this.toolConsole.getText());
+							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog3.setVisible(true);
+
+							MainFrame.this.toolConsole.setText("");
+
+							return;
 						}).start();
-					} catch (IOException e1) {
-						Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					} catch (final IOException e1) {
+						final Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 					}
 				}
+			}
+
+			@SuppressWarnings("unchecked")
+			public <T> T[] concatAll(final T[] first, final T[]... rest) {
+				int totalLength = first.length;
+				for (final T[] array : rest)
+					totalLength += array.length;
+				final T[] result = Arrays.copyOf(first, totalLength);
+				int offset = first.length;
+				for (final T[] array : rest) {
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+				return result;
+			}
+
+			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
+				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				final byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1)
+					bos.write(bytesIn, 0, read);
+				bos.close();
+			}
+
+			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
+				final File destDir = new File(destDirectory);
+				if (!destDir.exists())
+					destDir.mkdir();
+				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+				ZipEntry entry = zipIn.getNextEntry();
+				// iterates over entries in the zip file
+				while (entry != null) {
+					final String filePath = destDirectory + File.separator + entry.getName();
+					if (!entry.isDirectory())
+						// if the entry is a file, extracts it
+						this.extractFile(zipIn, filePath);
+					else {
+						// if the entry is a directory, make the directory
+						final File dir = new File(filePath);
+						dir.mkdir();
+					}
+					zipIn.closeEntry();
+					entry = zipIn.getNextEntry();
+				}
+				zipIn.close();
 			}
 		});
 		mnAssembly.add(mntmNasm);
-		
-		JMenuItem mntmFasm = new JMenuItem("FASM");
+
+		final JMenuItem mntmFasm = new JMenuItem("FASM (MacOS not supported)");
 		mntmFasm.addActionListener(new ActionListener() {
 			private static final int BUFFER_SIZE = 4096;
 
-			public void unzip(String zipFilePath, String destDirectory) throws IOException {
-				File destDir = new File(destDirectory);
-				if (!destDir.exists()) {
-					destDir.mkdir();
-				}
-				ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory()) {
-						// if the entry is a file, extracts it
-						extractFile(zipIn, filePath);
-					} else {
-						// if the entry is a directory, make the directory
-						File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-
-			private void extractFile(ZipInputStream zipIn, String filePath) throws IOException {
-				BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1) {
-					bos.write(bytesIn, 0, read);
-				}
-				bos.close();
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(T[] first, T[]... rest) {
-				int totalLength = first.length;
-				for (T[] array : rest) {
-					totalLength += array.length;
-				}
-				T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			public void actionPerformed(ActionEvent arg0) {
-				String name = "fasm", compilername = "fasm";
+			@Override
+			public void actionPerformed(final ActionEvent arg0) {
+				final String name = "fasm", compilername = "fasm";
 				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(instance, "Please install " + name + " package.", "Error",
-							JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(instance,
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
+							"Error", JOptionPane.ERROR_MESSAGE);
+					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
 							"Do you want to download and install " + name
 									+ " package?\n (By installing it you accept License provided with software)",
 							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -968,173 +732,539 @@ public class MainFrame extends JFrame {
 						try {
 							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
 									+ name + ".zip");
-						} catch (MalformedURLException e) {
-							Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						} catch (final MalformedURLException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
 							return;
 						}
 						try {
-							HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 							new File("compilers/" + name).mkdirs();
 							try (InputStream stream = con.getInputStream()) {
 								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
 							}
-							unzip("compilers/" + name + "/package.zip", "compilers/");
+							this.unzip("compilers/" + name + "/package.zip", "compilers/");
 							new File("compilers/" + name + "/package.zip").delete();
-						} catch (IOException e) {
-							Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+						} catch (final IOException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 							dialog.setVisible(true);
 							return;
 						}
 					} else
 						return;
 				}
-				if (currentFile == null) {
-					JOptionPane.showMessageDialog(instance, "Please save your work in order to compile.",
+				if (MainFrame.this.currentFile == null)
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
 							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				} else {
-					String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
+				else {
+					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
 							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
+					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
 					String[] lines = null;
 					try {
 						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (IOException e2) {
-						Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					} catch (final IOException e2) {
+						final Crash dialog = new Crash(e2);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 						return;
 					}
-					String[] command = concatAll(new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines, new String[] { "\"" + currentFile.getAbsolutePath() + "\"" });
+					final String[] command = this.concatAll(
+							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
+							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
 					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					ProcessBuilder pb = new ProcessBuilder(command);
+					final ProcessBuilder pb = new ProcessBuilder(command);
 					try {
-						pb.directory(new File(currentFile.getAbsoluteFile().getParent()));
-					} catch (Exception e1) {
+						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
+					} catch (final Exception e1) {
 						// I Don't care
 					}
 					try {
-						Process p = pb.start();
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+						final Process p = pb.start();
+						new Thread(() -> {
+							final BufferedReader stdInput = new BufferedReader(
+									new InputStreamReader(p.getInputStream()));
 
-								BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+							final BufferedReader stdError = new BufferedReader(
+									new InputStreamReader(p.getErrorStream()));
 
-								toolConsole.setText(toolConsole.getText() + "STDOUT:\n");
-								String s = null;
-								try {
-									while ((s = stdInput.readLine()) != null) {
-										toolConsole.setText(toolConsole.getText() + s);
-									}
-								} catch (IOException e1) {
-									Crash dialog = new Crash(e1);
-									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dialog.setVisible(true);
-									return;
-								}
-
-								// read any errors from the attempted command
-								toolConsole.setText(toolConsole.getText() + "\nSTDERR:\n");
-								try {
-									while ((s = stdError.readLine()) != null) {
-										toolConsole.setText(toolConsole.getText() + s);
-									}
-								} catch (IOException e) {
-									Crash dialog = new Crash(e);
-									dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-									dialog.setVisible(true);
-									return;
-								}
-
-								CommandOutputDialog dialog = new CommandOutputDialog(toolConsole.getText());
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-
-								toolConsole.setText("");
-
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
+							String s = null;
+							try {
+								while ((s = stdInput.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e1) {
+								final Crash dialog1 = new Crash(e1);
+								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog1.setVisible(true);
 								return;
 							}
+
+							// read any errors from the attempted command
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
+							try {
+								while ((s = stdError.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e) {
+								final Crash dialog2 = new Crash(e);
+								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog2.setVisible(true);
+								return;
+							}
+
+							final CommandOutputDialog dialog3 = new CommandOutputDialog(
+									MainFrame.this.toolConsole.getText());
+							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog3.setVisible(true);
+
+							MainFrame.this.toolConsole.setText("");
+
+							return;
 						}).start();
-					} catch (IOException e1) {
-						Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					} catch (final IOException e1) {
+						final Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 					}
 				}
+			}
+
+			@SuppressWarnings("unchecked")
+			public <T> T[] concatAll(final T[] first, final T[]... rest) {
+				int totalLength = first.length;
+				for (final T[] array : rest)
+					totalLength += array.length;
+				final T[] result = Arrays.copyOf(first, totalLength);
+				int offset = first.length;
+				for (final T[] array : rest) {
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+				return result;
+			}
+
+			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
+				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				final byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1)
+					bos.write(bytesIn, 0, read);
+				bos.close();
+			}
+
+			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
+				final File destDir = new File(destDirectory);
+				if (!destDir.exists())
+					destDir.mkdir();
+				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+				ZipEntry entry = zipIn.getNextEntry();
+				// iterates over entries in the zip file
+				while (entry != null) {
+					final String filePath = destDirectory + File.separator + entry.getName();
+					if (!entry.isDirectory())
+						// if the entry is a file, extracts it
+						this.extractFile(zipIn, filePath);
+					else {
+						// if the entry is a directory, make the directory
+						final File dir = new File(filePath);
+						dir.mkdir();
+					}
+					zipIn.closeEntry();
+					entry = zipIn.getNextEntry();
+				}
+				zipIn.close();
 			}
 		});
 		mnAssembly.add(mntmFasm);
 
-		JMenu mnAbout = new JMenu("About");
+		final JMenu mnC_1 = new JMenu("C");
+		mnManageCompilers.add(mnC_1);
+
+		final JMenuItem mntmTinycwindowsOnly = new JMenuItem("TinyC (Windows only)");
+		mntmTinycwindowsOnly.addActionListener(new ActionListener() {
+			private static final int BUFFER_SIZE = 4096;
+
+			@Override
+			public void actionPerformed(final ActionEvent arg0) {
+				final String name = "tinyc", compilername = "tcc";
+				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
+							"Error", JOptionPane.ERROR_MESSAGE);
+					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
+							"Do you want to download and install " + name
+									+ " package?\n (By installing it you accept License provided with software)",
+							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						URL url = null;
+						try {
+							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
+									+ name + ".zip");
+						} catch (final MalformedURLException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+						try {
+							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+							new File("compilers/" + name).mkdirs();
+							try (InputStream stream = con.getInputStream()) {
+								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
+							}
+							this.unzip("compilers/" + name + "/package.zip", "compilers/");
+							new File("compilers/" + name + "/package.zip").delete();
+						} catch (final IOException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+					} else
+						return;
+				}
+				if (MainFrame.this.currentFile == null)
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
+							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
+				else {
+					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
+							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
+					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
+					String[] lines = null;
+					try {
+						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
+					} catch (final IOException e2) {
+						final Crash dialog = new Crash(e2);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+						return;
+					}
+					final String[] command = this.concatAll(
+							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
+							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
+					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
+					final ProcessBuilder pb = new ProcessBuilder(command);
+					try {
+						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
+					} catch (final Exception e1) {
+						// I Don't care
+					}
+					try {
+						final Process p = pb.start();
+						new Thread(() -> {
+							final BufferedReader stdInput = new BufferedReader(
+									new InputStreamReader(p.getInputStream()));
+
+							final BufferedReader stdError = new BufferedReader(
+									new InputStreamReader(p.getErrorStream()));
+
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
+							String s = null;
+							try {
+								while ((s = stdInput.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e1) {
+								final Crash dialog1 = new Crash(e1);
+								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog1.setVisible(true);
+								return;
+							}
+
+							// read any errors from the attempted command
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
+							try {
+								while ((s = stdError.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e) {
+								final Crash dialog2 = new Crash(e);
+								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog2.setVisible(true);
+								return;
+							}
+
+							final CommandOutputDialog dialog3 = new CommandOutputDialog(
+									MainFrame.this.toolConsole.getText());
+							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog3.setVisible(true);
+
+							MainFrame.this.toolConsole.setText("");
+
+							return;
+						}).start();
+					} catch (final IOException e1) {
+						final Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+					}
+				}
+			}
+
+			@SuppressWarnings("unchecked")
+			public <T> T[] concatAll(final T[] first, final T[]... rest) {
+				int totalLength = first.length;
+				for (final T[] array : rest)
+					totalLength += array.length;
+				final T[] result = Arrays.copyOf(first, totalLength);
+				int offset = first.length;
+				for (final T[] array : rest) {
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+				return result;
+			}
+
+			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
+				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				final byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1)
+					bos.write(bytesIn, 0, read);
+				bos.close();
+			}
+
+			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
+				final File destDir = new File(destDirectory);
+				if (!destDir.exists())
+					destDir.mkdir();
+				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+				ZipEntry entry = zipIn.getNextEntry();
+				// iterates over entries in the zip file
+				while (entry != null) {
+					final String filePath = destDirectory + File.separator + entry.getName();
+					if (!entry.isDirectory())
+						// if the entry is a file, extracts it
+						this.extractFile(zipIn, filePath);
+					else {
+						// if the entry is a directory, make the directory
+						final File dir = new File(filePath);
+						dir.mkdir();
+					}
+					zipIn.closeEntry();
+					entry = zipIn.getNextEntry();
+				}
+				zipIn.close();
+			}
+		});
+		mnC_1.add(mntmTinycwindowsOnly);
+
+		final JMenuItem mntmClang = new JMenuItem("Clang (Currently, Windows not supported)");
+		mntmClang.addActionListener(new ActionListener() {
+			private static final int BUFFER_SIZE = 4096;
+
+			@Override
+			public void actionPerformed(final ActionEvent arg0) {
+				final String name = "clang", compilername = "bin/clang";
+				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
+							"Error", JOptionPane.ERROR_MESSAGE);
+					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
+							"Do you want to download and install " + name
+									+ " package?\n (By installing it you accept License provided with software)",
+							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						URL url = null;
+						try {
+							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
+									+ name + ".zip");
+						} catch (final MalformedURLException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+						try {
+							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+							new File("compilers/" + name).mkdirs();
+							try (InputStream stream = con.getInputStream()) {
+								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
+							}
+							this.unzip("compilers/" + name + "/package.zip", "compilers/");
+							new File("compilers/" + name + "/package.zip").delete();
+						} catch (final IOException e) {
+							final Crash dialog = new Crash(e);
+							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog.setVisible(true);
+							return;
+						}
+					} else
+						return;
+				}
+				if (MainFrame.this.currentFile == null)
+					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
+							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
+				else {
+					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
+							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
+					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
+					String[] lines = null;
+					try {
+						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
+					} catch (final IOException e2) {
+						final Crash dialog = new Crash(e2);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+						return;
+					}
+					final String[] command = this.concatAll(
+							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
+							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
+					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
+					final ProcessBuilder pb = new ProcessBuilder(command);
+					try {
+						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
+					} catch (final Exception e1) {
+						// I Don't care
+					}
+					try {
+						final Process p = pb.start();
+						new Thread(() -> {
+							final BufferedReader stdInput = new BufferedReader(
+									new InputStreamReader(p.getInputStream()));
+
+							final BufferedReader stdError = new BufferedReader(
+									new InputStreamReader(p.getErrorStream()));
+
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
+							String s = null;
+							try {
+								while ((s = stdInput.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e1) {
+								final Crash dialog1 = new Crash(e1);
+								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog1.setVisible(true);
+								return;
+							}
+
+							// read any errors from the attempted command
+							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
+							try {
+								while ((s = stdError.readLine()) != null)
+									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
+							} catch (final IOException e) {
+								final Crash dialog2 = new Crash(e);
+								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog2.setVisible(true);
+								return;
+							}
+
+							final CommandOutputDialog dialog3 = new CommandOutputDialog(
+									MainFrame.this.toolConsole.getText());
+							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog3.setVisible(true);
+
+							MainFrame.this.toolConsole.setText("");
+
+							return;
+						}).start();
+					} catch (final IOException e1) {
+						final Crash dialog = new Crash(e1);
+						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog.setVisible(true);
+					}
+				}
+			}
+
+			@SuppressWarnings("unchecked")
+			public <T> T[] concatAll(final T[] first, final T[]... rest) {
+				int totalLength = first.length;
+				for (final T[] array : rest)
+					totalLength += array.length;
+				final T[] result = Arrays.copyOf(first, totalLength);
+				int offset = first.length;
+				for (final T[] array : rest) {
+					System.arraycopy(array, 0, result, offset, array.length);
+					offset += array.length;
+				}
+				return result;
+			}
+
+			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
+				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
+				final byte[] bytesIn = new byte[BUFFER_SIZE];
+				int read = 0;
+				while ((read = zipIn.read(bytesIn)) != -1)
+					bos.write(bytesIn, 0, read);
+				bos.close();
+			}
+
+			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
+				final File destDir = new File(destDirectory);
+				if (!destDir.exists())
+					destDir.mkdir();
+				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
+				ZipEntry entry = zipIn.getNextEntry();
+				// iterates over entries in the zip file
+				while (entry != null) {
+					final String filePath = destDirectory + File.separator + entry.getName();
+					if (!entry.isDirectory())
+						// if the entry is a file, extracts it
+						this.extractFile(zipIn, filePath);
+					else {
+						// if the entry is a directory, make the directory
+						final File dir = new File(filePath);
+						dir.mkdir();
+					}
+					zipIn.closeEntry();
+					entry = zipIn.getNextEntry();
+				}
+				zipIn.close();
+			}
+		});
+		mnC_1.add(mntmClang);
+
+		final JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 
-		JMenuItem mntmAbout = new JMenuItem("About MEdit");
+		final JMenuItem mntmAbout = new JMenuItem("About MEdit");
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
-		mntmAbout.addActionListener(new ActionListener() {
-			/**
-			 * MEdit About Box action listener.
-			 */
-			public void actionPerformed(ActionEvent arg0) {
-				AboutBox dialog = new AboutBox();
-				dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
+		mntmAbout.addActionListener(arg0 -> {
+			final AboutBox dialog = new AboutBox();
+			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
 		});
 		mnAbout.add(mntmAbout);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		this.contentPane = new JPanel();
+		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.setContentPane(this.contentPane);
+		this.contentPane.setLayout(new BorderLayout(0, 0));
 
-		JToolBar toolBar = new JToolBar();
+		final JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
-		contentPane.add(toolBar, BorderLayout.NORTH);
+		this.contentPane.add(toolBar, BorderLayout.NORTH);
 
-		JButton btnNewButton = new JButton("");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-						try {
-							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-							MainFrame frame = new MainFrame();
-							frame.setVisible(true);
-							instances++;
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						textPane.requestFocus();
-					}
-				});
+		final JButton btnNewButton = new JButton("");
+		btnNewButton.addActionListener(e -> EventQueue.invokeLater(() -> {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				final MainFrame frame = new MainFrame();
+				frame.setVisible(true);
+				MainFrame.instances++;
+			} catch (final Exception e1) {
+				e1.printStackTrace();
 			}
-		});
+			MainFrame.this.textPane.requestFocus();
+		}));
 		btnNewButton.setToolTipText("Create new file");
 		btnNewButton.setFocusPainted(false);
 		btnNewButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-new.png")));
 		toolBar.add(btnNewButton);
 
-		JButton btnOpenButton = new JButton("");
-		btnOpenButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				if (chooser.showOpenDialog(instance) != JFileChooser.APPROVE_OPTION)
-					return;
-				try {
-					currentFile = chooser.getSelectedFile();
-					FileReader reader = new FileReader(chooser.getSelectedFile());
-					BufferedReader br = new BufferedReader(reader);
-					textPane.read(br, null);
-					br.close();
-					textPane.requestFocus();
-				} catch (Exception e2) {
-					Crash dialog = new Crash(e2);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
+		final JButton btnOpenButton = new JButton("");
+		btnOpenButton.addActionListener(e -> {
+			final JFileChooser chooser = new JFileChooser();
+			if (chooser.showOpenDialog(MainFrame.this.instance) != JFileChooser.APPROVE_OPTION)
+				return;
+			try {
+				MainFrame.this.currentFile = chooser.getSelectedFile();
+				final FileReader reader = new FileReader(chooser.getSelectedFile());
+				final BufferedReader br = new BufferedReader(reader);
+				MainFrame.this.textPane.read(br, null);
+				br.close();
+				MainFrame.this.textPane.requestFocus();
+			} catch (final Exception e2) {
+				final Crash dialog = new Crash(e2);
+				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
 			}
 		});
 		btnOpenButton.setToolTipText("Open existing file");
@@ -1142,61 +1272,56 @@ public class MainFrame extends JFrame {
 		btnOpenButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-open.png")));
 		toolBar.add(btnOpenButton);
 
-		JButton btnSaveButton = new JButton("");
-		btnSaveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (currentFile == null) {
-					final JFileChooser SaveAs = new JFileChooser();
-					SaveAs.setApproveButtonText("Save");
-					int actionDialog = SaveAs.showSaveDialog(instance);
-					if (actionDialog != JFileChooser.APPROVE_OPTION) {
-						return;
-					}
+		final JButton btnSaveButton = new JButton("");
+		btnSaveButton.addActionListener(e -> {
+			if (MainFrame.this.currentFile == null) {
+				final JFileChooser SaveAs = new JFileChooser();
+				SaveAs.setApproveButtonText("Save");
+				final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
+				if (actionDialog != JFileChooser.APPROVE_OPTION)
+					return;
 
-					File fileName = SaveAs.getSelectedFile();
-					BufferedWriter outFile = null;
-					try {
-						outFile = new BufferedWriter(new FileWriter(fileName));
-						textPane.write(outFile);
-					} catch (IOException ex) {
-						Crash dialog = new Crash(ex);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					} finally {
-						if (outFile != null) {
-							try {
-								outFile.close();
-							} catch (IOException e1) {
-								Crash dialog = new Crash(e1);
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-							}
+				final File fileName1 = SaveAs.getSelectedFile();
+				BufferedWriter outFile1 = null;
+				try {
+					outFile1 = new BufferedWriter(new FileWriter(fileName1));
+					MainFrame.this.textPane.write(outFile1);
+				} catch (final IOException ex1) {
+					final Crash dialog1 = new Crash(ex1);
+					dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog1.setVisible(true);
+				} finally {
+					if (outFile1 != null)
+						try {
+							outFile1.close();
+						} catch (final IOException e11) {
+							final Crash dialog2 = new Crash(e11);
+							dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog2.setVisible(true);
 						}
-					}
-					textPane.requestFocus();
-				} else {
-					File fileName = currentFile;
-					BufferedWriter outFile = null;
-					try {
-						outFile = new BufferedWriter(new FileWriter(fileName));
-						textPane.write(outFile);
-					} catch (IOException ex) {
-						Crash dialog = new Crash(ex);
-						dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					} finally {
-						if (outFile != null) {
-							try {
-								outFile.close();
-							} catch (IOException e1) {
-								Crash dialog = new Crash(e1);
-								dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-								dialog.setVisible(true);
-							}
-						}
-					}
-					textPane.requestFocus();
 				}
+				MainFrame.this.textPane.requestFocus();
+			} else {
+				final File fileName2 = MainFrame.this.currentFile;
+				BufferedWriter outFile2 = null;
+				try {
+					outFile2 = new BufferedWriter(new FileWriter(fileName2));
+					MainFrame.this.textPane.write(outFile2);
+				} catch (final IOException ex2) {
+					final Crash dialog3 = new Crash(ex2);
+					dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog3.setVisible(true);
+				} finally {
+					if (outFile2 != null)
+						try {
+							outFile2.close();
+						} catch (final IOException e12) {
+							final Crash dialog4 = new Crash(e12);
+							dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+							dialog4.setVisible(true);
+						}
+				}
+				MainFrame.this.textPane.requestFocus();
 			}
 		});
 		btnSaveButton.setToolTipText("Save file");
@@ -1204,280 +1329,261 @@ public class MainFrame extends JFrame {
 		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-save.png")));
 		toolBar.add(btnSaveButton);
 
-		JButton btnCloseButton = new JButton("");
-		btnCloseButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (instances == 0)
-					return;
-				instance.dispose();
-			}
+		final JButton btnCloseButton = new JButton("");
+		btnCloseButton.addActionListener(e -> {
+			if (MainFrame.instances == 0)
+				return;
+			MainFrame.this.instance.dispose();
 		});
 		btnCloseButton.setToolTipText("Close file");
 		btnCloseButton.setFocusPainted(false);
 		btnCloseButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/status/image-missing.png")));
 		toolBar.add(btnCloseButton);
 
-		JButton btnCutButton = new JButton("");
-		btnCutButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.cut();
-			}
-		});
+		final JButton btnCutButton = new JButton("");
+		btnCutButton.addActionListener(e -> MainFrame.this.textPane.cut());
 		btnCutButton.setToolTipText("Cut");
 		btnCutButton.setFocusPainted(false);
 		btnCutButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-cut.png")));
 		toolBar.add(btnCutButton);
 
-		JButton btnCopyButton = new JButton("");
-		btnCopyButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.copy();
-			}
-		});
+		final JButton btnCopyButton = new JButton("");
+		btnCopyButton.addActionListener(e -> MainFrame.this.textPane.copy());
 		btnCopyButton.setToolTipText("Copy");
 		btnCopyButton.setFocusPainted(false);
 		btnCopyButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-copy.png")));
 		toolBar.add(btnCopyButton);
 
-		JButton btnPasteButton = new JButton("");
-		btnPasteButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.paste();
-			}
-		});
+		final JButton btnPasteButton = new JButton("");
+		btnPasteButton.addActionListener(e -> MainFrame.this.textPane.paste());
 		btnPasteButton.setToolTipText("Paste");
 		btnPasteButton.setFocusPainted(false);
 		btnPasteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-paste.png")));
 		toolBar.add(btnPasteButton);
 
-		JButton btnDeleteButton = new JButton("");
-		btnDeleteButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.replaceSelection("");
-			}
-		});
+		final JButton btnDeleteButton = new JButton("");
+		btnDeleteButton.addActionListener(e -> MainFrame.this.textPane.replaceSelection(""));
 		btnDeleteButton.setToolTipText("Delete");
 		btnDeleteButton.setFocusPainted(false);
 		btnDeleteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-delete.png")));
 		toolBar.add(btnDeleteButton);
 
-		JButton btnUndoButton = new JButton("");
-		btnUndoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.undoLastAction();
-			}
-		});
+		final JButton btnUndoButton = new JButton("");
+		btnUndoButton.addActionListener(e -> MainFrame.this.textPane.undoLastAction());
 		btnUndoButton.setToolTipText("Undo");
 		btnUndoButton.setFocusPainted(false);
 		btnUndoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-undo.png")));
 		toolBar.add(btnUndoButton);
 
-		JButton btnRedoButton = new JButton("");
-		btnRedoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				textPane.redoLastAction();
-			}
-		});
+		final JButton btnRedoButton = new JButton("");
+		btnRedoButton.addActionListener(e -> MainFrame.this.textPane.redoLastAction());
 		btnRedoButton.setToolTipText("Redo");
 		btnRedoButton.setFocusPainted(false);
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
 		toolBar.add(btnRedoButton);
 
-		RTextScrollPane scrollPane = new RTextScrollPane();
-		contentPane.add(scrollPane, BorderLayout.CENTER);
+		final RTextScrollPane scrollPane = new RTextScrollPane();
+		this.contentPane.add(scrollPane, BorderLayout.CENTER);
 
-		textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
-		scrollPane.setViewportView(textPane);
+		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
+		scrollPane.setViewportView(this.textPane);
 
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.EAST);
+		final JPanel panel = new JPanel();
+		this.contentPane.add(panel, BorderLayout.EAST);
 		panel.setLayout(new BorderLayout(0, 0));
 
-		JPanel searchPanel = new JPanel();
+		final JPanel searchPanel = new JPanel();
 		panel.add(searchPanel, BorderLayout.NORTH);
 
-		JLabel lblSearch = new JLabel("Search");
+		final JLabel lblSearch = new JLabel("Search");
 		searchPanel.add(lblSearch);
 
-		searchTextField = new JTextField();
-		searchPanel.add(searchTextField);
-		searchTextField.setColumns(10);
+		this.searchTextField = new JTextField();
+		searchPanel.add(this.searchTextField);
+		this.searchTextField.setColumns(10);
 
-		JPanel panel_1 = new JPanel();
+		final JPanel panel_1 = new JPanel();
 		panel.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_2 = new JPanel();
+		final JPanel panel_2 = new JPanel();
 		panel_1.add(panel_2, BorderLayout.NORTH);
 
-		JLabel lblReplace = new JLabel("Replace with");
+		final JLabel lblReplace = new JLabel("Replace with");
 		panel_2.add(lblReplace);
 
-		replaceWithTextField = new JTextField();
-		panel_2.add(replaceWithTextField);
-		replaceWithTextField.setColumns(10);
+		this.replaceWithTextField = new JTextField();
+		panel_2.add(this.replaceWithTextField);
+		this.replaceWithTextField.setColumns(10);
 
-		JPanel panel_3 = new JPanel();
+		final JPanel panel_3 = new JPanel();
 		panel_1.add(panel_3, BorderLayout.CENTER);
 		panel_3.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_4 = new JPanel();
+		final JPanel panel_4 = new JPanel();
 		panel_3.add(panel_4, BorderLayout.NORTH);
 
-		JButton btnSearch = new JButton("Search");
-		btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
-				final int l2 = searchTextField.getText().length();
-				if (l1 == -1) {
-					JOptionPane.showMessageDialog(instance, "\"" + searchTextField.getText() + "\" not found");
-				} else {
-					textPane.select(l1, l2 + l1);
-				}
-			}
+		final JButton btnSearch = new JButton("Search");
+		btnSearch.addActionListener(e -> {
+			final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
+					MainFrame.this.textPane.getCaretPosition());
+			final int l2 = MainFrame.this.searchTextField.getText().length();
+			if (l1 == -1)
+				JOptionPane.showMessageDialog(MainFrame.this.instance,
+						"\"" + MainFrame.this.searchTextField.getText() + "\" not found");
+			else
+				MainFrame.this.textPane.select(l1, l2 + l1);
 		});
 		panel_4.add(btnSearch);
 
-		JButton btnReplace = new JButton("Replace");
-		btnReplace.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
-				final int l2 = searchTextField.getText().length();
-				if (l1 == -1) {
-					JOptionPane.showMessageDialog(instance, "\"" + searchTextField.getText() + "\" not found");
-				} else {
-					textPane.select(l1, l2 + l1);
-					textPane.replaceSelection(replaceWithTextField.getText());
-					textPane.select(l1, l2 + l1);
-				}
+		final JButton btnReplace = new JButton("Replace");
+		btnReplace.addActionListener(e -> {
+			final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
+					MainFrame.this.textPane.getCaretPosition());
+			final int l2 = MainFrame.this.searchTextField.getText().length();
+			if (l1 == -1)
+				JOptionPane.showMessageDialog(MainFrame.this.instance,
+						"\"" + MainFrame.this.searchTextField.getText() + "\" not found");
+			else {
+				MainFrame.this.textPane.select(l1, l2 + l1);
+				MainFrame.this.textPane.replaceSelection(MainFrame.this.replaceWithTextField.getText());
+				MainFrame.this.textPane.select(l1, l2 + l1);
 			}
 		});
 		panel_4.add(btnReplace);
 
-		JPanel panel_5 = new JPanel();
+		final JPanel panel_5 = new JPanel();
 		panel_3.add(panel_5, BorderLayout.CENTER);
 		panel_5.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_6 = new JPanel();
+		final JPanel panel_6 = new JPanel();
 		panel_5.add(panel_6, BorderLayout.NORTH);
 
-		JButton btnCountOccurences = new JButton("Count Occurences");
-		btnCountOccurences.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int amount = 0;
-				while (true) {
-					final int l1 = textPane.getText().indexOf(searchTextField.getText(), textPane.getCaretPosition());
-					final int l2 = searchTextField.getText().length();
-					if (l1 == -1) {
-						break;
-					} else {
-						textPane.setCaretPosition(l1 + l2);
-						amount++;
-					}
+		final JButton btnCountOccurences = new JButton("Count Occurences");
+		btnCountOccurences.addActionListener(e -> {
+			int amount = 0;
+			while (true) {
+				final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
+						MainFrame.this.textPane.getCaretPosition());
+				final int l2 = MainFrame.this.searchTextField.getText().length();
+				if (l1 == -1)
+					break;
+				else {
+					MainFrame.this.textPane.setCaretPosition(l1 + l2);
+					amount++;
 				}
-				JOptionPane.showMessageDialog(instance, "Found " + amount + " occurences.");
 			}
+			JOptionPane.showMessageDialog(MainFrame.this.instance, "Found " + amount + " occurences.");
 		});
 		panel_6.add(btnCountOccurences);
 
-		JPanel panel_7 = new JPanel();
+		final JPanel panel_7 = new JPanel();
 		panel_5.add(panel_7, BorderLayout.SOUTH);
 
-		JButton btnBlack = new JButton("Dark");
+		final JButton btnBlack = new JButton("Dark");
 		btnBlack.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-					theme.apply(textPane);
-				} catch (IOException ioe) { // Never happens
-					Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					final Theme theme = Theme
+							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
 			}
 		});
 		panel_7.add(btnBlack);
 
-		JButton btnClassical = new JButton("Default");
+		final JButton btnClassical = new JButton("Default");
 		btnClassical.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-					theme.apply(textPane);
-				} catch (IOException ioe) { // Never happens
-					Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
 			}
 		});
 		panel_7.add(btnClassical);
 
-		JPanel panel_8 = new JPanel();
+		final JPanel panel_8 = new JPanel();
 		panel_5.add(panel_8, BorderLayout.CENTER);
 		panel_8.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_9 = new JPanel();
+		final JPanel panel_9 = new JPanel();
 		panel_8.add(panel_9, BorderLayout.SOUTH);
 
-		JButton btnNewButton_1 = new JButton("Extra Default");
+		final JButton btnNewButton_1 = new JButton("Extra Default");
 		btnNewButton_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
+			@Override
+			public void actionPerformed(final ActionEvent arg0) {
 				try {
-					Theme theme = Theme.load(
-							getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
-					theme.apply(textPane);
-				} catch (IOException ioe) { // Never happens
-					Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
 			}
 		});
 		panel_9.add(btnNewButton_1);
 
-		JButton btnMonokai = new JButton("Monokai");
+		final JButton btnMonokai = new JButton("Monokai");
 		btnMonokai.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
-					Theme theme = Theme
-							.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
-					theme.apply(textPane);
-				} catch (IOException ioe) { // Never happens
-					Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
 			}
 		});
 		panel_9.add(btnMonokai);
 
-		JPanel panel_10 = new JPanel();
+		final JPanel panel_10 = new JPanel();
 		panel_8.add(panel_10, BorderLayout.CENTER);
 		panel_10.setLayout(new BorderLayout(0, 0));
 
-		JPanel panel_11 = new JPanel();
+		final JPanel panel_11 = new JPanel();
 		panel_10.add(panel_11, BorderLayout.SOUTH);
 
-		JLabel lblTheme = new JLabel("Theme:");
+		final JLabel lblTheme = new JLabel("Theme:");
 		panel_11.add(lblTheme);
 
-		JPanel panel_12 = new JPanel();
+		final JPanel panel_12 = new JPanel();
 		panel_10.add(panel_12, BorderLayout.CENTER);
 		panel_12.setLayout(new BorderLayout(0, 0));
 
-		toolConsole = new JTextPane();
-		panel_12.add(toolConsole, BorderLayout.CENTER);
-		toolConsole.setVisible(false);
+		this.toolConsole = new JTextPane();
+		panel_12.add(this.toolConsole, BorderLayout.CENTER);
+		this.toolConsole.setVisible(false);
 
-		Timer timer = new Timer();
+		final Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
+			@Override
 			public void run() {
-				lblReady.setText("Ready | Length: " + textPane.getText().length() + " | Filename: \""
-						+ (currentFile == null ? "Unnamed" : currentFile.getAbsolutePath()) + "\" | Maximum size: "
-						+ (currentFile == null ? "?" : currentFile.getFreeSpace() / 1024) + "KB | "
+				MainFrame.this.lblReady.setText("Ready | Length: " + MainFrame.this.textPane.getText().length()
+						+ " | Filename: \""
+						+ (MainFrame.this.currentFile == null ? "Unnamed"
+								: MainFrame.this.currentFile.getAbsolutePath())
+						+ "\" | Maximum size: "
+						+ (MainFrame.this.currentFile == null ? "?" : MainFrame.this.currentFile.getFreeSpace() / 1024)
+						+ "KB | "
 						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true ? "NUM"
 								: "NONUM")
 						+ " | "
@@ -1486,43 +1592,44 @@ public class MainFrame extends JFrame {
 						+ " | "
 						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK) == true ? "CAPS"
 								: "NOCAPS"));
-				if (instances == 0)
+				if (MainFrame.instances == 0)
 					System.exit(0);
 			}
 		}, 0, 1);
-		textPane.clearParsers();
-		textPane.setParserDelay(1);
-		textPane.setAnimateBracketMatching(true);
-		textPane.setAutoIndentEnabled(true);
-		textPane.setAntiAliasingEnabled(true);
-		textPane.setBracketMatchingEnabled(true);
-		textPane.setCloseCurlyBraces(true);
-		textPane.setCloseMarkupTags(true);
-		textPane.setCodeFoldingEnabled(true);
-		textPane.setHyperlinkForeground(Color.pink);
-		textPane.setHyperlinksEnabled(true);
-		textPane.setPaintMatchedBracketPair(true);
-		textPane.setPaintTabLines(true);
+		this.textPane.clearParsers();
+		this.textPane.setParserDelay(1);
+		this.textPane.setAnimateBracketMatching(true);
+		this.textPane.setAutoIndentEnabled(true);
+		this.textPane.setAntiAliasingEnabled(true);
+		this.textPane.setBracketMatchingEnabled(true);
+		this.textPane.setCloseCurlyBraces(true);
+		this.textPane.setCloseMarkupTags(true);
+		this.textPane.setCodeFoldingEnabled(true);
+		this.textPane.setHyperlinkForeground(Color.pink);
+		this.textPane.setHyperlinksEnabled(true);
+		this.textPane.setPaintMatchedBracketPair(true);
+		this.textPane.setPaintTabLines(true);
 		try {
-			Theme theme = Theme.load(getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-			theme.apply(textPane);
-		} catch (IOException ioe) { // Never happens
-			Crash dialog = new Crash(ioe);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			final Theme theme = Theme
+					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+			theme.apply(this.textPane);
+		} catch (final IOException ioe) { // Never happens
+			final Crash dialog = new Crash(ioe);
+			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
 
-		JPanel panel_14 = new JPanel();
-		contentPane.add(panel_14, BorderLayout.SOUTH);
+		final JPanel panel_14 = new JPanel();
+		this.contentPane.add(panel_14, BorderLayout.SOUTH);
 		panel_14.setLayout(new BorderLayout(0, 0));
 
-		JToolBar toolBar_1 = new JToolBar();
+		final JToolBar toolBar_1 = new JToolBar();
 		panel_14.add(toolBar_1);
 		toolBar_1.setFloatable(false);
 
-		toolBar_1.add(lblReady);
+		toolBar_1.add(this.lblReady);
 	}
 
 }
