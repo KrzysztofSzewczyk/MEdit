@@ -2,30 +2,20 @@ package medit;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -34,12 +24,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -48,7 +36,9 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import medit.ActionManagers.EditActionManager;
 import medit.ActionManagers.FileActionManager;
+import medit.ActionManagers.WindowActionManager;
 
 /**
  * Main frame for MEdit project.
@@ -78,32 +68,6 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() {
 		this.instance = this;
-		this.addWindowListener(new WindowAdapter() {
-			
-			/**
-			 * WindowClosed method that is watching for amount of instances running,
-			 * and when they hit 0, it's stopping MEdit
-			 */
-			@Override
-			public void windowClosed(final WindowEvent arg0) {
-				if (MainFrame.instances == 0)
-					System.exit(0);
-				else
-					MainFrame.instances--;
-			}
-
-			/**
-			 * See WindowClosed method of this WindowAdapter.
-			 */
-			
-			@Override
-			public void windowClosing(final WindowEvent arg0) {
-				if (MainFrame.instances == 0)
-					System.exit(0);
-				else
-					MainFrame.instances--;
-			}
-		});
 
 		this.setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(MainFrame.class.getResource("/medit/assets/apps/accessories-text-editor.png")));
@@ -114,11 +78,17 @@ public class MainFrame extends JFrame {
 
 		final JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
-
+		
 		final JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
+		final JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		final JMenu mnLanguage = new JMenu("Language");
+		menuBar.add(mnLanguage);
 
-
+		WindowActionManager wam = new WindowActionManager(this);
+		wam.Closing();
+		
 		FileActionManager fam = new FileActionManager(this);
 		fam.New(mnFile);
 		fam.Open(mnFile);
@@ -128,50 +98,16 @@ public class MainFrame extends JFrame {
 		fam.SaveAs(mnFile);
 		fam.Separator(mnFile);
 		fam.Exit(mnFile);
-
-		final JMenu mnEdit = new JMenu("Edit");
-		menuBar.add(mnEdit);
-
-		/**
-		 * Edit menu things here.
-		 */
 		
-		final JMenuItem mntmCut = new JMenuItem("Cut");
-		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
-		mntmCut.addActionListener(e -> MainFrame.this.textPane.cut());
-		mnEdit.add(mntmCut);
-
-		final JMenuItem mntmCopy = new JMenuItem("Copy");
-		mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-		mntmCopy.addActionListener(e -> MainFrame.this.textPane.copy());
-		mnEdit.add(mntmCopy);
-
-		final JMenuItem mntmPaste = new JMenuItem("Paste");
-		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-		mntmPaste.addActionListener(e -> MainFrame.this.textPane.paste());
-		mnEdit.add(mntmPaste);
-
-		final JMenuItem mntmDelete = new JMenuItem("Delete");
-		mntmDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, InputEvent.CTRL_MASK));
-		mntmDelete.addActionListener(e -> MainFrame.this.textPane.replaceSelection(""));
-		mnEdit.add(mntmDelete);
-
-		final JSeparator separator_4 = new JSeparator();
-		mnEdit.add(separator_4);
-
-		final JMenuItem mntmUndo = new JMenuItem("Undo");
-		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
-		mntmUndo.addActionListener(e -> MainFrame.this.textPane.undoLastAction());
-		mnEdit.add(mntmUndo);
-
-		final JMenuItem mntmRedo = new JMenuItem("Redo");
-		mntmRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
-		mntmRedo.addActionListener(e -> MainFrame.this.textPane.redoLastAction());
-		mnEdit.add(mntmRedo);
-
-		final JMenu mnLanguage = new JMenu("Language");
-		menuBar.add(mnLanguage);
-
+		EditActionManager eam = new EditActionManager(this);
+		eam.Cut(mnEdit);
+		eam.Copy(mnEdit);
+		eam.Paste(mnEdit);
+		eam.Delete(mnEdit);
+		eam.Separator(mnEdit);
+		eam.Undo(mnEdit);
+		eam.Redo(mnEdit);
+ 	
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
