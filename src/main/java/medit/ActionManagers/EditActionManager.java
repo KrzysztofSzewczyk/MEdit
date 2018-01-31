@@ -3,8 +3,11 @@ package medit.ActionManagers;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import medit.MainFrame;
@@ -64,4 +67,57 @@ public class EditActionManager {
 		parent.add(mntmRedo);
 	}
 
+	public void Cut(JToolBar toolBar) {
+		final JButton btnCutButton = new JButton("");
+		btnCutButton.addActionListener(e -> instance.textPane.cut());
+		btnCutButton.setToolTipText("Cut");
+		btnCutButton.setFocusPainted(false);
+		btnCutButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-cut.png")));
+		toolBar.add(btnCutButton);
+	}
+
+	public void Copy(JToolBar toolBar) {
+		final JButton btnCopyButton = new JButton("");
+		btnCopyButton.addActionListener(e -> instance.textPane.copy());
+		btnCopyButton.setToolTipText("Copy");
+		btnCopyButton.setFocusPainted(false);
+		btnCopyButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-copy.png")));
+		toolBar.add(btnCopyButton);
+	}
+
+	public void Paste(JToolBar toolBar) {
+		final JButton btnPasteButton = new JButton("");
+		btnPasteButton.addActionListener(e -> instance.textPane.paste());
+		btnPasteButton.setToolTipText("Paste");
+		btnPasteButton.setFocusPainted(false);
+		btnPasteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-paste.png")));
+		toolBar.add(btnPasteButton);
+	}
+
+	public void Delete(JToolBar toolBar) {
+		final JButton btnDeleteButton = new JButton("");
+		btnDeleteButton.addActionListener(e -> instance.textPane.replaceSelection(""));
+		btnDeleteButton.setToolTipText("Delete");
+		btnDeleteButton.setFocusPainted(false);
+		btnDeleteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-delete.png")));
+		toolBar.add(btnDeleteButton);
+	}
+
+	public void Undo(JToolBar toolBar) {
+		final JButton btnUndoButton = new JButton("");
+		btnUndoButton.addActionListener(e -> instance.textPane.undoLastAction());
+		btnUndoButton.setToolTipText("Undo");
+		btnUndoButton.setFocusPainted(false);
+		btnUndoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-undo.png")));
+		toolBar.add(btnUndoButton);
+	}
+
+	public void Redo(JToolBar toolBar) {
+		final JButton btnRedoButton = new JButton("");
+		btnRedoButton.addActionListener(e -> instance.textPane.redoLastAction());
+		btnRedoButton.setToolTipText("Redo");
+		btnRedoButton.setFocusPainted(false);
+		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
+		toolBar.add(btnRedoButton);
+	}
 }
