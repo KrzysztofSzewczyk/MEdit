@@ -2,6 +2,7 @@ package medit;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -12,28 +13,16 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -88,6 +77,11 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 		this.instance = this;
 		this.addWindowListener(new WindowAdapter() {
+			
+			/**
+			 * WindowClosed method that is watching for amount of instances running,
+			 * and when they hit 0, it's stopping MEdit
+			 */
 			@Override
 			public void windowClosed(final WindowEvent arg0) {
 				if (MainFrame.instances == 0)
@@ -96,6 +90,10 @@ public class MainFrame extends JFrame {
 					MainFrame.instances--;
 			}
 
+			/**
+			 * See WindowClosed method of this WindowAdapter.
+			 */
+			
 			@Override
 			public void windowClosing(final WindowEvent arg0) {
 				if (MainFrame.instances == 0)
@@ -120,6 +118,10 @@ public class MainFrame extends JFrame {
 
 		final JMenuItem mntmNew = new JMenuItem("New");
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
+		
+		/**
+		 * Start new window of MEdit
+		 */
 		mntmNew.addActionListener(arg0 -> EventQueue.invokeLater(() -> {
 			try {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -132,7 +134,10 @@ public class MainFrame extends JFrame {
 			}
 		}));
 		mnFile.add(mntmNew);
-
+		
+		/**
+		 * Open file in new MEdit window.
+		 */
 		final JMenuItem mntmOpen = new JMenuItem("Open");
 		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
 		mntmOpen.addActionListener(arg0 -> {
@@ -154,6 +159,9 @@ public class MainFrame extends JFrame {
 		});
 		mnFile.add(mntmOpen);
 
+		/**
+		 * Save file, if currentfile==null, execute SaveAs action.
+		 */
 		final JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
 		mntmSave.addActionListener(e -> {
@@ -208,8 +216,63 @@ public class MainFrame extends JFrame {
 				MainFrame.this.textPane.requestFocus();
 			}
 		});
+		
+		JMenuItem mntmReloadFileFrom = new JMenuItem("Reload file from disk");
+		mntmReloadFileFrom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(currentFile==null) return;
+				else {
+					FileReader reader = null;
+					try {
+						reader = new FileReader(currentFile);
+					} catch (FileNotFoundException e2) {
+						final Crash dialog4 = new Crash(e2);
+						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog4.setVisible(true);
+					}
+					final BufferedReader br = new BufferedReader(reader);
+					try {
+						MainFrame.this.textPane.read(br, null);
+					} catch (IOException e1) {
+						final Crash dialog4 = new Crash(e1 );
+						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog4.setVisible(true);
+					}
+					try {
+						br.close();
+					} catch (IOException e1) {
+						final Crash dialog4 = new Crash(e1);
+						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog4.setVisible(true);
+					}
+					MainFrame.this.textPane.requestFocus();          
+				}
+			}
+		});
+		mntmReloadFileFrom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
+		mnFile.add(mntmReloadFileFrom);
+		
+		JMenuItem mntmOpenContainingDirectory = new JMenuItem("Open containing directory");
+		mntmOpenContainingDirectory.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (Desktop.isDesktopSupported()) {
+			        try {
+						Desktop.getDesktop().open(currentFile.getParentFile());
+					} catch (IOException e1) {
+						final Crash dialog4 = new Crash(e1);
+						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog4.setVisible(true);
+					}
+			    }
+			}
+		});
+		mntmOpenContainingDirectory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
+		mnFile.add(mntmOpenContainingDirectory);
 		mnFile.add(mntmSave);
 
+		/**
+		 * Save file showing dialog (that's how this is differing from Save)
+		 */
 		final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		mntmSaveAs.addActionListener(e -> {
@@ -246,6 +309,9 @@ public class MainFrame extends JFrame {
 		final JSeparator separator = new JSeparator();
 		mnFile.add(separator);
 
+		/**
+		 * Decrement amount of instances and close current MEdit window.
+		 */
 		final JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 		mntmExit.addActionListener(e -> {
@@ -258,6 +324,10 @@ public class MainFrame extends JFrame {
 		final JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
 
+		/**
+		 * Edit menu things here.
+		 */
+		
 		final JMenuItem mntmCut = new JMenuItem("Cut");
 		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
 		mntmCut.addActionListener(e -> MainFrame.this.textPane.cut());
@@ -542,675 +612,6 @@ public class MainFrame extends JFrame {
 		mntmYaml.addActionListener(
 				e -> MainFrame.this.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML));
 		mnSyntaxHighlighting.add(mntmYaml);
-
-		final JMenu mnManageCompilers = new JMenu("Compilers");
-		menuBar.add(mnManageCompilers);
-
-		final JMenu mnAssembly = new JMenu("Assembly");
-		mnManageCompilers.add(mnAssembly);
-
-		final JMenuItem mntmNasm = new JMenuItem("NASM");
-		mntmNasm.addActionListener(new ActionListener() {
-			private static final int BUFFER_SIZE = 4096;
-
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-				final String name = "nasm", compilername = "nasm";
-				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
-							"Do you want to download and install " + name
-									+ " package?\n (By installing it you accept License provided with software)",
-							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						URL url = null;
-						try {
-							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
-									+ name + ".zip");
-						} catch (final MalformedURLException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-						try {
-							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-							new File("compilers/" + name).mkdirs();
-							try (InputStream stream = con.getInputStream()) {
-								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
-							}
-							this.unzip("compilers/" + name + "/package.zip", "compilers/");
-							new File("compilers/" + name + "/package.zip").delete();
-						} catch (final IOException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-					} else
-						return;
-				}
-				if (MainFrame.this.currentFile == null)
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
-							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				else {
-					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
-							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
-					String[] lines = null;
-					try {
-						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (final IOException e2) {
-						final Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-						return;
-					}
-					final String[] command = this.concatAll(
-							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
-							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
-					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					final ProcessBuilder pb = new ProcessBuilder(command);
-					try {
-						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
-					} catch (final Exception e1) {
-						// I Don't care
-					}
-					try {
-						final Process p = pb.start();
-						new Thread(() -> {
-							final BufferedReader stdInput = new BufferedReader(
-									new InputStreamReader(p.getInputStream()));
-
-							final BufferedReader stdError = new BufferedReader(
-									new InputStreamReader(p.getErrorStream()));
-
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
-							String s = null;
-							try {
-								while ((s = stdInput.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e1) {
-								final Crash dialog1 = new Crash(e1);
-								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog1.setVisible(true);
-								return;
-							}
-
-							// read any errors from the attempted command
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
-							try {
-								while ((s = stdError.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e) {
-								final Crash dialog2 = new Crash(e);
-								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog2.setVisible(true);
-								return;
-							}
-
-							final CommandOutputDialog dialog3 = new CommandOutputDialog(
-									MainFrame.this.toolConsole.getText());
-							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog3.setVisible(true);
-
-							MainFrame.this.toolConsole.setText("");
-
-							return;
-						}).start();
-					} catch (final IOException e1) {
-						final Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					}
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(final T[] first, final T[]... rest) {
-				int totalLength = first.length;
-				for (final T[] array : rest)
-					totalLength += array.length;
-				final T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (final T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
-				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				final byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1)
-					bos.write(bytesIn, 0, read);
-				bos.close();
-			}
-
-			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
-				final File destDir = new File(destDirectory);
-				if (!destDir.exists())
-					destDir.mkdir();
-				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					final String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory())
-						// if the entry is a file, extracts it
-						this.extractFile(zipIn, filePath);
-					else {
-						// if the entry is a directory, make the directory
-						final File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-		});
-		mnAssembly.add(mntmNasm);
-
-		final JMenuItem mntmFasm = new JMenuItem("FASM (MacOS not supported)");
-		mntmFasm.addActionListener(new ActionListener() {
-			private static final int BUFFER_SIZE = 4096;
-
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-				final String name = "fasm", compilername = "fasm";
-				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
-							"Do you want to download and install " + name
-									+ " package?\n (By installing it you accept License provided with software)",
-							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						URL url = null;
-						try {
-							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
-									+ name + ".zip");
-						} catch (final MalformedURLException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-						try {
-							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-							new File("compilers/" + name).mkdirs();
-							try (InputStream stream = con.getInputStream()) {
-								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
-							}
-							this.unzip("compilers/" + name + "/package.zip", "compilers/");
-							new File("compilers/" + name + "/package.zip").delete();
-						} catch (final IOException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-					} else
-						return;
-				}
-				if (MainFrame.this.currentFile == null)
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
-							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				else {
-					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
-							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
-					String[] lines = null;
-					try {
-						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (final IOException e2) {
-						final Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-						return;
-					}
-					final String[] command = this.concatAll(
-							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
-							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
-					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					final ProcessBuilder pb = new ProcessBuilder(command);
-					try {
-						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
-					} catch (final Exception e1) {
-						// I Don't care
-					}
-					try {
-						final Process p = pb.start();
-						new Thread(() -> {
-							final BufferedReader stdInput = new BufferedReader(
-									new InputStreamReader(p.getInputStream()));
-
-							final BufferedReader stdError = new BufferedReader(
-									new InputStreamReader(p.getErrorStream()));
-
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
-							String s = null;
-							try {
-								while ((s = stdInput.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e1) {
-								final Crash dialog1 = new Crash(e1);
-								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog1.setVisible(true);
-								return;
-							}
-
-							// read any errors from the attempted command
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
-							try {
-								while ((s = stdError.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e) {
-								final Crash dialog2 = new Crash(e);
-								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog2.setVisible(true);
-								return;
-							}
-
-							final CommandOutputDialog dialog3 = new CommandOutputDialog(
-									MainFrame.this.toolConsole.getText());
-							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog3.setVisible(true);
-
-							MainFrame.this.toolConsole.setText("");
-
-							return;
-						}).start();
-					} catch (final IOException e1) {
-						final Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					}
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(final T[] first, final T[]... rest) {
-				int totalLength = first.length;
-				for (final T[] array : rest)
-					totalLength += array.length;
-				final T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (final T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
-				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				final byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1)
-					bos.write(bytesIn, 0, read);
-				bos.close();
-			}
-
-			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
-				final File destDir = new File(destDirectory);
-				if (!destDir.exists())
-					destDir.mkdir();
-				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					final String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory())
-						// if the entry is a file, extracts it
-						this.extractFile(zipIn, filePath);
-					else {
-						// if the entry is a directory, make the directory
-						final File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-		});
-		mnAssembly.add(mntmFasm);
-
-		final JMenu mnC_1 = new JMenu("C");
-		mnManageCompilers.add(mnC_1);
-
-		final JMenuItem mntmTinycwindowsOnly = new JMenuItem("TinyC (Windows only)");
-		mntmTinycwindowsOnly.addActionListener(new ActionListener() {
-			private static final int BUFFER_SIZE = 4096;
-
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-				final String name = "tinyc", compilername = "tcc";
-				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
-							"Do you want to download and install " + name
-									+ " package?\n (By installing it you accept License provided with software)",
-							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						URL url = null;
-						try {
-							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
-									+ name + ".zip");
-						} catch (final MalformedURLException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-						try {
-							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-							new File("compilers/" + name).mkdirs();
-							try (InputStream stream = con.getInputStream()) {
-								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
-							}
-							this.unzip("compilers/" + name + "/package.zip", "compilers/");
-							new File("compilers/" + name + "/package.zip").delete();
-						} catch (final IOException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-					} else
-						return;
-				}
-				if (MainFrame.this.currentFile == null)
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
-							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				else {
-					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
-							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
-					String[] lines = null;
-					try {
-						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (final IOException e2) {
-						final Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-						return;
-					}
-					final String[] command = this.concatAll(
-							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
-							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
-					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					final ProcessBuilder pb = new ProcessBuilder(command);
-					try {
-						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
-					} catch (final Exception e1) {
-						// I Don't care
-					}
-					try {
-						final Process p = pb.start();
-						new Thread(() -> {
-							final BufferedReader stdInput = new BufferedReader(
-									new InputStreamReader(p.getInputStream()));
-
-							final BufferedReader stdError = new BufferedReader(
-									new InputStreamReader(p.getErrorStream()));
-
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
-							String s = null;
-							try {
-								while ((s = stdInput.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e1) {
-								final Crash dialog1 = new Crash(e1);
-								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog1.setVisible(true);
-								return;
-							}
-
-							// read any errors from the attempted command
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
-							try {
-								while ((s = stdError.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e) {
-								final Crash dialog2 = new Crash(e);
-								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog2.setVisible(true);
-								return;
-							}
-
-							final CommandOutputDialog dialog3 = new CommandOutputDialog(
-									MainFrame.this.toolConsole.getText());
-							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog3.setVisible(true);
-
-							MainFrame.this.toolConsole.setText("");
-
-							return;
-						}).start();
-					} catch (final IOException e1) {
-						final Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					}
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(final T[] first, final T[]... rest) {
-				int totalLength = first.length;
-				for (final T[] array : rest)
-					totalLength += array.length;
-				final T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (final T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
-				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				final byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1)
-					bos.write(bytesIn, 0, read);
-				bos.close();
-			}
-
-			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
-				final File destDir = new File(destDirectory);
-				if (!destDir.exists())
-					destDir.mkdir();
-				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					final String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory())
-						// if the entry is a file, extracts it
-						this.extractFile(zipIn, filePath);
-					else {
-						// if the entry is a directory, make the directory
-						final File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-		});
-		mnC_1.add(mntmTinycwindowsOnly);
-
-		final JMenuItem mntmClang = new JMenuItem("Clang (Currently, Windows not supported)");
-		mntmClang.addActionListener(new ActionListener() {
-			private static final int BUFFER_SIZE = 4096;
-
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-				final String name = "clang", compilername = "bin/clang";
-				if (!new File("compilers\\" + name + "\\installed.dat").exists()) {
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please install " + name + " package.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					if (JOptionPane.showConfirmDialog(MainFrame.this.instance,
-							"Do you want to download and install " + name
-									+ " package?\n (By installing it you accept License provided with software)",
-							"Package manager", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						URL url = null;
-						try {
-							url = new URL("https://raw.githubusercontent.com/KrzysztofSzewczyk/MEdit/master/packages/"
-									+ name + ".zip");
-						} catch (final MalformedURLException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-						try {
-							final HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-							new File("compilers/" + name).mkdirs();
-							try (InputStream stream = con.getInputStream()) {
-								Files.copy(stream, Paths.get("compilers/" + name + "/package.zip"));
-							}
-							this.unzip("compilers/" + name + "/package.zip", "compilers/");
-							new File("compilers/" + name + "/package.zip").delete();
-						} catch (final IOException e) {
-							final Crash dialog = new Crash(e);
-							dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog.setVisible(true);
-							return;
-						}
-					} else
-						return;
-				}
-				if (MainFrame.this.currentFile == null)
-					JOptionPane.showMessageDialog(MainFrame.this.instance, "Please save your work in order to compile.",
-							"Eggs are supposed to be green!", JOptionPane.ERROR_MESSAGE);
-				else {
-					final String osString = OsCheck.getOperatingSystemType() == OsCheck.OSType.MacOS ? "macos"
-							: OsCheck.getOperatingSystemType() == OsCheck.OSType.Windows ? "windows" : "linux";
-					final FileArrayProvider fap = new FileArrayProvider(); // FAP, huh... TODO: change name
-					String[] lines = null;
-					try {
-						lines = fap.readLines("compilers/" + name + "/" + osString + "/options.txt");
-					} catch (final IOException e2) {
-						final Crash dialog = new Crash(e2);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-						return;
-					}
-					final String[] command = this.concatAll(
-							new String[] { "compilers/" + name + "/" + osString + "/" + compilername }, lines,
-							new String[] { "\"" + MainFrame.this.currentFile.getAbsolutePath() + "\"" });
-					System.out.println(command[0] + " " + command[1] + " " + command[2] + " " + command[3] + " ");
-					final ProcessBuilder pb = new ProcessBuilder(command);
-					try {
-						pb.directory(new File(MainFrame.this.currentFile.getAbsoluteFile().getParent()));
-					} catch (final Exception e1) {
-						// I Don't care
-					}
-					try {
-						final Process p = pb.start();
-						new Thread(() -> {
-							final BufferedReader stdInput = new BufferedReader(
-									new InputStreamReader(p.getInputStream()));
-
-							final BufferedReader stdError = new BufferedReader(
-									new InputStreamReader(p.getErrorStream()));
-
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "STDOUT:\n");
-							String s = null;
-							try {
-								while ((s = stdInput.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e1) {
-								final Crash dialog1 = new Crash(e1);
-								dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog1.setVisible(true);
-								return;
-							}
-
-							// read any errors from the attempted command
-							MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + "\nSTDERR:\n");
-							try {
-								while ((s = stdError.readLine()) != null)
-									MainFrame.this.toolConsole.setText(MainFrame.this.toolConsole.getText() + s);
-							} catch (final IOException e) {
-								final Crash dialog2 = new Crash(e);
-								dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-								dialog2.setVisible(true);
-								return;
-							}
-
-							final CommandOutputDialog dialog3 = new CommandOutputDialog(
-									MainFrame.this.toolConsole.getText());
-							dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog3.setVisible(true);
-
-							MainFrame.this.toolConsole.setText("");
-
-							return;
-						}).start();
-					} catch (final IOException e1) {
-						final Crash dialog = new Crash(e1);
-						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog.setVisible(true);
-					}
-				}
-			}
-
-			@SuppressWarnings("unchecked")
-			public <T> T[] concatAll(final T[] first, final T[]... rest) {
-				int totalLength = first.length;
-				for (final T[] array : rest)
-					totalLength += array.length;
-				final T[] result = Arrays.copyOf(first, totalLength);
-				int offset = first.length;
-				for (final T[] array : rest) {
-					System.arraycopy(array, 0, result, offset, array.length);
-					offset += array.length;
-				}
-				return result;
-			}
-
-			private void extractFile(final ZipInputStream zipIn, final String filePath) throws IOException {
-				final BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
-				final byte[] bytesIn = new byte[BUFFER_SIZE];
-				int read = 0;
-				while ((read = zipIn.read(bytesIn)) != -1)
-					bos.write(bytesIn, 0, read);
-				bos.close();
-			}
-
-			public void unzip(final String zipFilePath, final String destDirectory) throws IOException {
-				final File destDir = new File(destDirectory);
-				if (!destDir.exists())
-					destDir.mkdir();
-				final ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zipFilePath));
-				ZipEntry entry = zipIn.getNextEntry();
-				// iterates over entries in the zip file
-				while (entry != null) {
-					final String filePath = destDirectory + File.separator + entry.getName();
-					if (!entry.isDirectory())
-						// if the entry is a file, extracts it
-						this.extractFile(zipIn, filePath);
-					else {
-						// if the entry is a directory, make the directory
-						final File dir = new File(filePath);
-						dir.mkdir();
-					}
-					zipIn.closeEntry();
-					entry = zipIn.getNextEntry();
-				}
-				zipIn.close();
-			}
-		});
-		mnC_1.add(mntmClang);
 
 		final JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
