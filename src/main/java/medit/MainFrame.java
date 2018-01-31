@@ -122,6 +122,8 @@ public class MainFrame extends JFrame {
 		eam.Separator(mnEdit);
 		eam.Undo(mnEdit);
 		eam.Redo(mnEdit);
+		eam.Separator(mnEdit);
+		eam.Search(mnEdit);
 		
 		AboutActionManager aam = new AboutActionManager();
 		aam.About(mnAbout);

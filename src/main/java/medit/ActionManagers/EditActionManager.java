@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
@@ -179,5 +180,10 @@ public class EditActionManager {
 		btnRedoButton.setFocusPainted(false);
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
 		toolBar.add(btnRedoButton);
+	}
+
+	public void Search(JMenu mnEdit) {
+		// TODO Auto-generated method stub
+		
 	}
 }
