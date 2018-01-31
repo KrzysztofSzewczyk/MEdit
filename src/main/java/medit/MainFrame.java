@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryUsage;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +37,7 @@ import medit.ActionManagers.EditActionManager;
 import medit.ActionManagers.FileActionManager;
 import medit.ActionManagers.LanguageActionManager;
 import medit.ActionManagers.WindowActionManager;
+import javax.swing.JMenuItem;
 
 /**
  * Main frame for MEdit project.
@@ -93,6 +96,121 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnLanguage);
 		final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
 		menuBar.add(mnSyntaxHighlighting);
+		
+		JMenu mnThemes = new JMenu("Themes");
+		menuBar.add(mnThemes);
+		
+		JMenuItem mntmDark = new JMenuItem("Dark");
+		mntmDark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		
+		JMenuItem mntmExtraDefault = new JMenuItem("Extra Default");
+		mntmExtraDefault.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmExtraDefault);
+		mnThemes.add(mntmDark);
+		
+		JMenuItem mntmDefault = new JMenuItem("Default");
+		mntmDefault.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmDefault);
+		
+		JMenuItem mntmEclipse = new JMenuItem("Eclipse");
+		mntmEclipse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmEclipse);
+		
+		JMenuItem mntmIntellijIdea = new JMenuItem("IntelliJ IDEA");
+		mntmIntellijIdea.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/idea.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmIntellijIdea);
+		
+		JMenuItem mntmMonokai = new JMenuItem("Monokai");
+		mntmMonokai.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmMonokai);
+		
+		JMenuItem mntmVisualStudio = new JMenuItem("Visual Studio");
+		mntmVisualStudio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					final Theme theme = Theme.load(
+							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/vs.xml"));
+					theme.apply(MainFrame.this.textPane);
+				} catch (final IOException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		mnThemes.add(mntmVisualStudio);
 		final JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 		
@@ -251,96 +369,13 @@ public class MainFrame extends JFrame {
 		});
 		panel_6.add(btnCountOccurences);
 
-		/**
-		 * Editor themes. TODO: Clean up.
-		 */
-		final JPanel panel_7 = new JPanel();
-		panel_5.add(panel_7, BorderLayout.SOUTH);
-
-		final JButton btnBlack = new JButton("Dark");
-		btnBlack.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					final Theme theme = Theme
-							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		panel_7.add(btnBlack);
-
-		final JButton btnClassical = new JButton("Default");
-		btnClassical.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		panel_7.add(btnClassical);
-
 		final JPanel panel_8 = new JPanel();
 		panel_5.add(panel_8, BorderLayout.CENTER);
 		panel_8.setLayout(new BorderLayout(0, 0));
 
-		final JPanel panel_9 = new JPanel();
-		panel_8.add(panel_9, BorderLayout.SOUTH);
-
-		final JButton btnNewButton_1 = new JButton("Extra Default");
-		btnNewButton_1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent arg0) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		panel_9.add(btnNewButton_1);
-
-		final JButton btnMonokai = new JButton("Monokai");
-		btnMonokai.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		panel_9.add(btnMonokai);
-
 		final JPanel panel_10 = new JPanel();
 		panel_8.add(panel_10, BorderLayout.CENTER);
 		panel_10.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_11 = new JPanel();
-		panel_10.add(panel_11, BorderLayout.SOUTH);
-
-		final JLabel lblTheme = new JLabel("Theme:");
-		panel_11.add(lblTheme);
 
 		final JPanel panel_12 = new JPanel();
 		panel_10.add(panel_12, BorderLayout.CENTER);
@@ -351,11 +386,25 @@ public class MainFrame extends JFrame {
 		this.toolConsole.setVisible(false);
 
 		/**
+		 * GC task cleaning memory everytime it hits 200mb.
+		 */
+		
+		final Timer gctimer = new Timer();
+		gctimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()/1024*1024 >= 200) {
+					Runtime.getRuntime().gc();
+				}
+			}
+		}, 0, 60);
+		
+		/**
 		 * Misc tasks, TODO: Clean up
 		 */
 		
-		final Timer timer = new Timer();
-		timer.schedule(new TimerTask() {
+		final Timer labeltimer = new Timer();
+		labeltimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
 				MainFrame.this.lblReady.setText("Ready | Length: " + MainFrame.this.textPane.getText().length()
