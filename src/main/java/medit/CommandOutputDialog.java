@@ -2,17 +2,16 @@ package medit;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Toolkit;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Toolkit;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTextPane;
-import java.awt.Font;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.WindowConstants;
+import javax.swing.border.EmptyBorder;
 
 public class CommandOutputDialog extends JDialog {
 
@@ -22,20 +21,21 @@ public class CommandOutputDialog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public CommandOutputDialog(String output) {
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		setIconImage(Toolkit.getDefaultToolkit().getImage(CommandOutputDialog.class.getResource("/medit/assets/categories/preferences-system.png")));
-		setTitle("Tool Output");
-		setBounds(100, 100, 450, 300);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+	public CommandOutputDialog(final String output) {
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		this.setIconImage(Toolkit.getDefaultToolkit()
+				.getImage(CommandOutputDialog.class.getResource("/medit/assets/categories/preferences-system.png")));
+		this.setTitle("Tool Output");
+		this.setBounds(100, 100, 450, 300);
+		this.getContentPane().setLayout(new BorderLayout());
+		this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.getContentPane().add(this.contentPanel, BorderLayout.CENTER);
+		this.contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JScrollPane scrollPane = new JScrollPane();
-			contentPanel.add(scrollPane, BorderLayout.CENTER);
+			final JScrollPane scrollPane = new JScrollPane();
+			this.contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
-				JTextPane textPane = new JTextPane();
+				final JTextPane textPane = new JTextPane();
 				scrollPane.setViewportView(textPane);
 				textPane.setEditable(false);
 				textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
@@ -43,19 +43,15 @@ public class CommandOutputDialog extends JDialog {
 			}
 		}
 		{
-			JPanel buttonPane = new JPanel();
+			final JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						dispose();
-					}
-				});
+				final JButton okButton = new JButton("OK");
+				okButton.addActionListener(e -> CommandOutputDialog.this.dispose());
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				this.getRootPane().setDefaultButton(okButton);
 			}
 		}
 	}

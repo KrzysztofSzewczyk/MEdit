@@ -19,3 +19,6 @@ bin/
 # Compilers directory, as it's used only locally, on my machine.
 # Unzipped packages are stored in this directory.
 compilers/
+
+# My own packages directory
+packages/
