@@ -48,6 +48,8 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import medit.ActionManagers.FileActionManager;
+
 /**
  * Main frame for MEdit project.
  *
@@ -56,20 +58,20 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 public class MainFrame extends JFrame {
 
-	private static int instances = 1;
+	public static int instances = 1;
 	/**
 	 * Serial version UID required by Eclipse
 	 */
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private File currentFile = null;
-	private MainFrame instance;
-	private final JLabel lblReady = new JLabel(
+	public static final long serialVersionUID = 1L;
+	public JPanel contentPane;
+	public File currentFile = null;
+	public MainFrame instance;
+	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
-	private JTextField replaceWithTextField;
-	private JTextField searchTextField;
-	private final RSyntaxTextArea textPane = new RSyntaxTextArea();
-	JTextPane toolConsole;
+	public JTextField replaceWithTextField;
+	public JTextField searchTextField;
+	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
+	public JTextPane toolConsole;
 
 	/**
 	 * Create the frame.
@@ -116,210 +118,16 @@ public class MainFrame extends JFrame {
 		final JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 
-		final JMenuItem mntmNew = new JMenuItem("New");
-		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
-		
-		/**
-		 * Start new window of MEdit
-		 */
-		mntmNew.addActionListener(arg0 -> EventQueue.invokeLater(() -> {
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				final MainFrame frame = new MainFrame();
-				frame.setVisible(true);
-				MainFrame.instances++;
-				MainFrame.this.textPane.requestFocus();
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-		}));
-		mnFile.add(mntmNew);
-		
-		/**
-		 * Open file in new MEdit window.
-		 */
-		final JMenuItem mntmOpen = new JMenuItem("Open");
-		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
-		mntmOpen.addActionListener(arg0 -> {
-			final JFileChooser chooser = new JFileChooser();
-			if (chooser.showOpenDialog(MainFrame.this.instance) != JFileChooser.APPROVE_OPTION)
-				return;
-			try {
-				final FileReader reader = new FileReader(chooser.getSelectedFile());
-				final BufferedReader br = new BufferedReader(reader);
-				MainFrame.this.textPane.read(br, null);
-				br.close();
-				MainFrame.this.textPane.requestFocus();
-				MainFrame.this.currentFile = chooser.getSelectedFile();
-			} catch (final Exception e2) {
-				final Crash dialog = new Crash(e2);
-				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		mnFile.add(mntmOpen);
 
-		/**
-		 * Save file, if currentfile==null, execute SaveAs action.
-		 */
-		final JMenuItem mntmSave = new JMenuItem("Save");
-		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
-		mntmSave.addActionListener(e -> {
-			if (MainFrame.this.currentFile == null) {
-				final JFileChooser SaveAs = new JFileChooser();
-				SaveAs.setApproveButtonText("Save");
-				final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
-				if (actionDialog != JFileChooser.APPROVE_OPTION)
-					return;
-
-				final File fileName1 = SaveAs.getSelectedFile();
-				BufferedWriter outFile1 = null;
-				try {
-					outFile1 = new BufferedWriter(new FileWriter(fileName1));
-					MainFrame.this.textPane.write(outFile1);
-				} catch (final IOException ex1) {
-					final Crash dialog1 = new Crash(ex1);
-					dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog1.setVisible(true);
-				} finally {
-					if (outFile1 != null)
-						try {
-							outFile1.close();
-						} catch (final IOException e11) {
-							final Crash dialog2 = new Crash(e11);
-							dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog2.setVisible(true);
-						}
-				}
-				MainFrame.this.currentFile = fileName1;
-				MainFrame.this.textPane.requestFocus();
-			} else {
-				final File fileName2 = MainFrame.this.currentFile;
-				BufferedWriter outFile2 = null;
-				try {
-					outFile2 = new BufferedWriter(new FileWriter(fileName2));
-					MainFrame.this.textPane.write(outFile2);
-				} catch (final IOException ex2) {
-					final Crash dialog3 = new Crash(ex2);
-					dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog3.setVisible(true);
-				} finally {
-					if (outFile2 != null)
-						try {
-							outFile2.close();
-						} catch (final IOException e12) {
-							final Crash dialog4 = new Crash(e12);
-							dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog4.setVisible(true);
-						}
-				}
-				MainFrame.this.textPane.requestFocus();
-			}
-		});
-		
-		JMenuItem mntmReloadFileFrom = new JMenuItem("Reload file from disk");
-		mntmReloadFileFrom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if(currentFile==null) return;
-				else {
-					FileReader reader = null;
-					try {
-						reader = new FileReader(currentFile);
-					} catch (FileNotFoundException e2) {
-						final Crash dialog4 = new Crash(e2);
-						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog4.setVisible(true);
-					}
-					final BufferedReader br = new BufferedReader(reader);
-					try {
-						MainFrame.this.textPane.read(br, null);
-					} catch (IOException e1) {
-						final Crash dialog4 = new Crash(e1 );
-						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog4.setVisible(true);
-					}
-					try {
-						br.close();
-					} catch (IOException e1) {
-						final Crash dialog4 = new Crash(e1);
-						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog4.setVisible(true);
-					}
-					MainFrame.this.textPane.requestFocus();          
-				}
-			}
-		});
-		mntmReloadFileFrom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
-		mnFile.add(mntmReloadFileFrom);
-		
-		JMenuItem mntmOpenContainingDirectory = new JMenuItem("Open containing directory");
-		mntmOpenContainingDirectory.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (Desktop.isDesktopSupported()) {
-			        try {
-						Desktop.getDesktop().open(currentFile.getParentFile());
-					} catch (IOException e1) {
-						final Crash dialog4 = new Crash(e1);
-						dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog4.setVisible(true);
-					}
-			    }
-			}
-		});
-		mntmOpenContainingDirectory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
-		mnFile.add(mntmOpenContainingDirectory);
-		mnFile.add(mntmSave);
-
-		/**
-		 * Save file showing dialog (that's how this is differing from Save)
-		 */
-		final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
-		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
-		mntmSaveAs.addActionListener(e -> {
-			final JFileChooser SaveAs = new JFileChooser();
-			SaveAs.setApproveButtonText("Save");
-			final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
-			if (actionDialog != JFileChooser.APPROVE_OPTION)
-				return;
-
-			final File fileName = SaveAs.getSelectedFile();
-			BufferedWriter outFile = null;
-			try {
-				outFile = new BufferedWriter(new FileWriter(fileName));
-				MainFrame.this.textPane.write(outFile);
-			} catch (final IOException ex) {
-				final Crash dialog1 = new Crash(ex);
-				dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				dialog1.setVisible(true);
-			} finally {
-				if (outFile != null)
-					try {
-						outFile.close();
-					} catch (final IOException e1) {
-						final Crash dialog2 = new Crash(e1);
-						dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-						dialog2.setVisible(true);
-					}
-			}
-			MainFrame.this.currentFile = fileName;
-			MainFrame.this.textPane.requestFocus();
-		});
-		mnFile.add(mntmSaveAs);
-
-		final JSeparator separator = new JSeparator();
-		mnFile.add(separator);
-
-		/**
-		 * Decrement amount of instances and close current MEdit window.
-		 */
-		final JMenuItem mntmExit = new JMenuItem("Exit");
-		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
-		mntmExit.addActionListener(e -> {
-			if (MainFrame.instances == 0)
-				return;
-			MainFrame.this.instance.dispose();
-		});
-		mnFile.add(mntmExit);
+		FileActionManager fam = new FileActionManager(this);
+		fam.New(mnFile);
+		fam.Open(mnFile);
+		fam.Save(mnFile);
+		fam.ReloadFromDisk(mnFile);
+		fam.OpenDir(mnFile);
+		fam.SaveAs(mnFile);
+		fam.Separator(mnFile);
+		fam.Exit(mnFile);
 
 		final JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
@@ -633,113 +441,13 @@ public class MainFrame extends JFrame {
 		toolBar.setFloatable(false);
 		this.contentPane.add(toolBar, BorderLayout.NORTH);
 
-		final JButton btnNewButton = new JButton("");
-		btnNewButton.addActionListener(e -> EventQueue.invokeLater(() -> {
-			try {
-				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				final MainFrame frame = new MainFrame();
-				frame.setVisible(true);
-				MainFrame.instances++;
-			} catch (final Exception e1) {
-				e1.printStackTrace();
-			}
-			MainFrame.this.textPane.requestFocus();
-		}));
-		btnNewButton.setToolTipText("Create new file");
-		btnNewButton.setFocusPainted(false);
-		btnNewButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-new.png")));
-		toolBar.add(btnNewButton);
+		fam.New(toolBar);
 
-		final JButton btnOpenButton = new JButton("");
-		btnOpenButton.addActionListener(e -> {
-			final JFileChooser chooser = new JFileChooser();
-			if (chooser.showOpenDialog(MainFrame.this.instance) != JFileChooser.APPROVE_OPTION)
-				return;
-			try {
-				MainFrame.this.currentFile = chooser.getSelectedFile();
-				final FileReader reader = new FileReader(chooser.getSelectedFile());
-				final BufferedReader br = new BufferedReader(reader);
-				MainFrame.this.textPane.read(br, null);
-				br.close();
-				MainFrame.this.textPane.requestFocus();
-			} catch (final Exception e2) {
-				final Crash dialog = new Crash(e2);
-				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				dialog.setVisible(true);
-			}
-		});
-		btnOpenButton.setToolTipText("Open existing file");
-		btnOpenButton.setFocusPainted(false);
-		btnOpenButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-open.png")));
-		toolBar.add(btnOpenButton);
+		fam.Open(toolBar);
 
-		final JButton btnSaveButton = new JButton("");
-		btnSaveButton.addActionListener(e -> {
-			if (MainFrame.this.currentFile == null) {
-				final JFileChooser SaveAs = new JFileChooser();
-				SaveAs.setApproveButtonText("Save");
-				final int actionDialog = SaveAs.showSaveDialog(MainFrame.this.instance);
-				if (actionDialog != JFileChooser.APPROVE_OPTION)
-					return;
+		fam.Save(toolBar);
 
-				final File fileName1 = SaveAs.getSelectedFile();
-				BufferedWriter outFile1 = null;
-				try {
-					outFile1 = new BufferedWriter(new FileWriter(fileName1));
-					MainFrame.this.textPane.write(outFile1);
-				} catch (final IOException ex1) {
-					final Crash dialog1 = new Crash(ex1);
-					dialog1.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog1.setVisible(true);
-				} finally {
-					if (outFile1 != null)
-						try {
-							outFile1.close();
-						} catch (final IOException e11) {
-							final Crash dialog2 = new Crash(e11);
-							dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog2.setVisible(true);
-						}
-				}
-				MainFrame.this.textPane.requestFocus();
-			} else {
-				final File fileName2 = MainFrame.this.currentFile;
-				BufferedWriter outFile2 = null;
-				try {
-					outFile2 = new BufferedWriter(new FileWriter(fileName2));
-					MainFrame.this.textPane.write(outFile2);
-				} catch (final IOException ex2) {
-					final Crash dialog3 = new Crash(ex2);
-					dialog3.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog3.setVisible(true);
-				} finally {
-					if (outFile2 != null)
-						try {
-							outFile2.close();
-						} catch (final IOException e12) {
-							final Crash dialog4 = new Crash(e12);
-							dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-							dialog4.setVisible(true);
-						}
-				}
-				MainFrame.this.textPane.requestFocus();
-			}
-		});
-		btnSaveButton.setToolTipText("Save file");
-		btnSaveButton.setFocusPainted(false);
-		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-save.png")));
-		toolBar.add(btnSaveButton);
-
-		final JButton btnCloseButton = new JButton("");
-		btnCloseButton.addActionListener(e -> {
-			if (MainFrame.instances == 0)
-				return;
-			MainFrame.this.instance.dispose();
-		});
-		btnCloseButton.setToolTipText("Close file");
-		btnCloseButton.setFocusPainted(false);
-		btnCloseButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/status/image-missing.png")));
-		toolBar.add(btnCloseButton);
+		fam.Exit(toolBar);
 
 		final JButton btnCutButton = new JButton("");
 		btnCutButton.addActionListener(e -> MainFrame.this.textPane.cut());
