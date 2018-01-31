@@ -5,13 +5,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryUsage;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -36,8 +33,8 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import medit.ActionManagers.EditActionManager;
 import medit.ActionManagers.FileActionManager;
 import medit.ActionManagers.LanguageActionManager;
+import medit.ActionManagers.ThemesActionManager;
 import medit.ActionManagers.WindowActionManager;
-import javax.swing.JMenuItem;
 
 /**
  * Main frame for MEdit project.
@@ -96,121 +93,8 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnLanguage);
 		final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
 		menuBar.add(mnSyntaxHighlighting);
-		
-		JMenu mnThemes = new JMenu("Themes");
+		final JMenu mnThemes = new JMenu("Themes");
 		menuBar.add(mnThemes);
-		
-		JMenuItem mntmDark = new JMenuItem("Dark");
-		mntmDark.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		
-		JMenuItem mntmExtraDefault = new JMenuItem("Extra Default");
-		mntmExtraDefault.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmExtraDefault);
-		mnThemes.add(mntmDark);
-		
-		JMenuItem mntmDefault = new JMenuItem("Default");
-		mntmDefault.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmDefault);
-		
-		JMenuItem mntmEclipse = new JMenuItem("Eclipse");
-		mntmEclipse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmEclipse);
-		
-		JMenuItem mntmIntellijIdea = new JMenuItem("IntelliJ IDEA");
-		mntmIntellijIdea.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/idea.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmIntellijIdea);
-		
-		JMenuItem mntmMonokai = new JMenuItem("Monokai");
-		mntmMonokai.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmMonokai);
-		
-		JMenuItem mntmVisualStudio = new JMenuItem("Visual Studio");
-		mntmVisualStudio.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/vs.xml"));
-					theme.apply(MainFrame.this.textPane);
-				} catch (final IOException ioe) { // Never happens
-					final Crash dialog = new Crash(ioe);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-			}
-		});
-		mnThemes.add(mntmVisualStudio);
 		final JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
 		
@@ -219,6 +103,7 @@ public class MainFrame extends JFrame {
 		 */
 		WindowActionManager wam = new WindowActionManager(this);
 		wam.Closing();
+		
 		FileActionManager fam = new FileActionManager(this);
 		fam.New(mnFile);
 		fam.Open(mnFile);
@@ -228,6 +113,7 @@ public class MainFrame extends JFrame {
 		fam.SaveAs(mnFile);
 		fam.Separator(mnFile);
 		fam.Exit(mnFile);
+		
 		EditActionManager eam = new EditActionManager(this);
 		eam.Cut(mnEdit);
 		eam.Copy(mnEdit);
@@ -236,10 +122,15 @@ public class MainFrame extends JFrame {
 		eam.Separator(mnEdit);
 		eam.Undo(mnEdit);
 		eam.Redo(mnEdit);
+		
 		AboutActionManager aam = new AboutActionManager();
 		aam.About(mnAbout);
+		
 		LanguageActionManager lam = new LanguageActionManager(this);
 		lam.SetUp(mnSyntaxHighlighting);
+		
+		ThemesActionManager tam = new ThemesActionManager(this);
+		tam.RegisterThemes(mnThemes);
 		
 		/**
 		 * Language submenu setup
