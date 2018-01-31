@@ -10,8 +10,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
 
+import medit.AboutBox;
 import medit.MainFrame;
+import medit.SearchWindow;
 
 public class EditActionManager {
 
@@ -182,8 +185,17 @@ public class EditActionManager {
 		toolBar.add(btnRedoButton);
 	}
 
-	public void Search(JMenu mnEdit) {
-		// TODO Auto-generated method stub
-		
+	public void Search(JMenu parent) {
+		final JMenuItem mntmUndo = new JMenuItem("Find/Replace/Count Occurences");
+		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
+		mntmUndo.addActionListener(e -> new Thread(new Runnable() {
+			@Override
+			public void run() {
+				final SearchWindow dialog = new SearchWindow(instance);
+				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				dialog.setVisible(true);
+			}
+		}).start());
+		parent.add(mntmUndo);
 	}
 }
