@@ -1,4 +1,4 @@
-package medit;
+package medit.ActionManagers;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -7,6 +7,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+
+import medit.AboutBox;
 
 public class AboutActionManager {
 	

@@ -21,6 +21,7 @@ import org.fife.ui.rtextarea.SearchEngine;
 
 public class SearchWindow extends JDialog {
 
+	private static final long serialVersionUID = 3599396860237329268L;
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
 	private JTextField textField_1;
@@ -157,6 +158,7 @@ public class SearchWindow extends JDialog {
 			rdbtnForward.setSelected(true);
 			
 			rdbtnForward.addActionListener(new ActionListener() {
+				@SuppressWarnings("deprecation")
 				public void actionPerformed(ActionEvent e) {
 					rdbtnBackward.enable(false);
 				}
@@ -164,6 +166,7 @@ public class SearchWindow extends JDialog {
 			rdbtnForward.setBounds(10, 70, 109, 23);
 			panel.add(rdbtnForward);
 			rdbtnBackward.addActionListener(new ActionListener() {
+				@SuppressWarnings("deprecation")
 				public void actionPerformed(ActionEvent e) {
 					rdbtnForward.enable(false);
 				}

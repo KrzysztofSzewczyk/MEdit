@@ -5,23 +5,15 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
@@ -30,10 +22,13 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import medit.ActionManagers.AboutActionManager;
+import medit.ActionManagers.BottombarActionManager;
 import medit.ActionManagers.EditActionManager;
 import medit.ActionManagers.FileActionManager;
 import medit.ActionManagers.LanguageActionManager;
 import medit.ActionManagers.ThemesActionManager;
+import medit.ActionManagers.TimerTaskActionManager;
 import medit.ActionManagers.WindowActionManager;
 
 /**
@@ -52,7 +47,6 @@ public class MainFrame extends JFrame {
 	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
-	public JTextPane toolConsole;
 
 	/**
 	 * Create the frame.
@@ -99,6 +93,7 @@ public class MainFrame extends JFrame {
 		/**
 		 * Menu action managers setup
 		 */
+		
 		WindowActionManager wam = new WindowActionManager(this);
 		wam.Closing();
 		
@@ -131,6 +126,12 @@ public class MainFrame extends JFrame {
 		
 		ThemesActionManager tam = new ThemesActionManager(this);
 		tam.RegisterThemes(mnThemes);
+		
+		TimerTaskActionManager ttam = new TimerTaskActionManager(this);
+		ttam.SetUpTimers();
+		
+		BottombarActionManager bbam = new BottombarActionManager(this);
+		bbam.SetUpBottombar();
 		
 		/**
 		 * Language submenu setup
@@ -166,83 +167,7 @@ public class MainFrame extends JFrame {
 
 		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		scrollPane.setViewportView(this.textPane);
-
-		/**
-		 * Search box setup. Dirty at the moment, TODO: Clean up.
-		 */
-		final JPanel panel = new JPanel();
-		this.contentPane.add(panel, BorderLayout.EAST);
-		panel.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_1 = new JPanel();
-		panel.add(panel_1, BorderLayout.CENTER);
-		panel_1.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_3 = new JPanel();
-		panel_1.add(panel_3, BorderLayout.CENTER);
-		panel_3.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_5 = new JPanel();
-		panel_3.add(panel_5, BorderLayout.CENTER);
-		panel_5.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_8 = new JPanel();
-		panel_5.add(panel_8, BorderLayout.CENTER);
-		panel_8.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_10 = new JPanel();
-		panel_8.add(panel_10, BorderLayout.CENTER);
-		panel_10.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_12 = new JPanel();
-		panel_10.add(panel_12, BorderLayout.CENTER);
-		panel_12.setLayout(new BorderLayout(0, 0));
-
-		this.toolConsole = new JTextPane();
-		panel_12.add(this.toolConsole, BorderLayout.CENTER);
-		this.toolConsole.setVisible(false);
-
-		/**
-		 * GC task cleaning memory everytime it hits 200mb.
-		 */
 		
-		final Timer gctimer = new Timer();
-		gctimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				if(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()/1024*1024 >= 200) {
-					Runtime.getRuntime().gc();
-				}
-			}
-		}, 0, 60);
-		
-		/**
-		 * Misc tasks, TODO: Clean up
-		 */
-		
-		final Timer labeltimer = new Timer();
-		labeltimer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				MainFrame.this.lblReady.setText("Ready | Length: " + MainFrame.this.textPane.getText().length()
-						+ " | Filename: \""
-						+ (MainFrame.this.currentFile == null ? "Unnamed"
-								: MainFrame.this.currentFile.getAbsolutePath())
-						+ "\" | Maximum size: "
-						+ (MainFrame.this.currentFile == null ? "?" : MainFrame.this.currentFile.getFreeSpace() / 1024)
-						+ "KB | "
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true ? "NUM"
-								: "NONUM")
-						+ " | "
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_SCROLL_LOCK) == true ? "SCR"
-								: "NOSCR")
-						+ " | "
-						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK) == true ? "CAPS"
-								: "NOCAPS"));
-				if (MainFrame.instances == 0)
-					System.exit(0);
-			}
-		}, 0, 1);
 		this.textPane.clearParsers();
 		this.textPane.setParserDelay(1);
 		this.textPane.setAnimateBracketMatching(true);
@@ -268,15 +193,7 @@ public class MainFrame extends JFrame {
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
 
-		final JPanel panel_14 = new JPanel();
-		this.contentPane.add(panel_14, BorderLayout.SOUTH);
-		panel_14.setLayout(new BorderLayout(0, 0));
-
-		final JToolBar toolBar_1 = new JToolBar();
-		panel_14.add(toolBar_1);
-		toolBar_1.setFloatable(false);
-
-		toolBar_1.add(this.lblReady);
+		
 	}
 
 }

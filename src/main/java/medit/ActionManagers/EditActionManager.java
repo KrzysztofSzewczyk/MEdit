@@ -12,7 +12,6 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import medit.AboutBox;
 import medit.MainFrame;
 import medit.SearchWindow;
 
