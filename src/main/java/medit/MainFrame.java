@@ -51,8 +51,6 @@ public class MainFrame extends JFrame {
 	public MainFrame instance;
 	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
-	public JTextField replaceWithTextField;
-	public JTextField searchTextField;
 	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
 	public JTextPane toolConsole;
 
@@ -176,91 +174,17 @@ public class MainFrame extends JFrame {
 		this.contentPane.add(panel, BorderLayout.EAST);
 		panel.setLayout(new BorderLayout(0, 0));
 
-		final JPanel searchPanel = new JPanel();
-		panel.add(searchPanel, BorderLayout.NORTH);
-
-		final JLabel lblSearch = new JLabel("Search");
-		searchPanel.add(lblSearch);
-
-		this.searchTextField = new JTextField();
-		searchPanel.add(this.searchTextField);
-		this.searchTextField.setColumns(10);
-
 		final JPanel panel_1 = new JPanel();
 		panel.add(panel_1, BorderLayout.CENTER);
 		panel_1.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_2 = new JPanel();
-		panel_1.add(panel_2, BorderLayout.NORTH);
-
-		final JLabel lblReplace = new JLabel("Replace with");
-		panel_2.add(lblReplace);
-
-		this.replaceWithTextField = new JTextField();
-		panel_2.add(this.replaceWithTextField);
-		this.replaceWithTextField.setColumns(10);
 
 		final JPanel panel_3 = new JPanel();
 		panel_1.add(panel_3, BorderLayout.CENTER);
 		panel_3.setLayout(new BorderLayout(0, 0));
 
-		final JPanel panel_4 = new JPanel();
-		panel_3.add(panel_4, BorderLayout.NORTH);
-
-		final JButton btnSearch = new JButton("Search");
-		btnSearch.addActionListener(e -> {
-			final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
-					MainFrame.this.textPane.getCaretPosition());
-			final int l2 = MainFrame.this.searchTextField.getText().length();
-			if (l1 == -1)
-				JOptionPane.showMessageDialog(MainFrame.this.instance,
-						"\"" + MainFrame.this.searchTextField.getText() + "\" not found");
-			else
-				MainFrame.this.textPane.select(l1, l2 + l1);
-		});
-		panel_4.add(btnSearch);
-
-		final JButton btnReplace = new JButton("Replace");
-		btnReplace.addActionListener(e -> {
-			final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
-					MainFrame.this.textPane.getCaretPosition());
-			final int l2 = MainFrame.this.searchTextField.getText().length();
-			if (l1 == -1)
-				JOptionPane.showMessageDialog(MainFrame.this.instance,
-						"\"" + MainFrame.this.searchTextField.getText() + "\" not found");
-			else {
-				MainFrame.this.textPane.select(l1, l2 + l1);
-				MainFrame.this.textPane.replaceSelection(MainFrame.this.replaceWithTextField.getText());
-				MainFrame.this.textPane.select(l1, l2 + l1);
-			}
-		});
-		panel_4.add(btnReplace);
-
 		final JPanel panel_5 = new JPanel();
 		panel_3.add(panel_5, BorderLayout.CENTER);
 		panel_5.setLayout(new BorderLayout(0, 0));
-
-		final JPanel panel_6 = new JPanel();
-		panel_5.add(panel_6, BorderLayout.NORTH);
-
-		final JButton btnCountOccurences =  new JButton("Count Occurences");
-		btnCountOccurences.addActionListener(e -> {
-			int amount = 0;
-			while (true) {
-				final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
-						MainFrame.this.textPane.getCaretPosition());
-				final int l2 = MainFrame.this.searchTextField.getText().length();
-				if(l1 >= l2) break;
-				if (l1 == -1)
-					break;
-				else {
-					MainFrame.this.textPane.setCaretPosition(l1 + l2);
-					amount++;
-				}
-			}
-			JOptionPane.showMessageDialog(MainFrame.this.instance, "Found " + amount + " occurences.");
-		});
-		panel_6.add(btnCountOccurences);
 
 		final JPanel panel_8 = new JPanel();
 		panel_5.add(panel_8, BorderLayout.CENTER);
