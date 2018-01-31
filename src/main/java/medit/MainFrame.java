@@ -60,6 +60,7 @@ public class MainFrame extends JFrame {
 	 * Create the frame.
 	 */
 	public MainFrame() {
+		
 		/**
 		 * Frame setup
 		 */
@@ -70,6 +71,10 @@ public class MainFrame extends JFrame {
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setBounds(100, 100, 700, 500);
 		this.setMinimumSize(new Dimension(700, 500));
+		this.contentPane = new JPanel();
+		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.setContentPane(this.contentPane);
+		this.contentPane.setLayout(new BorderLayout(0, 0));
 
 		/**
 		 * Menu bar Setup
@@ -124,14 +129,10 @@ public class MainFrame extends JFrame {
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
-
 		
-		
-		this.contentPane = new JPanel();
-		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		this.setContentPane(this.contentPane);
-		this.contentPane.setLayout(new BorderLayout(0, 0));
-
+		/**
+		 * Toolbar setup.
+		 */
 		final JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		this.contentPane.add(toolBar, BorderLayout.NORTH);
@@ -148,12 +149,18 @@ public class MainFrame extends JFrame {
 		eam.Undo(toolBar);
 		eam.Redo(toolBar);
 		
+		/**
+		 * Editor setup
+		 */
 		final RTextScrollPane scrollPane = new RTextScrollPane();
 		this.contentPane.add(scrollPane, BorderLayout.CENTER);
 
 		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		scrollPane.setViewportView(this.textPane);
 
+		/**
+		 * Search box setup. Dirty at the moment, TODO: Clean up.
+		 */
 		final JPanel panel = new JPanel();
 		this.contentPane.add(panel, BorderLayout.EAST);
 		panel.setLayout(new BorderLayout(0, 0));
@@ -244,6 +251,9 @@ public class MainFrame extends JFrame {
 		});
 		panel_6.add(btnCountOccurences);
 
+		/**
+		 * Editor themes. TODO: Clean up.
+		 */
 		final JPanel panel_7 = new JPanel();
 		panel_5.add(panel_7, BorderLayout.SOUTH);
 
@@ -340,6 +350,10 @@ public class MainFrame extends JFrame {
 		panel_12.add(this.toolConsole, BorderLayout.CENTER);
 		this.toolConsole.setVisible(false);
 
+		/**
+		 * Misc tasks, TODO: Clean up
+		 */
+		
 		final Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
 			@Override
