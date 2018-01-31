@@ -140,10 +140,16 @@ public class SearchWindow extends JDialog {
 				    context.setWholeWord(chckbxSearchWholeWord.isSelected());
 				    context.setReplaceWith(sinstance.textField_1.getText());
 				    
-				    boolean found = SearchEngine.find(instance.textPane, context).wasFound();
-				    if (!found) {
-				         JOptionPane.showMessageDialog(sinstance, "Text not found");
+				    int amount = 0;
+				    
+				    while(true) {
+				    	boolean found = SearchEngine.find(instance.textPane, context).wasFound();
+					    if (!found) {
+					    	 break;
+					    } else amount++;
 				    }
+				    
+				    JOptionPane.showMessageDialog(sinstance, "Found " + amount + " occurences");
 				}
 			});
 			btnCountOccurences.setBounds(241, 84, 128, 23);
