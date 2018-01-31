@@ -1459,13 +1459,14 @@ public class MainFrame extends JFrame {
 		final JPanel panel_6 = new JPanel();
 		panel_5.add(panel_6, BorderLayout.NORTH);
 
-		final JButton btnCountOccurences = new JButton("Count Occurences");
+		final JButton btnCountOccurences =  new JButton("Count Occurences");
 		btnCountOccurences.addActionListener(e -> {
 			int amount = 0;
 			while (true) {
 				final int l1 = MainFrame.this.textPane.getText().indexOf(MainFrame.this.searchTextField.getText(),
 						MainFrame.this.textPane.getCaretPosition());
 				final int l2 = MainFrame.this.searchTextField.getText().length();
+				if(l1 >= l2) break;
 				if (l1 == -1)
 					break;
 				else {
