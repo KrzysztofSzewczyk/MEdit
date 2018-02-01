@@ -171,6 +171,7 @@ public class FileActionManager {
 							return;
 
 						final File fileName1 = SaveAs.getSelectedFile();
+						instance.currentFile = SaveAs.getSelectedFile();
 						BufferedWriter outFile1 = null;
 						try {
 							outFile1 = new BufferedWriter(new FileWriter(fileName1));
@@ -236,6 +237,7 @@ public class FileActionManager {
 							return;
 
 						final File fileName1 = SaveAs.getSelectedFile();
+						instance.currentFile = SaveAs.getSelectedFile();
 						BufferedWriter outFile1 = null;
 						try {
 							outFile1 = new BufferedWriter(new FileWriter(fileName1));
