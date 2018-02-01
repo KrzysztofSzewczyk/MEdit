@@ -420,4 +420,24 @@ public class FileActionManager {
 		parent.add(separator);
 	}
 
+	public void RemoveFromDisk(JMenu parent) {
+		final JMenuItem mntmSaveAs = new JMenuItem("Remove from disk");
+		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		mntmSaveAs.addActionListener(e -> {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						instance.currentFile.delete();
+					} catch(Exception E) {
+						final Crash dialog2 = new Crash(E);
+						dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+						dialog2.setVisible(true);
+					}
+				}
+			}).start();
+		});
+		parent.add(mntmSaveAs);
+	}
+
 }
