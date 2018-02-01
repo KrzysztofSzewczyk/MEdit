@@ -2,18 +2,18 @@ package medit;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import java.awt.Toolkit;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
-import java.awt.event.ActionListener;
-import java.util.Scanner;
-import java.awt.event.ActionEvent;
+import javax.swing.border.EmptyBorder;
 
 public class GoToLine extends JDialog {
 
@@ -24,66 +24,67 @@ public class GoToLine extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public GoToLine(MainFrame instance) {
-		setType(Type.POPUP);
-		setTitle("Go to line");
-		setIconImage(Toolkit.getDefaultToolkit()
+	public GoToLine(final MainFrame instance) {
+		this.setType(Type.POPUP);
+		this.setTitle("Go to line");
+		this.setIconImage(Toolkit.getDefaultToolkit()
 				.getImage(GoToLine.class.getResource("/medit/assets/actions/format-indent-more.png")));
-		setBounds(100, 100, 174, 112);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+		this.setBounds(100, 100, 174, 112);
+		this.getContentPane().setLayout(new BorderLayout());
+		this.contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.getContentPane().add(this.contentPanel, BorderLayout.CENTER);
+		this.contentPanel.setLayout(new BorderLayout(0, 0));
 		{
-			JPanel panel = new JPanel();
-			contentPanel.add(panel, BorderLayout.NORTH);
+			final JPanel panel = new JPanel();
+			this.contentPanel.add(panel, BorderLayout.NORTH);
 			{
-				JLabel lblLine = new JLabel("Line: ");
+				final JLabel lblLine = new JLabel("Line: ");
 				panel.add(lblLine);
 			}
 			{
-				textField = new JTextField();
-				panel.add(textField);
-				textField.setColumns(10);
+				this.textField = new JTextField();
+				panel.add(this.textField);
+				this.textField.setColumns(10);
 			}
 		}
 		{
-			JPanel buttonPane = new JPanel();
+			final JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton okButton = new JButton("OK");
+				final JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
-					public int newCursor(int newlineno) {
-						int pos = 0;
-						int i = 0;
-						String line = "";
-						Scanner sc = new Scanner(instance.textPane.getText());
-						while (sc.hasNextLine()) {
-							line = sc.nextLine();
-							i++;
-							if (newlineno > i) {
-								pos = pos + line.length() + 1;
-							}
-						}
-						sc.close();
-						return pos;
-					}
-
-					public void actionPerformed(ActionEvent arg0) {
+					@Override
+					public void actionPerformed(final ActionEvent arg0) {
 						try {
-							instance.textPane.setCaretPosition(newCursor(Integer.parseInt(textField.getText())));
-						} catch (Exception e) {
+							instance.textPane.setCaretPosition(
+									this.newCursor(Integer.parseInt(GoToLine.this.textField.getText())));
+						} catch (final Exception e) {
 							JOptionPane.showMessageDialog(instance, "Please enter valid line number.", "Error.",
 									JOptionPane.ERROR_MESSAGE);
 							return;
 						}
 
 					}
+
+					public int newCursor(final int newlineno) {
+						int pos = 0;
+						int i = 0;
+						String line = "";
+						final Scanner sc = new Scanner(instance.textPane.getText());
+						while (sc.hasNextLine()) {
+							line = sc.nextLine();
+							i++;
+							if (newlineno > i)
+								pos = pos + line.length() + 1;
+						}
+						sc.close();
+						return pos;
+					}
 				});
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
+				this.getRootPane().setDefaultButton(okButton);
 			}
 		}
 	}

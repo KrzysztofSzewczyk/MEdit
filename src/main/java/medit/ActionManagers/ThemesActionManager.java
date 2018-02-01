@@ -37,7 +37,7 @@ public class ThemesActionManager {
 			}
 		});
 
-		JMenuItem mntmExtraDefault = new JMenuItem("Extra Default");
+		JMenuItem mntmExtraDefault = new JMenuItem("Alternative MEdit");
 		mntmExtraDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -54,7 +54,7 @@ public class ThemesActionManager {
 		parent.add(mntmExtraDefault);
 		parent.add(mntmDark);
 
-		JMenuItem mntmDefault = new JMenuItem("Default");
+		JMenuItem mntmDefault = new JMenuItem("MEdit");
 		mntmDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
