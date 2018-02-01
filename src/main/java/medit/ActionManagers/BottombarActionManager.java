@@ -14,7 +14,7 @@ public class BottombarActionManager {
 	public BottombarActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void SetUpBottombar() {
 		final JPanel panel_14 = new JPanel();
 		instance.contentPane.add(panel_14, BorderLayout.SOUTH);
@@ -26,5 +26,5 @@ public class BottombarActionManager {
 
 		toolBar_1.add(instance.lblReady);
 	}
-	
+
 }

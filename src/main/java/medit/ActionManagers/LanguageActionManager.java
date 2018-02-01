@@ -9,15 +9,16 @@ import medit.MainFrame;
 
 public class LanguageActionManager {
 	private MainFrame instance;
+
 	public LanguageActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void SetUp(JMenu parent) {
 		final JMenuItem mntmNo = new JMenuItem("No");
 		final JMenu mnA = new JMenu("A");
 		final JMenuItem mntmActionscript = new JMenuItem("ActionScript");
-		final JMenuItem mntmAssembler = new JMenuItem("Assembly"); //Like this one
+		final JMenuItem mntmAssembler = new JMenuItem("Assembly"); // Like this one
 		final JMenuItem mntmBbcode = new JMenuItem("BBCode");
 		final JMenu mnC = new JMenu("C");
 		final JMenuItem mntmC = new JMenuItem("C");
@@ -54,7 +55,7 @@ public class LanguageActionManager {
 		final JMenu mnP = new JMenu("P");
 		final JMenuItem mntmPerl = new JMenuItem("Perl");
 		final JMenuItem mntmPropertiesFile = new JMenuItem("Properties File");
-		final JMenuItem mntmPython = new JMenuItem("Python"); //Hate this one
+		final JMenuItem mntmPython = new JMenuItem("Python"); // Hate this one
 		final JMenu mnR = new JMenu("R");
 		final JMenuItem mntmRuby = new JMenuItem("Ruby");
 		final JMenu mnS = new JMenu("S");
@@ -69,7 +70,7 @@ public class LanguageActionManager {
 		final JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
 		final JMenuItem mntmXml = new JMenuItem("XML");
 		final JMenuItem mntmYaml = new JMenuItem("YAML");
-		
+
 		parent.add(mntmNo);
 		parent.add(mnA);
 		parent.add(mntmBbcode);
@@ -92,38 +93,47 @@ public class LanguageActionManager {
 		parent.add(mntmWindowsBatch);
 		parent.add(mntmXml);
 		parent.add(mntmYaml);
-		
+
 		mntmNo.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE));
-		mntmAssembler.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86));
-		mntmActionscript.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT));
+		mntmAssembler.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86));
+		mntmActionscript.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT));
 		mntmBbcode.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE));
-		mntmClojure.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE));
+		mntmClojure
+				.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE));
 		mntmC_2.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP));
 		mntmC_1.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS));
 		mntmC.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C));
 		mntmD.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D));
 		mntmDtd.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD));
-		mntmDocker.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE));
+		mntmDocker.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE));
 		mntmDelphi.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI));
 		mntmDart.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART));
-		mntmFortan.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN));
+		mntmFortan
+				.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN));
 		mntmGroovy.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY));
-		mntmHtaccess.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS));
+		mntmHtaccess
+				.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS));
 		mntmHtml.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML));
 		mntmHosts.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS));
 		mntmIni.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_INI));
 		mntmJsp.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP));
 		mntmJshintrc.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON));
 		mntmJava.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA));
-		mntmJavascript.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT));
+		mntmJavascript.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT));
 		mntmLua.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA));
 		mntmLisp.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP));
 		mntmLess.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS));
 		mntmLatex.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX));
 		mntmMxml.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML));
-		mntmMakeFile.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE));
+		mntmMakeFile
+				.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE));
 		mntmNsis.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NSIS));
-		mntmPropertiesFile.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE));
+		mntmPropertiesFile.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE));
 		mntmPython.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON));
 		mntmPerl.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL));
 		mntmRuby.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY));
@@ -131,13 +141,17 @@ public class LanguageActionManager {
 		mntmSacala.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA));
 		mntmSql.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL));
 		mntmTcl.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TCL));
-		mntmTypescript.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT));
-		mntmUnixShell.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL));
-		mntmVisualBasic.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC));
-		mntmWindowsBatch.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH));
+		mntmTypescript.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT));
+		mntmUnixShell.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL));
+		mntmVisualBasic.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC));
+		mntmWindowsBatch.addActionListener(
+				e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH));
 		mntmXml.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML));
 		mntmYaml.addActionListener(e -> instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML));
-		
+
 		mnA.add(mntmActionscript);
 		mnA.add(mntmAssembler);
 		mnC.add(mntmC);

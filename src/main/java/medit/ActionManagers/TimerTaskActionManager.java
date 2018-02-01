@@ -15,18 +15,18 @@ public class TimerTaskActionManager {
 	public TimerTaskActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	/**
-	 * Timers updating labels and running GC every minute, if ram
-	 * ussage hits 200 MB.
+	 * Timers updating labels and running GC every minute, if ram ussage hits 200
+	 * MB.
 	 */
-	
+
 	public void SetUpTimers() {
 		final Timer gctimer = new Timer();
 		gctimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				if(ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed()/1024*1024 >= 200) {
+				if (ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024 * 1024 >= 200) {
 					Runtime.getRuntime().gc();
 				}
 			}
@@ -35,13 +35,10 @@ public class TimerTaskActionManager {
 		labeltimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				instance.lblReady.setText("Ready | Length: " + instance.textPane.getText().length()
-						+ " | Filename: \""
-						+ (instance.currentFile == null ? "Unnamed"
-								: instance.currentFile.getAbsolutePath())
+				instance.lblReady.setText("Ready | Length: " + instance.textPane.getText().length() + " | Filename: \""
+						+ (instance.currentFile == null ? "Unnamed" : instance.currentFile.getAbsolutePath())
 						+ "\" | Maximum size: "
-						+ (instance.currentFile == null ? "?" : instance.currentFile.getFreeSpace() / 1024)
-						+ "KB | "
+						+ (instance.currentFile == null ? "?" : instance.currentFile.getFreeSpace() / 1024) + "KB | "
 						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true ? "NUM"
 								: "NONUM")
 						+ " | "

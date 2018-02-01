@@ -16,18 +16,18 @@ import medit.MainFrame;
 public class ThemesActionManager {
 
 	private MainFrame instance;
-	
+
 	public ThemesActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void RegisterThemes(JMenu parent) {
 		JMenuItem mntmDark = new JMenuItem("Dark");
 		mntmDark.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
+					final Theme theme = Theme
+							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
 					theme.apply(instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
@@ -36,7 +36,7 @@ public class ThemesActionManager {
 				}
 			}
 		});
-		
+
 		JMenuItem mntmExtraDefault = new JMenuItem("Extra Default");
 		mntmExtraDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -53,7 +53,7 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmExtraDefault);
 		parent.add(mntmDark);
-		
+
 		JMenuItem mntmDefault = new JMenuItem("Default");
 		mntmDefault.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -69,7 +69,7 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmDefault);
-		
+
 		JMenuItem mntmEclipse = new JMenuItem("Eclipse");
 		mntmEclipse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -85,13 +85,13 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmEclipse);
-		
+
 		JMenuItem mntmIntellijIdea = new JMenuItem("IntelliJ IDEA");
 		mntmIntellijIdea.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/idea.xml"));
+					final Theme theme = Theme
+							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/idea.xml"));
 					theme.apply(instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
@@ -101,7 +101,7 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmIntellijIdea);
-		
+
 		JMenuItem mntmMonokai = new JMenuItem("Monokai");
 		mntmMonokai.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -117,13 +117,13 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmMonokai);
-		
+
 		JMenuItem mntmVisualStudio = new JMenuItem("Visual Studio");
 		mntmVisualStudio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					final Theme theme = Theme.load(
-							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/vs.xml"));
+					final Theme theme = Theme
+							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/vs.xml"));
 					theme.apply(instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
@@ -134,5 +134,5 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmVisualStudio);
 	}
-	
+
 }

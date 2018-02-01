@@ -11,7 +11,7 @@ import javax.swing.WindowConstants;
 import medit.AboutBox;
 
 public class AboutActionManager {
-	
+
 	public void About(JMenu parent) {
 		final JMenuItem mntmAbout = new JMenuItem("About MEdit");
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));

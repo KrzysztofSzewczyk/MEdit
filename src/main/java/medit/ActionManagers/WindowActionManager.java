@@ -7,11 +7,11 @@ import medit.MainFrame;
 
 public class WindowActionManager {
 	private MainFrame instance;
-	
+
 	public WindowActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void Closing() {
 		instance.addWindowListener(new WindowAdapter() {
 			@Override
@@ -21,7 +21,7 @@ public class WindowActionManager {
 				else
 					MainFrame.instances--;
 			}
-			
+
 			@Override
 			public void windowClosing(final WindowEvent arg0) {
 				if (MainFrame.instances == 0)

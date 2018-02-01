@@ -32,11 +32,11 @@ import medit.MainFrame;
 public class FileActionManager {
 
 	private MainFrame instance;
-	
+
 	public FileActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void New(JToolBar toolBar) {
 		final JButton btnNewButton = new JButton("");
 		btnNewButton.addActionListener(e -> EventQueue.invokeLater(() -> {
@@ -69,7 +69,7 @@ public class FileActionManager {
 		btnNewButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-new.png")));
 		toolBar.add(btnNewButton);
 	}
-	
+
 	public void New(JMenu parent) {
 		final JMenuItem mntmNew = new JMenuItem("New");
 		mntmNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
@@ -97,7 +97,7 @@ public class FileActionManager {
 		}));
 		parent.add(mntmNew);
 	}
-	
+
 	public void Open(JToolBar toolBar) {
 		final JButton btnOpenButton = new JButton("");
 		btnOpenButton.addActionListener(e -> {
@@ -127,7 +127,7 @@ public class FileActionManager {
 		btnOpenButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-open.png")));
 		toolBar.add(btnOpenButton);
 	}
-	
+
 	public void Open(JMenu parent) {
 		final JMenuItem mntmOpen = new JMenuItem("Open");
 		mntmOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
@@ -152,11 +152,11 @@ public class FileActionManager {
 					}
 				}
 			}).start();
-			
+
 		});
 		parent.add(mntmOpen);
 	}
-	
+
 	public void Save(JToolBar toolBar) {
 		final JButton btnSaveButton = new JButton("");
 		btnSaveButton.addActionListener(e -> {
@@ -221,7 +221,7 @@ public class FileActionManager {
 		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-save.png")));
 		toolBar.add(btnSaveButton);
 	}
-	
+
 	public void Save(JMenu parent) {
 		final JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -292,7 +292,8 @@ public class FileActionManager {
 				new Thread(new Runnable() {
 					@Override
 					public void run() {
-						if(instance.currentFile==null) return;
+						if (instance.currentFile == null)
+							return;
 						else {
 							FileReader reader = null;
 							try {
@@ -306,7 +307,7 @@ public class FileActionManager {
 							try {
 								instance.textPane.read(br, null);
 							} catch (IOException e1) {
-								final Crash dialog4 = new Crash(e1 );
+								final Crash dialog4 = new Crash(e1);
 								dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 								dialog4.setVisible(true);
 							}
@@ -317,7 +318,7 @@ public class FileActionManager {
 								dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 								dialog4.setVisible(true);
 							}
-							instance.textPane.requestFocus();          
+							instance.textPane.requestFocus();
 						}
 					}
 				}).start();
@@ -335,14 +336,14 @@ public class FileActionManager {
 					@Override
 					public void run() {
 						if (Desktop.isDesktopSupported()) {
-					        try {
+							try {
 								Desktop.getDesktop().open(instance.currentFile.getParentFile());
 							} catch (IOException e1) {
 								final Crash dialog4 = new Crash(e1);
 								dialog4.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 								dialog4.setVisible(true);
 							}
-					    }
+						}
 					}
 				}).start();
 			}
@@ -350,7 +351,7 @@ public class FileActionManager {
 		mntmOpenContainingDirectory.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, InputEvent.CTRL_MASK));
 		parent.add(mntmOpenContainingDirectory);
 	}
-	
+
 	public void SaveAs(JMenu parent) {
 		final JMenuItem mntmSaveAs = new JMenuItem("Save As...");
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
@@ -403,7 +404,7 @@ public class FileActionManager {
 		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/list-remove.png")));
 		toolBar.add(btnSaveButton);
 	}
-	
+
 	public void Exit(JMenu parent) {
 		final JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
@@ -429,7 +430,7 @@ public class FileActionManager {
 				public void run() {
 					try {
 						instance.currentFile.delete();
-					} catch(Exception E) {
+					} catch (Exception E) {
 						final Crash dialog2 = new Crash(E);
 						dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog2.setVisible(true);
@@ -439,7 +440,7 @@ public class FileActionManager {
 		});
 		parent.add(mntmSaveAs);
 	}
-	
+
 	public void Print(JMenu parent) {
 		final JMenuItem mntmSaveAs = new JMenuItem("Print ...");
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));

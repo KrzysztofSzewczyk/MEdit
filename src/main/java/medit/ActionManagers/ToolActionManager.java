@@ -28,55 +28,56 @@ public class ToolActionManager {
 	public ToolActionManager(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public void SetupTools(JMenu mnTools) {
 		NTSLoader tsldr = new NTSLoader();
 		try {
 			List<NTSEntry> tools = tsldr.loadAll("tools.xml");
-			if(tools != null) {
-				for(NTSEntry e : tools) {
+			if (tools != null) {
+				for (NTSEntry e : tools) {
 					JMenuItem item = new JMenuItem(e.getName());
 					item.addActionListener(new MenuActionListener(e.getCode(), e.getName(), e.getExeName()) {
-						
+
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
 							new Thread(new NTSRunnable(e.getExeName(), e.getCode()) {
-								public String getProcessOutput(ProcessBuilder processBuilder) throws IOException, InterruptedException {
-							        processBuilder.redirectErrorStream(true);
+								public String getProcessOutput(ProcessBuilder processBuilder)
+										throws IOException, InterruptedException {
+									processBuilder.redirectErrorStream(true);
 
-							        Process process = processBuilder.start();
-							        StringBuilder processOutput = new StringBuilder();
+									Process process = processBuilder.start();
+									StringBuilder processOutput = new StringBuilder();
 
-							        try (BufferedReader processOutputReader = new BufferedReader(
-							                new InputStreamReader(process.getInputStream()));)
-							        {
-							            String readLine;
+									try (BufferedReader processOutputReader = new BufferedReader(
+											new InputStreamReader(process.getInputStream()));) {
+										String readLine;
 
-							            while ((readLine = processOutputReader.readLine()) != null)
-							            {
-							                processOutput.append(readLine + System.lineSeparator());
-							            }
+										while ((readLine = processOutputReader.readLine()) != null) {
+											processOutput.append(readLine + System.lineSeparator());
+										}
 
-							            process.waitFor();
-							        }
+										process.waitFor();
+									}
 
-							        return processOutput.toString().trim();
-							    }
-								
+									return processOutput.toString().trim();
+								}
+
 								@Override
 								public void run() {
-									if(instance.currentFile==null) {
+									if (instance.currentFile == null) {
 										JOptionPane.showMessageDialog(instance,
-											    "Please save your work in order to execute any tool.",
-											    "Error.",
-											    JOptionPane.ERROR_MESSAGE);
+												"Please save your work in order to execute any tool.", "Error.",
+												JOptionPane.ERROR_MESSAGE);
 										return;
 									}
 									String currentCode = this.code;
-									currentCode = currentCode.replaceAll("\\$\\(FILE\\)", instance.currentFile.getAbsolutePath().replaceAll("\\\\","\\\\\\\\")); //Windows bug workaround
+									currentCode = currentCode.replaceAll("\\$\\(FILE\\)",
+											instance.currentFile.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\")); // Windows
+																													// bug
+																													// workaround
 									ProcessBuilder builder = new ProcessBuilder(this.exeName, currentCode);
-							        builder.directory(instance.currentFile.getParentFile());
-							        
+									builder.directory(instance.currentFile.getParentFile());
+
 									CommandOutputDialog dialog;
 									try {
 										dialog = new CommandOutputDialog(getProcessOutput(builder));

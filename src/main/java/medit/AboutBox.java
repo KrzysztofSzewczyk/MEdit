@@ -51,7 +51,8 @@ public class AboutBox extends JDialog {
 			this.contentPanel.add(lblCopyrightcBy);
 		}
 		{
-			final JLabel lblPleaseSeeLicense = new JLabel(" Please see LICENSE for details. Every package that I didn't made, has own LICENSE inside.");
+			final JLabel lblPleaseSeeLicense = new JLabel(
+					" Please see LICENSE for details. Every package that I didn't made, has own LICENSE inside.");
 			this.contentPanel.add(lblPleaseSeeLicense);
 		}
 		{
