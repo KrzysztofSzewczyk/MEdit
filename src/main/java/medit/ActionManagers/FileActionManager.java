@@ -422,7 +422,7 @@ public class FileActionManager {
 
 	public void RemoveFromDisk(JMenu parent) {
 		final JMenuItem mntmSaveAs = new JMenuItem("Remove from disk");
-		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
 		mntmSaveAs.addActionListener(e -> {
 			new Thread(new Runnable() {
 				@Override
@@ -434,6 +434,20 @@ public class FileActionManager {
 						dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog2.setVisible(true);
 					}
+				}
+			}).start();
+		});
+		parent.add(mntmSaveAs);
+	}
+	
+	public void Print(JMenu parent) {
+		final JMenuItem mntmSaveAs = new JMenuItem("Print ...");
+		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
+		mntmSaveAs.addActionListener(e -> {
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					PrintActionManager.printComponent(instance.textPane);
 				}
 			}).start();
 		});

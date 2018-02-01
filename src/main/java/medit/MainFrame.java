@@ -105,6 +105,7 @@ public class MainFrame extends JFrame {
 		fam.Open(mnFile);
 		fam.Save(mnFile);
 		fam.SaveAs(mnFile);
+		fam.Print(mnFile);
 		fam.Separator(mnFile);
 		fam.ReloadFromDisk(mnFile);
 		fam.OpenDir(mnFile);
