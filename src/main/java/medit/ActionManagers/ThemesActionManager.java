@@ -15,20 +15,21 @@ import medit.MainFrame;
 
 public class ThemesActionManager {
 
-	private MainFrame instance;
+	private final MainFrame instance;
 
-	public ThemesActionManager(MainFrame instance) {
+	public ThemesActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
-	public void RegisterThemes(JMenu parent) {
-		JMenuItem mntmDark = new JMenuItem("Dark");
+	public void RegisterThemes(final JMenu parent) {
+		final JMenuItem mntmDark = new JMenuItem("Dark");
 		mntmDark.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme
 							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/dark.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -37,13 +38,14 @@ public class ThemesActionManager {
 			}
 		});
 
-		JMenuItem mntmExtraDefault = new JMenuItem("Alternative MEdit");
+		final JMenuItem mntmExtraDefault = new JMenuItem("Alternative MEdit");
 		mntmExtraDefault.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme.load(
 							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default-alt.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -54,13 +56,14 @@ public class ThemesActionManager {
 		parent.add(mntmExtraDefault);
 		parent.add(mntmDark);
 
-		JMenuItem mntmDefault = new JMenuItem("MEdit");
+		final JMenuItem mntmDefault = new JMenuItem("MEdit");
 		mntmDefault.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme.load(
 							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -70,13 +73,14 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmDefault);
 
-		JMenuItem mntmEclipse = new JMenuItem("Eclipse");
+		final JMenuItem mntmEclipse = new JMenuItem("Eclipse");
 		mntmEclipse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme.load(
 							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/eclipse.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -86,13 +90,14 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmEclipse);
 
-		JMenuItem mntmIntellijIdea = new JMenuItem("IntelliJ IDEA");
+		final JMenuItem mntmIntellijIdea = new JMenuItem("IntelliJ IDEA");
 		mntmIntellijIdea.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme
 							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/idea.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -102,13 +107,14 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmIntellijIdea);
 
-		JMenuItem mntmMonokai = new JMenuItem("Monokai");
+		final JMenuItem mntmMonokai = new JMenuItem("Monokai");
 		mntmMonokai.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme.load(
 							this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/monokai.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -118,13 +124,14 @@ public class ThemesActionManager {
 		});
 		parent.add(mntmMonokai);
 
-		JMenuItem mntmVisualStudio = new JMenuItem("Visual Studio");
+		final JMenuItem mntmVisualStudio = new JMenuItem("Visual Studio");
 		mntmVisualStudio.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
 				try {
 					final Theme theme = Theme
 							.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/vs.xml"));
-					theme.apply(instance.textPane);
+					theme.apply(ThemesActionManager.this.instance.textPane);
 				} catch (final IOException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

@@ -13,126 +13,91 @@ import medit.MainFrame;
 
 public class TextActionManager {
 
-	private MainFrame instance;
+	private final MainFrame instance;
 
-	public TextActionManager(MainFrame instance) {
+	public TextActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
-	public void SetupText(JMenu mnTextOperations) {
-		JMenu mnCase = new JMenu("Case");
+	public void SetupText(final JMenu mnTextOperations) {
+		final JMenu mnCase = new JMenu("Case");
 		mnTextOperations.add(mnCase);
-		JMenuItem mntmThisWay = new JMenuItem("THIS WAY");
-		mntmThisWay.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							instance.textPane.replaceSelection(instance.textPane.getSelectedText().toUpperCase());
-						} catch (Exception e2) {
-						}
-					}
-				}).start();
-
+		final JMenuItem mntmThisWay = new JMenuItem("THIS WAY");
+		mntmThisWay.addActionListener(e -> new Thread(() -> {
+			try {
+				TextActionManager.this.instance.textPane
+						.replaceSelection(TextActionManager.this.instance.textPane.getSelectedText().toUpperCase());
+			} catch (final Exception e2) {
 			}
-		});
+		}).start());
 		mnCase.add(mntmThisWay);
-		JMenuItem mntmThisWay_1 = new JMenuItem("this way");
-		mntmThisWay_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							instance.textPane.replaceSelection(instance.textPane.getSelectedText().toLowerCase());
-						} catch (Exception e2) {
-						}
-					}
-				}).start();
+		final JMenuItem mntmThisWay_1 = new JMenuItem("this way");
+		mntmThisWay_1.addActionListener(e -> new Thread(() -> {
+			try {
+				TextActionManager.this.instance.textPane
+						.replaceSelection(TextActionManager.this.instance.textPane.getSelectedText().toLowerCase());
+			} catch (final Exception e2) {
 			}
-		});
+		}).start());
 		mnCase.add(mntmThisWay_1);
-		JMenuItem mntmThisWay_2 = new JMenuItem("This Way");
+		final JMenuItem mntmThisWay_2 = new JMenuItem("This Way");
 		mntmThisWay_2.addActionListener(new ActionListener() {
-			public String toTitleCase(String givenString) {
-				String[] arr = givenString.split(" ");
-				StringBuffer sb = new StringBuffer();
-
-				for (int i = 0; i < arr.length; i++) {
-					sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
-				}
-				return sb.toString().trim();
-			}
-
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							String text = instance.textPane.getSelectedText();
-							instance.textPane.replaceSelection(toTitleCase(text));
-						} catch (Exception e3) {
-						}
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				new Thread(() -> {
+					try {
+						final String text = TextActionManager.this.instance.textPane.getSelectedText();
+						TextActionManager.this.instance.textPane.replaceSelection(toTitleCase(text));
+					} catch (final Exception e3) {
 					}
 				}).start();
+			}
+
+			public String toTitleCase(final String givenString) {
+				final String[] arr = givenString.split(" ");
+				final StringBuffer sb = new StringBuffer();
+
+				for (final String element : arr)
+					sb.append(Character.toUpperCase(element.charAt(0))).append(element.substring(1)).append(" ");
+				return sb.toString().trim();
 			}
 		});
 		mnCase.add(mntmThisWay_2);
-		JMenuItem mntmThisWay_4 = new JMenuItem("ThIs WaY");
-		mntmThisWay_4.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							char[] text = instance.textPane.getSelectedText().toCharArray();
-							for (int i = 0; i < text.length; i++) {
-								if (i == text.length % 2)
-									text[i] = Character.toUpperCase(text[i]);
-								else
-									text[i] = Character.toLowerCase(text[i]);
-							}
-							instance.textPane.replaceSelection(new String(text));
-						} catch (Exception e3) {
-						}
-					}
-				}).start();
+		final JMenuItem mntmThisWay_4 = new JMenuItem("ThIs WaY");
+		mntmThisWay_4.addActionListener(e -> new Thread(() -> {
+			try {
+				final char[] text = TextActionManager.this.instance.textPane.getSelectedText().toCharArray();
+				for (int i = 0; i < text.length; i++)
+					if (i == text.length % 2)
+						text[i] = Character.toUpperCase(text[i]);
+					else
+						text[i] = Character.toLowerCase(text[i]);
+				TextActionManager.this.instance.textPane.replaceSelection(new String(text));
+			} catch (final Exception e3) {
 			}
-		});
+		}).start());
 		mnCase.add(mntmThisWay_4);
-		JMenuItem mntmRandom = new JMenuItem("RanDOm");
-		mntmRandom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new Thread(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							char[] text = instance.textPane.getSelectedText().toCharArray();
-							for (int i = 0; i < text.length; i++) {
-								if (new Random().nextInt(3) == 1)
-									text[i] = Character.toUpperCase(text[i]);
-								else
-									text[i] = Character.toLowerCase(text[i]);
-							}
-							instance.textPane.replaceSelection(new String(text));
-						} catch (Exception e3) {
-						}
-					}
-				}).start();
+		final JMenuItem mntmRandom = new JMenuItem("RanDOm");
+		mntmRandom.addActionListener(e -> new Thread(() -> {
+			try {
+				final char[] text = TextActionManager.this.instance.textPane.getSelectedText().toCharArray();
+				for (int i = 0; i < text.length; i++)
+					if (new Random().nextInt(3) == 1)
+						text[i] = Character.toUpperCase(text[i]);
+					else
+						text[i] = Character.toLowerCase(text[i]);
+				TextActionManager.this.instance.textPane.replaceSelection(new String(text));
+			} catch (final Exception e3) {
 			}
-		});
+		}).start());
 		mnCase.add(mntmRandom);
-		JMenu mnRow = new JMenu("Row");
+		final JMenu mnRow = new JMenu("Row");
 		mnTextOperations.add(mnRow);
-		JMenuItem mntmGoToRow = new JMenuItem("Go to row ...");
-		mntmGoToRow.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				GoToLine gtlDlg = new GoToLine(instance);
-				gtlDlg.setVisible(true);
-				gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			}
+		final JMenuItem mntmGoToRow = new JMenuItem("Go to row ...");
+		mntmGoToRow.addActionListener(e -> {
+			final GoToLine gtlDlg = new GoToLine(TextActionManager.this.instance);
+			gtlDlg.setVisible(true);
+			gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		});
 		mnRow.add(mntmGoToRow);
 	}

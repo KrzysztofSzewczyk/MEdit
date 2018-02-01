@@ -10,9 +10,9 @@ import medit.MainFrame;
 
 public class TimerTaskActionManager {
 
-	private MainFrame instance;
+	private final MainFrame instance;
 
-	public TimerTaskActionManager(MainFrame instance) {
+	public TimerTaskActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
@@ -26,19 +26,22 @@ public class TimerTaskActionManager {
 		gctimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				if (ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024 * 1024 >= 200) {
+				if (ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024 * 1024 >= 200)
 					Runtime.getRuntime().gc();
-				}
 			}
 		}, 0, 60);
 		final Timer labeltimer = new Timer();
 		labeltimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				instance.lblReady.setText("Ready | Length: " + instance.textPane.getText().length() + " | Filename: \""
-						+ (instance.currentFile == null ? "Unnamed" : instance.currentFile.getAbsolutePath())
+				TimerTaskActionManager.this.instance.lblReady.setText("Ready | Length: "
+						+ TimerTaskActionManager.this.instance.textPane.getText().length() + " | Filename: \""
+						+ (TimerTaskActionManager.this.instance.currentFile == null ? "Unnamed"
+								: TimerTaskActionManager.this.instance.currentFile.getAbsolutePath())
 						+ "\" | Maximum size: "
-						+ (instance.currentFile == null ? "?" : instance.currentFile.getFreeSpace() / 1024) + "KB | "
+						+ (TimerTaskActionManager.this.instance.currentFile == null ? "?"
+								: TimerTaskActionManager.this.instance.currentFile.getFreeSpace() / 1024)
+						+ "KB | "
 						+ (Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_NUM_LOCK) == true ? "NUM"
 								: "NONUM")
 						+ " | "

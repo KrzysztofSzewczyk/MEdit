@@ -7,6 +7,7 @@ import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+
 import javax.swing.RepaintManager;
 import javax.swing.WindowConstants;
 
@@ -18,51 +19,50 @@ import medit.Crash;
  */
 public class PrintActionManager implements Printable {
 
-	private Component print_component;
+	public static void disableDoubleBuffering(final Component c) {
+		final RepaintManager currentManager = RepaintManager.currentManager(c);
+		currentManager.setDoubleBufferingEnabled(false);
+	}
 
-	public static void printComponent(Component c) {
+	public static void enableDoubleBuffering(final Component c) {
+		final RepaintManager currentManager = RepaintManager.currentManager(c);
+		currentManager.setDoubleBufferingEnabled(true);
+	}
+
+	public static void printComponent(final Component c) {
 		new PrintActionManager(c).doPrint();
 	}
 
-	public PrintActionManager(Component comp) {
+	private final Component print_component;
+
+	public PrintActionManager(final Component comp) {
 		this.print_component = comp;
 	}
 
 	public void doPrint() {
-		PrinterJob printJob = PrinterJob.getPrinterJob();
+		final PrinterJob printJob = PrinterJob.getPrinterJob();
 		printJob.setPrintable(this);
-		if (printJob.printDialog()) {
+		if (printJob.printDialog())
 			try {
 				printJob.print();
-			} catch (PrinterException pe) {
+			} catch (final PrinterException pe) {
 				final Crash dialog2 = new Crash(pe);
 				dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				dialog2.setVisible(true);
 			}
-		}
 	}
 
 	@Override
-	public int print(Graphics g, PageFormat pageFormat, int pageIndex) {
-		if (pageIndex > 0) {
-			return (NO_SUCH_PAGE);
-		} else {
-			Graphics2D g2d = (Graphics2D) g;
+	public int print(final Graphics g, final PageFormat pageFormat, final int pageIndex) {
+		if (pageIndex > 0)
+			return Printable.NO_SUCH_PAGE;
+		else {
+			final Graphics2D g2d = (Graphics2D) g;
 			g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
-			disableDoubleBuffering(print_component);
-			print_component.paint(g2d);
-			enableDoubleBuffering(print_component);
-			return (PAGE_EXISTS);
+			PrintActionManager.disableDoubleBuffering(this.print_component);
+			this.print_component.paint(g2d);
+			PrintActionManager.enableDoubleBuffering(this.print_component);
+			return Printable.PAGE_EXISTS;
 		}
-	}
-
-	public static void disableDoubleBuffering(Component c) {
-		RepaintManager currentManager = RepaintManager.currentManager(c);
-		currentManager.setDoubleBufferingEnabled(false);
-	}
-
-	public static void enableDoubleBuffering(Component c) {
-		RepaintManager currentManager = RepaintManager.currentManager(c);
-		currentManager.setDoubleBufferingEnabled(true);
 	}
 }

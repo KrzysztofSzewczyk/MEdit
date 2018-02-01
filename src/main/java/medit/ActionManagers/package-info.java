@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 /**
  * @author Krzysztof Szewczyk

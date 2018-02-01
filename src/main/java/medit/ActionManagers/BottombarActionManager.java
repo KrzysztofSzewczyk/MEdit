@@ -9,22 +9,22 @@ import medit.MainFrame;
 
 public class BottombarActionManager {
 
-	private MainFrame instance;
+	private final MainFrame instance;
 
-	public BottombarActionManager(MainFrame instance) {
+	public BottombarActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
 	public void SetUpBottombar() {
 		final JPanel panel_14 = new JPanel();
-		instance.contentPane.add(panel_14, BorderLayout.SOUTH);
+		this.instance.contentPane.add(panel_14, BorderLayout.SOUTH);
 		panel_14.setLayout(new BorderLayout(0, 0));
 
 		final JToolBar toolBar_1 = new JToolBar();
 		panel_14.add(toolBar_1);
 		toolBar_1.setFloatable(false);
 
-		toolBar_1.add(instance.lblReady);
+		toolBar_1.add(this.instance.lblReady);
 	}
 
 }

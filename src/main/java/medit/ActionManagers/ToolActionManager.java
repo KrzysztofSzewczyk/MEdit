@@ -23,38 +23,37 @@ import medit.NTS.NTSLoader;
 import medit.NTS.NTSRunnable;
 
 public class ToolActionManager {
-	private MainFrame instance;
+	private final MainFrame instance;
 
-	public ToolActionManager(MainFrame instance) {
+	public ToolActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
-	public void SetupTools(JMenu mnTools) {
-		NTSLoader tsldr = new NTSLoader();
+	public void SetupTools(final JMenu mnTools) {
+		final NTSLoader tsldr = new NTSLoader();
 		try {
-			List<NTSEntry> tools = tsldr.loadAll("tools.xml");
-			if (tools != null) {
-				for (NTSEntry e : tools) {
-					JMenuItem item = new JMenuItem(e.getName());
+			final List<NTSEntry> tools = tsldr.loadAll("tools.xml");
+			if (tools != null)
+				for (final NTSEntry e : tools) {
+					final JMenuItem item = new JMenuItem(e.getName());
 					item.addActionListener(new MenuActionListener(e.getCode(), e.getName(), e.getExeName()) {
 
 						@Override
-						public void actionPerformed(ActionEvent arg0) {
+						public void actionPerformed(final ActionEvent arg0) {
 							new Thread(new NTSRunnable(e.getExeName(), e.getCode()) {
-								public String getProcessOutput(ProcessBuilder processBuilder)
+								public String getProcessOutput(final ProcessBuilder processBuilder)
 										throws IOException, InterruptedException {
 									processBuilder.redirectErrorStream(true);
 
-									Process process = processBuilder.start();
-									StringBuilder processOutput = new StringBuilder();
+									final Process process = processBuilder.start();
+									final StringBuilder processOutput = new StringBuilder();
 
 									try (BufferedReader processOutputReader = new BufferedReader(
 											new InputStreamReader(process.getInputStream()));) {
 										String readLine;
 
-										while ((readLine = processOutputReader.readLine()) != null) {
+										while ((readLine = processOutputReader.readLine()) != null)
 											processOutput.append(readLine + System.lineSeparator());
-										}
 
 										process.waitFor();
 									}
@@ -64,23 +63,24 @@ public class ToolActionManager {
 
 								@Override
 								public void run() {
-									if (instance.currentFile == null) {
-										JOptionPane.showMessageDialog(instance,
+									if (ToolActionManager.this.instance.currentFile == null) {
+										JOptionPane.showMessageDialog(ToolActionManager.this.instance,
 												"Please save your work in order to execute any tool.", "Error.",
 												JOptionPane.ERROR_MESSAGE);
 										return;
 									}
 									String currentCode = this.code;
 									currentCode = currentCode.replaceAll("\\$\\(FILE\\)",
-											instance.currentFile.getAbsolutePath().replaceAll("\\\\", "\\\\\\\\")); // Windows
-																													// bug
-																													// workaround
-									ProcessBuilder builder = new ProcessBuilder(this.exeName, currentCode);
-									builder.directory(instance.currentFile.getParentFile());
+											ToolActionManager.this.instance.currentFile.getAbsolutePath()
+													.replaceAll("\\\\", "\\\\\\\\")); // Windows
+									// bug
+									// workaround
+									final ProcessBuilder builder = new ProcessBuilder(this.exeName, currentCode);
+									builder.directory(ToolActionManager.this.instance.currentFile.getParentFile());
 
 									CommandOutputDialog dialog;
 									try {
-										dialog = new CommandOutputDialog(getProcessOutput(builder));
+										dialog = new CommandOutputDialog(this.getProcessOutput(builder));
 										dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 										dialog.setVisible(true);
 									} catch (IOException | InterruptedException e) {
@@ -94,16 +94,15 @@ public class ToolActionManager {
 					});
 					mnTools.add(item);
 				}
-			}
-		} catch (ParserConfigurationException e) {
+		} catch (final ParserConfigurationException e) {
 			final Crash dialog = new Crash(e);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-		} catch (SAXException e) {
+		} catch (final SAXException e) {
 			final Crash dialog = new Crash(e);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			final Crash dialog = new Crash(e);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
