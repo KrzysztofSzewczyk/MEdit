@@ -3,9 +3,7 @@ package medit.ActionManagers;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 
 import medit.MainFrame;
 
