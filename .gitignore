@@ -22,3 +22,6 @@ compilers/
 
 # My own packages directory
 packages/
+
+# Suggested by Sebastian Krajewski
+*.jar
