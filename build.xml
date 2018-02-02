@@ -12,8 +12,8 @@
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" classpathref="blob">
-            <classpath refid="build.classpath"/>
+        <javac srcdir="src" destdir="build/classes">
+            <classpath refid="blob"/>
         </javac>
     </target>
 
