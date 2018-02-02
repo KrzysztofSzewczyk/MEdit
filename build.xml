@@ -1,9 +1,8 @@
 <project>
 
     <path id="build.classpath">
-        <fileset dir="lib">
-            <include name="**/*.jar"/>
-            <include name="**/*.zip"/>
+        <fileset dir=".">
+            <include name="darcula.jar"/>
         </fileset>
     </path>
     
