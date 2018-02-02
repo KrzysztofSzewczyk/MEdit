@@ -197,7 +197,7 @@ public class ThemesActionManager {
 		mntmDarculaLF.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				try {
+				try { 
 					//instance.setVisible(false);
 					UIManager.setLookAndFeel(new DarculaLaf());
 					SwingUtilities.updateComponentTreeUI(instance);
