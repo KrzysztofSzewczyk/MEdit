@@ -14,4 +14,4 @@ build:
         code: |
           sudo apt-get update
           echo Y | sudo apt-get install ant
-          ant compile jar
+          ant clean init build
