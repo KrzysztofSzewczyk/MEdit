@@ -35,13 +35,20 @@ import medit.ActionManagers.ToolActionManager;
 import medit.ActionManagers.WindowActionManager;
 
 /**
- * Main frame for MEdit project.
+ * Main frame for MEdit project. That's where the whole magic is done.
+ * It was split to many files, which are located in ActionManagers.
  *
  * @author Krzysztof Szewczyk
  */
 
 public class MainFrame extends JFrame {
 
+	/**
+	 * Many public variables, that were privatized before.
+	 * They are public, because our MainFrame is not standalone class
+	 * now and it references many ActionManagers.
+	 */
+	
 	public static int instances = 1;
 	public static final long serialVersionUID = 1L;
 	public JPanel contentPane;
@@ -101,7 +108,7 @@ public class MainFrame extends JFrame {
 		
 
 		/**
-		 * Menu action managers setup
+		 * Menu action managers setup.
 		 */
 
 		final WindowActionManager wam = new WindowActionManager(this);

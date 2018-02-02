@@ -19,6 +19,13 @@ import javax.swing.border.EmptyBorder;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
+/**
+ * This window is reproducing look of Windows search form.
+ * It contains many advanced options for searching.
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class SearchWindow extends JDialog {
 
 	private static final long serialVersionUID = 3599396860237329268L;

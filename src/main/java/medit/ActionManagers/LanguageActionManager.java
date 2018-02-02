@@ -7,14 +7,42 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
 import medit.MainFrame;
 
+/**
+ * This is propably best organized actionmanager in the whole project.
+ * It's task is to create many menu items (>100) to supply very big amount
+ * of languages to support (~92).
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class LanguageActionManager {
+	
+	/**
+	 * This is MainFrame class instance used by this project.
+	 */
 	private final MainFrame instance;
 
+	/**
+	 * This is constructor of LanguageActionManager
+	 * assigning passed instance to internal instance.
+	 * @param instance
+	 */
+	
 	public LanguageActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
+	
+	/**
+	 * Set up syntax highlighting menu contents.
+	 * @param parent
+	 */
 
 	public void SetUp(final JMenu parent) {
+		/**
+		 * First, let's create every language group and
+		 * separate JMenuItem for each.
+		 */
+		
 		final JMenuItem mntmNo = new JMenuItem("No");
 		final JMenu mnA = new JMenu("A");
 		final JMenuItem mntmActionscript = new JMenuItem("ActionScript");
@@ -73,6 +101,10 @@ public class LanguageActionManager {
 		final JMenuItem mntmXml = new JMenuItem("XML");
 		final JMenuItem mntmYaml = new JMenuItem("YAML");
 
+		/**
+		 * Now, let's add groups and separate ungrouped languages.
+		 */
+		
 		parent.add(mntmNo);
 		parent.add(mnA);
 		parent.add(mnB);
@@ -95,6 +127,12 @@ public class LanguageActionManager {
 		parent.add(mntmWindowsBatch);
 		parent.add(mntmXml);
 		parent.add(mntmYaml);
+		
+		/**
+		 * Now, let's set up action listeners
+		 * for each of buttons, to change syntax highlighting style
+		 * for MainFrame' textPane component.
+		 */
 
 		mntmNo.addActionListener(e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE));
 		mntmAssembler.addActionListener(
@@ -176,6 +214,10 @@ public class LanguageActionManager {
 		mntmYaml.addActionListener(
 				e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML));
 
+		/**
+		 * This part is adding grouped languages to it's parents.
+		 */
+		
 		mnA.add(mntmActionscript);
 		mnA.add(mntmAssembler);
 		mnB.add(mntmBpp);

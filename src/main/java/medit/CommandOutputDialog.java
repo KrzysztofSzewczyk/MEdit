@@ -13,6 +13,14 @@ import javax.swing.JTextPane;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+/**
+ * This dialog is the on that pops up after
+ * executing tool. It contains information about
+ * tool execution status and it's output.
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class CommandOutputDialog extends JDialog {
 
 	private static final long serialVersionUID = 1482808449383821979L;

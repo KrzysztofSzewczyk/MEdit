@@ -13,13 +13,35 @@ import org.fife.ui.rsyntaxtextarea.Theme;
 import medit.Crash;
 import medit.MainFrame;
 
+/**
+ * This class is creating menu items for each of themes available in
+ * MEdit.
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class ThemesActionManager {
 
+	/**
+	 * This is instance of MainFrame used by this class,
+	 * to reference textPane variable.
+	 */
+	
 	private final MainFrame instance;
 
+	/**
+	 * Constructor passing MainFrame instance.
+	 * @param instance
+	 */
+	
 	public ThemesActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
+	
+	/**
+	 * Function registering themes for 'parent' JMenu.
+	 * @param parent
+	 */
 
 	public void RegisterThemes(final JMenu parent) {
 		final JMenuItem mntmDark = new JMenuItem("Dark");

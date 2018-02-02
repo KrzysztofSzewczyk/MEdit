@@ -2,7 +2,7 @@
 /**
  * Main Application package
  *
- * @author PC
+ * @author Krzysztof Szewczyk
  *
  */
 package medit;

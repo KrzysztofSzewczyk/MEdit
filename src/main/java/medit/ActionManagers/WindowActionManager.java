@@ -5,13 +5,35 @@ import java.awt.event.WindowEvent;
 
 import medit.MainFrame;
 
+/**
+ * This function is watching on amount of MainFrame instances
+ * and exiting program, if there are no instances left.
+ * 
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class WindowActionManager {
+	/**
+	 * This is MainFrame instance used by this class.
+	 */
+	
 	private final MainFrame instance;
 
+	/**
+	 * Constructor assigning passed MainFrame instance
+	 * to internal MainFrame instance.
+	 * @param instance
+	 */
+	
 	public WindowActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
+	/**
+	 * This function is setting up handlers for MainFrame.
+	 */
+	
 	public void Closing() {
 		this.instance.addWindowListener(new WindowAdapter() {
 			@Override

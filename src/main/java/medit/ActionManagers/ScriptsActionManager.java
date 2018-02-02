@@ -26,13 +26,31 @@ import medit.NSS.NSSEntry;
 import medit.NSS.NSSLoader;
 import medit.NSS.NSSRunnable;
 
+/**
+ * This class is allowing user to script MEdit using
+ * own scripts written in B++.
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public class ScriptsActionManager {
+	/**
+	 * MainFrame instance used by this class.
+	 */
 	private final MainFrame instance;
 
+	/**
+	 * Constructor that is assigning its parameter to internal instance variable.
+	 * @param instance
+	 */
 	public ScriptsActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
+	/**
+	 * Setup scripts menu. This function is pretty self-documenting.
+	 * @param mnTools
+	 */
 	public void SetupScripts(final JMenu mnTools) {
 		final NSSLoader tsldr = new NSSLoader();
 		try {

@@ -14,8 +14,8 @@ import javax.swing.WindowConstants;
 import medit.Crash;
 
 /**
- *
- * @author User
+ * This class is adding print support for MEdit.
+ * @author Krzysztof Szewczyk
  */
 public class PrintActionManager implements Printable {
 
