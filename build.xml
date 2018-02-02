@@ -1,6 +1,6 @@
 <project>
     
-	<path id="mypath"> 
+	<path id="blob"> 
 	  <fileset dir=".">
 	    <include name="blob/**/*.class"/>
 	  </fileset>
@@ -12,7 +12,7 @@
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" classpathref="build.classpath">
+        <javac srcdir="src" destdir="build/classes" classpathref="blob">
             <classpath refid="build.classpath"/>
         </javac>
     </target>
