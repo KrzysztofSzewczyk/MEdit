@@ -18,7 +18,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Token;
 
-
 /**
  * Parser that identifies "task tags," such as "<code>TODO</code>",
  * "<code>FIXME</code>", etc. in source code comments.
@@ -28,68 +27,78 @@ import org.fife.ui.rsyntaxtextarea.Token;
  */
 public class TaskTagParser extends AbstractParser {
 
-	private DefaultParseResult result;
-	private static final String DEFAULT_TASK_PATTERN	= "TODO|FIXME|HACK";
-	private Pattern taskPattern;
+	/**
+	 * A parser notice that signifies a task. This class is here so we can treat
+	 * tasks specially and show them in the
+	 * {@link org.fife.ui.rsyntaxtextarea.ErrorStrip} even though they are
+	 * <code>INFO</code>-level and marked as "don't show in editor."
+	 */
+	public static class TaskNotice extends DefaultParserNotice {
+
+		public TaskNotice(final Parser parser, final String message, final int line, final int offs, final int length) {
+			super(parser, message, line, offs, length);
+		}
+
+	}
 
 	private static final Color COLOR = new Color(48, 150, 252);
+	private static final String DEFAULT_TASK_PATTERN = "TODO|FIXME|HACK";
 
+	private final DefaultParseResult result;
+
+	private Pattern taskPattern;
 
 	/**
-	 * Creates a new task parser.  The default parser treats the following
-	 * identifiers in comments as task definitions:  "<code>TODO</code>",
+	 * Creates a new task parser. The default parser treats the following
+	 * identifiers in comments as task definitions: "<code>TODO</code>",
 	 * "<code>FIXME</code>", and "<code>HACK</code>".
 	 */
 	public TaskTagParser() {
-		result = new DefaultParseResult(this);
-		setTaskPattern(DEFAULT_TASK_PATTERN);
+		this.result = new DefaultParseResult(this);
+		this.setTaskPattern(TaskTagParser.DEFAULT_TASK_PATTERN);
 	}
-
 
 	/**
 	 * Returns the regular expression used to search for tasks.
 	 *
-	 * @return The regular expression.  This may be <code>null</code> if no
-	 *         regular expression was specified (or an empty string was
-	 *         specified).
+	 * @return The regular expression. This may be <code>null</code> if no regular
+	 *         expression was specified (or an empty string was specified).
 	 * @see #setTaskPattern(String)
 	 */
 	public String getTaskPattern() {
-		return taskPattern==null ? null : taskPattern.pattern();
+		return this.taskPattern == null ? null : this.taskPattern.pattern();
 	}
 
-
 	@Override
-	public ParseResult parse(RSyntaxDocument doc, String style) {
+	public ParseResult parse(final RSyntaxDocument doc, final String style) {
 
-		Element root = doc.getDefaultRootElement();
-		int lineCount = root.getElementCount();
+		final Element root = doc.getDefaultRootElement();
+		final int lineCount = root.getElementCount();
 
-		if (taskPattern==null ||
-				style==null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)){
-			result.clearNotices();
-			result.setParsedLines(0, lineCount-1);
-			return result;
+		if (this.taskPattern == null || style == null || SyntaxConstants.SYNTAX_STYLE_NONE.equals(style)) {
+			this.result.clearNotices();
+			this.result.setParsedLines(0, lineCount - 1);
+			return this.result;
 		}
 
 		// TODO: Pass in parsed line range and just do that
-		result.clearNotices();
-		result.setParsedLines(0, lineCount-1);
+		this.result.clearNotices();
+		this.result.setParsedLines(0, lineCount - 1);
 
-		for (int line=0; line<lineCount; line++) {
+		for (int line = 0; line < lineCount; line++) {
 
 			Token t = doc.getTokenListForLine(line);
 			int offs = -1;
 			int start = -1;
 			String text = null;
 
-			while (t!=null && t.isPaintable()) {
+			while (t != null && t.isPaintable()) {
 				if (t.isComment()) {
 
 					offs = t.getOffset();
 					text = t.getLexeme();
 
-					Matcher m = taskPattern.matcher(text);
+					final Matcher m = this.taskPattern.matcher(text);
 					if (m.find()) {
 						start = m.start();
 						offs += start;
@@ -100,59 +109,39 @@ public class TaskTagParser extends AbstractParser {
 				t = t.getNextToken();
 			}
 
-			if (start>-1 && text != null) { // "text != null" just for Sonar
+			if (start > -1 && text != null) { // "text != null" just for Sonar
 				text = text.substring(start);
 				// TODO: Strip off end of MLC's if they're there.
-				int len = text.length();
-				TaskNotice pn = new TaskNotice(this, text, line + 1, offs, len);
+				final int len = text.length();
+				final TaskNotice pn = new TaskNotice(this, text, line + 1, offs, len);
 				pn.setLevel(ParserNotice.Level.INFO);
 				pn.setShowInEditor(false);
-				pn.setColor(COLOR);
-				result.addNotice(pn);
+				pn.setColor(TaskTagParser.COLOR);
+				this.result.addNotice(pn);
 			}
 
 		}
 
-		return result;
+		return this.result;
 
 	}
 
-
 	/**
-	 * Sets the pattern of task identifiers.  You will usually want this to be
-	 * a list of words "or'ed" together, such as
-	 * "<code>TODO|FIXME|HACK|REMIND</code>".
+	 * Sets the pattern of task identifiers. You will usually want this to be a list
+	 * of words "or'ed" together, such as "<code>TODO|FIXME|HACK|REMIND</code>".
 	 *
-	 * @param pattern The pattern.  A value of <code>null</code> or an
-	 *        empty string effectively disables task parsing.
-	 * @throws java.util.regex.PatternSyntaxException If <code>pattern</code>
-	 *         is an invalid regular expression.
+	 * @param pattern
+	 *            The pattern. A value of <code>null</code> or an empty string
+	 *            effectively disables task parsing.
+	 * @throws java.util.regex.PatternSyntaxException
+	 *             If <code>pattern</code> is an invalid regular expression.
 	 * @see #getTaskPattern()
 	 */
-	public void setTaskPattern(String pattern) {
-		if (pattern==null || pattern.length()==0) {
-			taskPattern = null;
-		}
-		else {
-			taskPattern = Pattern.compile(pattern);
-		}
+	public void setTaskPattern(final String pattern) {
+		if (pattern == null || pattern.length() == 0)
+			this.taskPattern = null;
+		else
+			this.taskPattern = Pattern.compile(pattern);
 	}
-
-
-	/**
-	 * A parser notice that signifies a task.  This class is here so we can
-	 * treat tasks specially and show them in the
-	 * {@link org.fife.ui.rsyntaxtextarea.ErrorStrip} even though they are
-	 * <code>INFO</code>-level and marked as "don't show in editor."
-	 */
-	public static class TaskNotice extends DefaultParserNotice {
-
-		public TaskNotice(Parser parser, String message, int line, int offs,
-							int length) {
-			super(parser, message, line, offs, length);
-		}
-
-	}
-
 
 }

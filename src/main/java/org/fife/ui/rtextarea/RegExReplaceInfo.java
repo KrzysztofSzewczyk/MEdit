@@ -8,7 +8,6 @@
  */
 package org.fife.ui.rtextarea;
 
-
 /**
  * Information on how to implement a regular expression "replace" operation.
  *
@@ -17,25 +16,27 @@ package org.fife.ui.rtextarea;
  */
 class RegExReplaceInfo {
 
-	private String matchedText;
-	private int startIndex;
-	private int endIndex;
-	private String replacement;
-
+	private final int endIndex;
+	private final String matchedText;
+	private final String replacement;
+	private final int startIndex;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param matchedText The text that matched the regular expression.
-	 * @param start The start index of the matched text in the
-	 *        <code>CharSequence</code> searched.
-	 * @param end The end index of the matched text in the
-	 *        <code>CharSequence</code> searched.
-	 * @param replacement The text to replace the matched text with.  This
-	 *        string has any matched groups and character escapes replaced.
+	 * @param matchedText
+	 *            The text that matched the regular expression.
+	 * @param start
+	 *            The start index of the matched text in the
+	 *            <code>CharSequence</code> searched.
+	 * @param end
+	 *            The end index of the matched text in the <code>CharSequence</code>
+	 *            searched.
+	 * @param replacement
+	 *            The text to replace the matched text with. This string has any
+	 *            matched groups and character escapes replaced.
 	 */
-	RegExReplaceInfo(String matchedText, int start, int end,
-						String replacement) {
+	RegExReplaceInfo(final String matchedText, final int start, final int end, final String replacement) {
 		this.matchedText = matchedText;
 		this.startIndex = start;
 		this.endIndex = end;
@@ -50,7 +51,7 @@ class RegExReplaceInfo {
 	 * @see #getEndIndex()
 	 */
 	public int getEndIndex() {
-		return endIndex;
+		return this.endIndex;
 	}
 
 	/**
@@ -59,7 +60,7 @@ class RegExReplaceInfo {
 	 * @return The matched text.
 	 */
 	public String getMatchedText() {
-		return matchedText;
+		return this.matchedText;
 	}
 
 	/**
@@ -68,7 +69,7 @@ class RegExReplaceInfo {
 	 * @return The string to replace the matched text with.
 	 */
 	public String getReplacement() {
-		return replacement;
+		return this.replacement;
 	}
 
 	/**
@@ -79,7 +80,7 @@ class RegExReplaceInfo {
 	 * @see #getEndIndex()
 	 */
 	public int getStartIndex() {
-		return startIndex;
+		return this.startIndex;
 	}
 
 }

@@ -10,7 +10,6 @@ package org.fife.ui.rsyntaxtextarea;
 
 import java.util.Iterator;
 
-
 /**
  * Allows you to iterate through all paintable tokens in an
  * <code>RSyntaxDocument</code>.
@@ -20,31 +19,29 @@ import java.util.Iterator;
  */
 class TokenIterator implements Iterator<Token> {
 
-	private RSyntaxDocument doc;
 	private int curLine;
+	private final RSyntaxDocument doc;
 	private Token token;
-
 
 	/**
 	 * Constructor.
 	 *
-	 * @param doc The document whose tokens we should iterate over.
+	 * @param doc
+	 *            The document whose tokens we should iterate over.
 	 */
-	TokenIterator(RSyntaxDocument doc) {
+	TokenIterator(final RSyntaxDocument doc) {
 		this.doc = doc;
-		loadTokenListForCurLine();
-		int lineCount = getLineCount();
-		while ((token==null || !token.isPaintable()) && curLine<lineCount-1) {
-			curLine++;
-			loadTokenListForCurLine();
+		this.loadTokenListForCurLine();
+		final int lineCount = this.getLineCount();
+		while ((this.token == null || !this.token.isPaintable()) && this.curLine < lineCount - 1) {
+			this.curLine++;
+			this.loadTokenListForCurLine();
 		}
 	}
 
-
 	private int getLineCount() {
-		return doc.getDefaultRootElement().getElementCount();
+		return this.doc.getDefaultRootElement().getElementCount();
 	}
-
 
 	/**
 	 * Returns whether any more paintable tokens are in the document.
@@ -54,18 +51,15 @@ class TokenIterator implements Iterator<Token> {
 	 */
 	@Override
 	public boolean hasNext() {
-		return token!=null;
+		return this.token != null;
 	}
-
 
 	private void loadTokenListForCurLine() {
-		token = doc.getTokenListForLine(curLine);
-		if (token!=null && !token.isPaintable()) {
+		this.token = this.doc.getTokenListForLine(this.curLine);
+		if (this.token != null && !this.token.isPaintable())
 			// Common end of document scenario
-			token = null;
-		}
+			this.token = null;
 	}
-
 
 	/**
 	 * Returns the next paintable token in the document.
@@ -76,52 +70,47 @@ class TokenIterator implements Iterator<Token> {
 	@Override
 	public Token next() {
 
-		Token t = token;
+		Token t = this.token;
 		boolean tIsCloned = false;
-		int lineCount = getLineCount();
+		final int lineCount = this.getLineCount();
 
 		// Get the next token, going to the next line if necessary.
-		if (token!=null && token.isPaintable()) {
-			token = token.getNextToken();
-		}
-		else if (curLine<lineCount-1) {
+		if (this.token != null && this.token.isPaintable())
+			this.token = this.token.getNextToken();
+		else if (this.curLine < lineCount - 1) {
 			t = new TokenImpl(t); // Clone t since tokens are pooled
 			tIsCloned = true;
-			curLine++;
-			loadTokenListForCurLine();
-		}
-		else if (token!=null && !token.isPaintable()) {
+			this.curLine++;
+			this.loadTokenListForCurLine();
+		} else if (this.token != null && !this.token.isPaintable())
 			// Ends with a non-paintable token (not sure this ever happens)
-			token = null;
-		}
+			this.token = null;
 
-		while ((token==null || !token.isPaintable()) && curLine<lineCount-1) {
+		while ((this.token == null || !this.token.isPaintable()) && this.curLine < lineCount - 1) {
 			if (!tIsCloned) {
 				t = new TokenImpl(t); // Clone t since tokens are pooled
 				tIsCloned = true;
 			}
-			curLine++;
-			loadTokenListForCurLine();
+			this.curLine++;
+			this.loadTokenListForCurLine();
 		}
-		if (token!=null && !token.isPaintable() && curLine==lineCount-1) {
-			token = null;
-		}
+		if (this.token != null && !this.token.isPaintable() && this.curLine == lineCount - 1)
+			this.token = null;
 
 		return t;
 
 	}
 
-
 	/**
-	 * Always throws {@link UnsupportedOperationException}, as
-	 * <code>Token</code> removal is not supported.
+	 * Always throws {@link UnsupportedOperationException}, as <code>Token</code>
+	 * removal is not supported.
 	 *
-	 * @throws UnsupportedOperationException always.
+	 * @throws UnsupportedOperationException
+	 *             always.
 	 */
 	@Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}
-
 
 }

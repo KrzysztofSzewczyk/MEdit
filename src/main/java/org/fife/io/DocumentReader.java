@@ -15,7 +15,6 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Segment;
 
-
 /**
  * A <code>Reader</code> for <code>javax.swing.text.Document</code> objects.
  *
@@ -25,9 +24,9 @@ import javax.swing.text.Segment;
 public class DocumentReader extends Reader {
 
 	/**
-	 * The stream's position in the document.
+	 * The document we're working on.
 	 */
-	private long position;
+	private final Document document;
 
 	/**
 	 * A remembered position in the document.
@@ -35,28 +34,27 @@ public class DocumentReader extends Reader {
 	private long mark;
 
 	/**
-	 * The document we're working on.
+	 * The stream's position in the document.
 	 */
-	private Document document;
+	private long position;
 
 	/**
 	 * Used for fast character access.
 	 */
-	private Segment segment;
-
+	private final Segment segment;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param document The document we're 'reading'.
+	 * @param document
+	 *            The document we're 'reading'.
 	 */
-	public DocumentReader(Document document) {
-		position = 0;
-		mark = -1;
+	public DocumentReader(final Document document) {
+		this.position = 0;
+		this.mark = -1;
 		this.document = document;
 		this.segment = new Segment();
 	}
-
 
 	/**
 	 * This currently does nothing...
@@ -65,157 +63,146 @@ public class DocumentReader extends Reader {
 	public void close() {
 	}
 
-
 	/**
-	 * Marks the present position in the stream.  Subsequent calls to
+	 * Marks the present position in the stream. Subsequent calls to
 	 * <code>reset()</code> will reposition the stream to this point.
 	 *
-	 * @param readAheadLimit Ignored.
+	 * @param readAheadLimit
+	 *            Ignored.
 	 */
 	@Override
-	public void mark(int readAheadLimit) {
-		mark = position;
+	public void mark(final int readAheadLimit) {
+		this.mark = this.position;
 	}
 
-
 	/**
-	 * Tells whether this reader supports the <code>mark</code> operation.
-	 * This always returns <code>true</code> for <code>DocumentReader</code>.
+	 * Tells whether this reader supports the <code>mark</code> operation. This
+	 * always returns <code>true</code> for <code>DocumentReader</code>.
 	 */
 	@Override
 	public boolean markSupported() {
 		return true;
 	}
 
-
 	/**
 	 * Reads the single character at the current position in the document.
 	 */
 	@Override
 	public int read() {
-		if(position>=document.getLength()) {
-			return -1;      // Read past end of document.
-		}
+		if (this.position >= this.document.getLength())
+			return -1; // Read past end of document.
 		try {
-			document.getText((int)position,1, segment);
-			position++;
-			return segment.array[segment.offset];
-		} catch (BadLocationException ble) {
+			this.document.getText((int) this.position, 1, this.segment);
+			this.position++;
+			return this.segment.array[this.segment.offset];
+		} catch (final BadLocationException ble) {
 			/* Should never happen?? */
 			ble.printStackTrace();
 			return -1;
 		}
 	}
 
-
 	/**
-	 * Read <code>array.length</code> characters from the beginning
-	 * of the document into <code>array</code>.
+	 * Read <code>array.length</code> characters from the beginning of the document
+	 * into <code>array</code>.
 	 *
-	 * @param array The array to read characters into.
+	 * @param array
+	 *            The array to read characters into.
 	 * @return The number of characters read.
 	 */
 	@Override
-	public int read(char[] array) {
-		return read(array, 0, array.length);
+	public int read(final char[] array) {
+		return this.read(array, 0, array.length);
 	}
-
 
 	/**
 	 * Reads characters into a portion of an array.
 	 *
-	 * @param cbuf The destination buffer.
-	 * @param off Offset at which to start storing characters.
-	 * @param len Maximum number of characters to read.
-	 * @return The number of characters read, or <code>-1</code> if the
-	 *         end of the stream (document) has been reached.
+	 * @param cbuf
+	 *            The destination buffer.
+	 * @param off
+	 *            Offset at which to start storing characters.
+	 * @param len
+	 *            Maximum number of characters to read.
+	 * @return The number of characters read, or <code>-1</code> if the end of the
+	 *         stream (document) has been reached.
 	 */
 	@Override
-	public int read(char[] cbuf, int off, int len) {
+	public int read(final char[] cbuf, final int off, final int len) {
 		int k;
-		if(position>=document.getLength()) {
-			return -1;      // Read past end of document.
-		}
+		if (this.position >= this.document.getLength())
+			return -1; // Read past end of document.
 		k = len;
-		if((position+k)>=document.getLength()) {
-			k = document.getLength() - (int)position;
-		}
-		if(off + k >= cbuf.length) {
+		if (this.position + k >= this.document.getLength())
+			k = this.document.getLength() - (int) this.position;
+		if (off + k >= cbuf.length)
 			k = cbuf.length - off;
-		}
 		try {
-			document.getText((int)position, k, segment);
-			position += k;
-			System.arraycopy(segment.array,segment.offset,
-							cbuf,off,
-							k);
+			this.document.getText((int) this.position, k, this.segment);
+			this.position += k;
+			System.arraycopy(this.segment.array, this.segment.offset, cbuf, off, k);
 			return k;
-		} catch (BadLocationException ble) {
+		} catch (final BadLocationException ble) {
 			/* Should never happen ? */
 			return -1;
 		}
 	}
 
-
 	/**
-	 * Tells whether this reader is ready to be read without
-	 * blocking for input.  <code>DocumentReader</code> will
-	 * always return true.
+	 * Tells whether this reader is ready to be read without blocking for input.
+	 * <code>DocumentReader</code> will always return true.
 	 *
-	 * @return <code>true</code> if the next read operation will
-	 *         return without blocking.
+	 * @return <code>true</code> if the next read operation will return without
+	 *         blocking.
 	 */
 	@Override
 	public boolean ready() {
 		return true;
 	}
 
-
 	/**
-	 * Resets the stream.  If the stream has been marked, then attempt to
-	 * reposition it at the mark.  If the stream has not been marked, then
-	 * move it to the beginning of the document.
+	 * Resets the stream. If the stream has been marked, then attempt to reposition
+	 * it at the mark. If the stream has not been marked, then move it to the
+	 * beginning of the document.
 	 */
 	@Override
 	public void reset() {
-		if(mark==-1) {
-			position = 0;
-		}
+		if (this.mark == -1)
+			this.position = 0;
 		else {
-			position = mark;
-			mark = -1;
+			this.position = this.mark;
+			this.mark = -1;
 		}
 	}
 
+	/**
+	 * Move to the specified position in the document. If <code>pos</code> is
+	 * greater than the document's length, the stream's position is moved to the end
+	 * of the document.
+	 *
+	 * @param pos
+	 *            The position in the document to move to.
+	 */
+	public void seek(final long pos) {
+		this.position = Math.min(pos, this.document.getLength());
+	}
 
 	/**
-	 * Skips characters.  This will not 'skip' past the end of the document.
+	 * Skips characters. This will not 'skip' past the end of the document.
 	 *
-	 * @param n The number of characters to skip.
+	 * @param n
+	 *            The number of characters to skip.
 	 * @return The number of characters actually skipped.
 	 */
 	@Override
-	public long skip(long n) {
-		if (position+n<=document.getLength()) {
-			position += n;
+	public long skip(final long n) {
+		if (this.position + n <= this.document.getLength()) {
+			this.position += n;
 			return n;
 		}
-		long temp = position;
-		position = document.getLength();
-		return document.getLength() - temp;
+		final long temp = this.position;
+		this.position = this.document.getLength();
+		return this.document.getLength() - temp;
 	}
-
-
-	/**
-	 * Move to the specified position in the document.  If <code>pos</code>
-	 * is greater than the document's length, the stream's position is moved
-	 * to the end of the document.
-	 *
-	 * @param pos The position in the document to move to.
-	 */
-	public void seek(long pos) {
-		position = Math.min(pos, document.getLength());
-	}
-
 
 }

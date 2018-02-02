@@ -116,7 +116,7 @@ public class MainFrame extends JFrame {
 				new Thread(() -> {
 					try {
 						final String text = MainFrame.this.textPane.getSelectedText();
-						MainFrame.this.textPane.replaceSelection(toTitleCase(text));
+						MainFrame.this.textPane.replaceSelection(this.toTitleCase(text));
 					} catch (final Exception e3) {
 					}
 				}).start();

@@ -16,10 +16,11 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Token;
-
+import org.fife.ui.rsyntaxtextarea.TokenTypes;
 
 /**
- * A fold parser NSIS.<p>
+ * A fold parser NSIS.
+ * <p>
  *
  * Note that this class may impose somewhat of a performance penalty on large
  * source files, since it re-parses the entire document each time folds are
@@ -30,115 +31,100 @@ import org.fife.ui.rsyntaxtextarea.Token;
  */
 public class NsisFoldParser implements FoldParser {
 
-	private static final char[] KEYWORD_FUNCTION		= "Function".toCharArray();
-	private static final char[] KEYWORD_FUNCTION_END	= "FunctionEnd".toCharArray();
-	private static final char[] KEYWORD_SECTION			= "Section".toCharArray();
-	private static final char[] KEYWORD_SECTION_END		= "SectionEnd".toCharArray();
-
 	protected static final char[] C_MLC_END = "*/".toCharArray();
+	private static final char[] KEYWORD_FUNCTION = "Function".toCharArray();
+	private static final char[] KEYWORD_FUNCTION_END = "FunctionEnd".toCharArray();
+	private static final char[] KEYWORD_SECTION = "Section".toCharArray();
 
+	private static final char[] KEYWORD_SECTION_END = "SectionEnd".toCharArray();
 
-	private static boolean foundEndKeyword(char[] keyword, Token t,
-			Stack<char[]> endWordStack) {
-		return t.is(Token.RESERVED_WORD, keyword) && !endWordStack.isEmpty() &&
-			keyword==endWordStack.peek();
+	private static boolean foundEndKeyword(final char[] keyword, final Token t, final Stack<char[]> endWordStack) {
+		return t.is(TokenTypes.RESERVED_WORD, keyword) && !endWordStack.isEmpty() && keyword == endWordStack.peek();
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Fold> getFolds(RSyntaxTextArea textArea) {
+	public List<Fold> getFolds(final RSyntaxTextArea textArea) {
 
-		List<Fold> folds = new ArrayList<Fold>();
+		final List<Fold> folds = new ArrayList<>();
 
 		Fold currentFold = null;
-		int lineCount = textArea.getLineCount();
+		final int lineCount = textArea.getLineCount();
 		boolean inMLC = false;
 		int mlcStart = 0;
-		Stack<char[]> endWordStack = new Stack<char[]>();
+		final Stack<char[]> endWordStack = new Stack<>();
 
 		try {
 
-			for (int line=0; line<lineCount; line++) {
+			for (int line = 0; line < lineCount; line++) {
 
 				Token t = textArea.getTokenListForLine(line);
-				while (t!=null && t.isPaintable()) {
+				while (t != null && t.isPaintable()) {
 
 					if (t.isComment()) {
 
 						if (inMLC) {
 							// If we found the end of an MLC that started
 							// on a previous line...
-							if (t.endsWith(C_MLC_END)) {
-								int mlcEnd = t.getEndOffset() - 1;
-								if (currentFold==null) {
+							if (t.endsWith(NsisFoldParser.C_MLC_END)) {
+								final int mlcEnd = t.getEndOffset() - 1;
+								if (currentFold == null) {
 									currentFold = new Fold(FoldType.COMMENT, textArea, mlcStart);
 									currentFold.setEndOffset(mlcEnd);
 									folds.add(currentFold);
 									currentFold = null;
-								}
-								else {
+								} else {
 									currentFold = currentFold.createChild(FoldType.COMMENT, mlcStart);
 									currentFold.setEndOffset(mlcEnd);
 									currentFold = currentFold.getParent();
 								}
-								//System.out.println("Ending MLC at: " + mlcEnd + ", parent==" + currentFold);
+								// System.out.println("Ending MLC at: " + mlcEnd + ", parent==" + currentFold);
 								inMLC = false;
 								mlcStart = 0;
 							}
 							// Otherwise, this MLC is continuing on to yet
 							// another line.
-						}
-						else {
-							// If we're an MLC that ends on a later line...
-							if (t.getType()!=Token.COMMENT_EOL && !t.endsWith(C_MLC_END)) {
-								//System.out.println("Starting MLC at: " + t.offset);
-								inMLC = true;
-								mlcStart = t.getOffset();
-							}
+						} else // If we're an MLC that ends on a later line...
+						if (t.getType() != TokenTypes.COMMENT_EOL && !t.endsWith(NsisFoldParser.C_MLC_END)) {
+							// System.out.println("Starting MLC at: " + t.offset);
+							inMLC = true;
+							mlcStart = t.getOffset();
 						}
 
 					}
 
-					else if (t.is(Token.RESERVED_WORD, KEYWORD_SECTION)) {
-						if (currentFold==null) {
+					else if (t.is(TokenTypes.RESERVED_WORD, NsisFoldParser.KEYWORD_SECTION)) {
+						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);
-						}
-						else {
+						} else
 							currentFold = currentFold.createChild(FoldType.CODE, t.getOffset());
-						}
-						endWordStack.push(KEYWORD_SECTION_END);
+						endWordStack.push(NsisFoldParser.KEYWORD_SECTION_END);
 					}
 
-					else if (t.is(Token.RESERVED_WORD, KEYWORD_FUNCTION)) {
-						if (currentFold==null) {
+					else if (t.is(TokenTypes.RESERVED_WORD, NsisFoldParser.KEYWORD_FUNCTION)) {
+						if (currentFold == null) {
 							currentFold = new Fold(FoldType.CODE, textArea, t.getOffset());
 							folds.add(currentFold);
-						}
-						else {
+						} else
 							currentFold = currentFold.createChild(FoldType.CODE, t.getOffset());
-						}
-						endWordStack.push(KEYWORD_FUNCTION_END);
+						endWordStack.push(NsisFoldParser.KEYWORD_FUNCTION_END);
 					}
 
-					else if (foundEndKeyword(KEYWORD_SECTION_END, t, endWordStack) ||
-							foundEndKeyword(KEYWORD_FUNCTION_END, t, endWordStack)) {
-						if (currentFold!=null) {
+					else if (NsisFoldParser.foundEndKeyword(NsisFoldParser.KEYWORD_SECTION_END, t, endWordStack)
+							|| NsisFoldParser.foundEndKeyword(NsisFoldParser.KEYWORD_FUNCTION_END, t, endWordStack))
+						if (currentFold != null) {
 							currentFold.setEndOffset(t.getOffset());
-							Fold parentFold = currentFold.getParent();
+							final Fold parentFold = currentFold.getParent();
 							endWordStack.pop();
 							// Don't add fold markers for single-line blocks
-							if (currentFold.isOnSingleLine()) {
-								if (!currentFold.removeFromParent()) {
-									folds.remove(folds.size()-1);
-								}
-							}
+							if (currentFold.isOnSingleLine())
+								if (!currentFold.removeFromParent())
+									folds.remove(folds.size() - 1);
 							currentFold = parentFold;
 						}
-					}
 
 					t = t.getNextToken();
 
@@ -146,13 +132,12 @@ public class NsisFoldParser implements FoldParser {
 
 			}
 
-		} catch (BadLocationException ble) { // Should never happen
+		} catch (final BadLocationException ble) { // Should never happen
 			ble.printStackTrace();
 		}
 
 		return folds;
 
 	}
-
 
 }

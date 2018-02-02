@@ -20,18 +20,16 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 
-
 /**
- * A "smart" highlight painter designed for use in RSyntaxTextArea.  Adds the
+ * A "smart" highlight painter designed for use in RSyntaxTextArea. Adds the
  * following features:
  *
  * <ul>
- *    <li>Rendered highlights don't "grow" when users append text to the "end"
- *        of them.  This is implemented by assuming that the highlights
- *        themselves specify their end offset as one offset "too short".  This
- *        behavior is baked into various RSTA highlights (mark all, mark
- *        occurrences, etc.).
- *    <li>Ability to paint a border line around highlights.
+ * <li>Rendered highlights don't "grow" when users append text to the "end" of
+ * them. This is implemented by assuming that the highlights themselves specify
+ * their end offset as one offset "too short". This behavior is baked into
+ * various RSTA highlights (mark all, mark occurrences, etc.).
+ * <li>Ability to paint a border line around highlights.
  * </ul>
  *
  * @author Robert Futrell
@@ -39,9 +37,12 @@ import javax.swing.text.View;
  */
 public class SmartHighlightPainter extends ChangeableHighlightPainter {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private Color borderColor;
 	private boolean paintBorder;
-
 
 	/**
 	 * Creates a highlight painter that defaults to blue.
@@ -50,16 +51,15 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 		super(Color.BLUE);
 	}
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param paint The color or paint to use for this painter.
+	 * @param paint
+	 *            The color or paint to use for this painter.
 	 */
-	public SmartHighlightPainter(Paint paint) {
+	public SmartHighlightPainter(final Paint paint) {
 		super(paint);
 	}
-
 
 	/**
 	 * Returns whether a border is painted around marked occurrences.
@@ -69,45 +69,41 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 	 * @see #getPaint()
 	 */
 	public boolean getPaintBorder() {
-		return paintBorder;
+		return this.paintBorder;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Shape paintLayer(Graphics g, int p0, int p1, Shape viewBounds,
-								JTextComponent c, View view) {
+	public Shape paintLayer(final Graphics g, final int p0, final int p1, final Shape viewBounds,
+			final JTextComponent c, final View view) {
 
-		g.setColor((Color)getPaint());
+		g.setColor((Color) this.getPaint());
 
 		// This special case isn't needed for most standard Swing Views (which
 		// always return a width of 1 for modelToView() calls), but it is
 		// needed for RSTA views, which actually return the width of chars for
-		// modelToView calls.  But this should be faster anyway, as we
+		// modelToView calls. But this should be faster anyway, as we
 		// short-circuit and do only one modelToView() for one offset.
-		if (p0==p1) {
+		if (p0 == p1)
 			try {
-				Shape s = view.modelToView(p0, viewBounds,
-											Position.Bias.Forward);
-				Rectangle r = s.getBounds();
-				g.drawLine(r.x, r.y, r.x, r.y+r.height);
+				final Shape s = view.modelToView(p0, viewBounds, Position.Bias.Forward);
+				final Rectangle r = s.getBounds();
+				g.drawLine(r.x, r.y, r.x, r.y + r.height);
 				return r;
-			} catch (BadLocationException ble) {
+			} catch (final BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 				return null;
 			}
-		}
 
 		if (p0 == view.getStartOffset() && p1 == view.getEndOffset()) {
 			// Contained in view, can just use bounds.
 			Rectangle alloc;
-			if (viewBounds instanceof Rectangle) {
+			if (viewBounds instanceof Rectangle)
 				alloc = (Rectangle) viewBounds;
-			} else {
+			else
 				alloc = viewBounds.getBounds();
-			}
 			g.fillRect(alloc.x, alloc.y, alloc.width, alloc.height);
 			return alloc;
 		}
@@ -115,46 +111,41 @@ public class SmartHighlightPainter extends ChangeableHighlightPainter {
 		// Should only render part of View.
 		try {
 			// --- determine locations ---
-			Shape shape = view.modelToView(p0, Position.Bias.Forward, p1,
-					Position.Bias.Backward, viewBounds);
-			Rectangle r = shape instanceof Rectangle ? (Rectangle) shape :
-														shape.getBounds();
+			final Shape shape = view.modelToView(p0, Position.Bias.Forward, p1, Position.Bias.Backward, viewBounds);
+			final Rectangle r = shape instanceof Rectangle ? (Rectangle) shape : shape.getBounds();
 			g.fillRect(r.x, r.y, r.width, r.height);
-			if (paintBorder) {
-				g.setColor(borderColor);
-				g.drawRect(r.x,r.y, r.width-1,r.height-1);
+			if (this.paintBorder) {
+				g.setColor(this.borderColor);
+				g.drawRect(r.x, r.y, r.width - 1, r.height - 1);
 			}
 			return r;
-		} catch (BadLocationException e) { // Never happens
+		} catch (final BadLocationException e) { // Never happens
 			e.printStackTrace();
 			return null;
 		}
 
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setPaint(Paint paint) {
+	public void setPaint(final Paint paint) {
 		super.setPaint(paint);
-		if (paint instanceof Color) {
-			borderColor = ((Color)paint).darker();
-		}
+		if (paint instanceof Color)
+			this.borderColor = ((Color) paint).darker();
 	}
-
 
 	/**
 	 * Toggles whether a border is painted around highlights.
 	 *
-	 * @param paint Whether to paint a border.
+	 * @param paint
+	 *            Whether to paint a border.
 	 * @see #getPaintBorder()
 	 * @see #setPaint(Paint)
 	 */
-	public void setPaintBorder(boolean paint) {
+	public void setPaintBorder(final boolean paint) {
 		this.paintBorder = paint;
 	}
-
 
 }

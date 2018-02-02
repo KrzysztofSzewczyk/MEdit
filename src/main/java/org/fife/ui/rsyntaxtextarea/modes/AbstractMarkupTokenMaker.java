@@ -11,7 +11,6 @@ package org.fife.ui.rsyntaxtextarea.modes;
 
 import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
 
-
 /**
  * Base class for token makers for markup languages.
  *
@@ -20,7 +19,6 @@ import org.fife.ui.rsyntaxtextarea.AbstractJFlexTokenMaker;
  */
 public abstract class AbstractMarkupTokenMaker extends AbstractJFlexTokenMaker {
 
-
 	/**
 	 * Returns whether markup close tags should be completed.
 	 *
@@ -28,15 +26,13 @@ public abstract class AbstractMarkupTokenMaker extends AbstractJFlexTokenMaker {
 	 */
 	public abstract boolean getCompleteCloseTags();
 
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String[] getLineCommentStartAndEnd(int languageIndex) {
+	public String[] getLineCommentStartAndEnd(final int languageIndex) {
 		return new String[] { "<!--", "-->" };
 	}
-
 
 	/**
 	 * Overridden to return <code>true</code>.
@@ -47,6 +43,5 @@ public abstract class AbstractMarkupTokenMaker extends AbstractJFlexTokenMaker {
 	public final boolean isMarkupLanguage() {
 		return true;
 	}
-
 
 }

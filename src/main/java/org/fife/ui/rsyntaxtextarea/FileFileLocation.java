@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-
 /**
  * The location of a local file.
  *
@@ -25,34 +24,32 @@ import java.io.OutputStream;
 class FileFileLocation extends FileLocation {
 
 	/**
-	 * The file.  This may or may not actually exist.
+	 * The file. This may or may not actually exist.
 	 */
 	private File file;
-
 
 	/**
 	 * Constructor.
 	 *
-	 * @param file The local file.
+	 * @param file
+	 *            The local file.
 	 */
-	FileFileLocation(File file) {
+	FileFileLocation(final File file) {
 		try {
 			// Useful on Windows and OS X.
 			this.file = file.getCanonicalFile();
-		} catch (IOException ioe) {
+		} catch (final IOException ioe) {
 			this.file = file;
 		}
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected long getActualLastModified() {
-		return file.lastModified();
+		return this.file.lastModified();
 	}
-
 
 	/**
 	 * Returns the full path to the file.
@@ -62,36 +59,32 @@ class FileFileLocation extends FileLocation {
 	 */
 	@Override
 	public String getFileFullPath() {
-		return file.getAbsolutePath();
+		return this.file.getAbsolutePath();
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getFileName() {
-		return file.getName();
+		return this.file.getName();
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected InputStream getInputStream() throws IOException {
-		return new FileInputStream(file);
+		return new FileInputStream(this.file);
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected OutputStream getOutputStream() throws IOException {
-		return new FileOutputStream(file);
+		return new FileOutputStream(this.file);
 	}
-
 
 	/**
 	 * Always returns <code>true</code>.
@@ -104,18 +97,16 @@ class FileFileLocation extends FileLocation {
 		return true;
 	}
 
-
 	/**
-	 * Since file locations of this type are guaranteed to be local, this
-	 * method returns whether the file exists.
+	 * Since file locations of this type are guaranteed to be local, this method
+	 * returns whether the file exists.
 	 *
 	 * @return Whether this local file actually exists.
 	 * @see #isLocal()
 	 */
 	@Override
 	public boolean isLocalAndExists() {
-		return file.exists();
+		return this.file.exists();
 	}
-
 
 }

@@ -11,9 +11,8 @@ package org.fife.ui.rsyntaxtextarea.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
- * A basic implementation of {@link ParseResult}.  Most, if not all,
+ * A basic implementation of {@link ParseResult}. Most, if not all,
  * <code>Parser</code>s can return instances of this class.
  *
  * @author Robert Futrell
@@ -22,30 +21,28 @@ import java.util.List;
  */
 public class DefaultParseResult implements ParseResult {
 
-	private Parser parser;
+	private Exception error;
 	private int firstLineParsed;
 	private int lastLineParsed;
-	private List<ParserNotice> notices;
+	private final List<ParserNotice> notices;
+	private final Parser parser;
 	private long parseTime;
-	private Exception error;
 
-
-	public DefaultParseResult(Parser parser) {
+	public DefaultParseResult(final Parser parser) {
 		this.parser = parser;
-		notices = new ArrayList<ParserNotice>();
+		this.notices = new ArrayList<>();
 	}
-
 
 	/**
 	 * Adds a parser notice.
 	 *
-	 * @param notice The new notice.
+	 * @param notice
+	 *            The new notice.
 	 * @see #clearNotices()
 	 */
-	public void addNotice(ParserNotice notice) {
-		notices.add(notice);
+	public void addNotice(final ParserNotice notice) {
+		this.notices.add(notice);
 	}
-
 
 	/**
 	 * Clears any parser notices in this result.
@@ -53,99 +50,92 @@ public class DefaultParseResult implements ParseResult {
 	 * @see #addNotice(ParserNotice)
 	 */
 	public void clearNotices() {
-		notices.clear();
+		this.notices.clear();
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Exception getError() {
-		return error;
+		return this.error;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int getFirstLineParsed() {
-		return firstLineParsed;
+		return this.firstLineParsed;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int getLastLineParsed() {
-		return lastLineParsed;
+		return this.lastLineParsed;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public List<ParserNotice> getNotices() {
-		return notices;
+		return this.notices;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Parser getParser() {
-		return parser;
+		return this.parser;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public long getParseTime() {
-		return parseTime;
+		return this.parseTime;
 	}
-
 
 	/**
-	 * Sets the error that occurred when last parsing the document, if
-	 * any.
+	 * Sets the error that occurred when last parsing the document, if any.
 	 *
-	 * @param e The error that occurred, or <code>null</code> if no error
-	 *        occurred.
+	 * @param e
+	 *            The error that occurred, or <code>null</code> if no error
+	 *            occurred.
 	 */
-	public void setError(Exception e) {
+	public void setError(final Exception e) {
 		this.error = e;
 	}
-
 
 	/**
 	 * Sets the line range parsed.
 	 *
-	 * @param first The first line parsed, inclusive.
-	 * @param last The last line parsed, inclusive.
+	 * @param first
+	 *            The first line parsed, inclusive.
+	 * @param last
+	 *            The last line parsed, inclusive.
 	 * @see #getFirstLineParsed()
 	 * @see #getLastLineParsed()
 	 */
-	public void setParsedLines(int first, int last) {
-		firstLineParsed = first;
-		lastLineParsed = last;
+	public void setParsedLines(final int first, final int last) {
+		this.firstLineParsed = first;
+		this.lastLineParsed = last;
 	}
-
 
 	/**
 	 * Sets the amount of time it took for this parser to parse the document.
 	 *
-	 * @param time The amount of time, in milliseconds.
+	 * @param time
+	 *            The amount of time, in milliseconds.
 	 * @see #getParseTime()
 	 */
-	public void setParseTime(long time) {
-		parseTime = time;
+	public void setParseTime(final long time) {
+		this.parseTime = time;
 	}
-
 
 }

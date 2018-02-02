@@ -20,15 +20,15 @@ import medit.Crash;
 
 public class NTSLoader {
 
-	private List<NTSEntry> tools = new ArrayList<NTSEntry>();
+	private final List<NTSEntry> tools = new ArrayList<>();
 
-	public List<NTSEntry> loadAll(String string) throws ParserConfigurationException, SAXException, IOException {
+	public List<NTSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException {
 		if (!new File(string).exists())
 			return null;
-		File inputFile = new File(string);
-		DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-		Document doc = dBuilder.parse(inputFile);
+		final File inputFile = new File(string);
+		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+		final Document doc = dBuilder.parse(inputFile);
 		doc.getDocumentElement().normalize();
 		if (doc.getDocumentElement().getNodeName() != "medit") {
 			final Crash dialog = new Crash(
@@ -36,31 +36,33 @@ public class NTSLoader {
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
-		NodeList nList = doc.getElementsByTagName("tool");
+		final NodeList nList = doc.getElementsByTagName("tool");
 		for (int temp = 0; temp < nList.getLength(); temp++) {
-			Node nNode = nList.item(temp);
+			final Node nNode = nList.item(temp);
 			if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-				Element eElement = (Element) nNode;
-				String name = eElement.getElementsByTagName("name").item(0).getTextContent();
-				String script = eElement.getElementsByTagName("script").item(0).getTextContent();
-				String exeName = eElement.getElementsByTagName("exe").item(0).getTextContent();
-				tools.add(new NTSEntry(name, script, exeName) {
-					@Override
-					public String getName() {
-						return this.name;
-					}
+				final Element eElement = (Element) nNode;
+				final String name = eElement.getElementsByTagName("name").item(0).getTextContent();
+				final String script = eElement.getElementsByTagName("script").item(0).getTextContent();
+				final String exeName = eElement.getElementsByTagName("exe").item(0).getTextContent();
+				this.tools.add(new NTSEntry(name, script, exeName) {
 					@Override
 					public String getCode() {
 						return this.code;
 					}
+
 					@Override
 					public String getExeName() {
 						return this.exeName;
 					}
+
+					@Override
+					public String getName() {
+						return this.name;
+					}
 				});
 			}
 		}
-		return tools;
+		return this.tools;
 	}
 
 }

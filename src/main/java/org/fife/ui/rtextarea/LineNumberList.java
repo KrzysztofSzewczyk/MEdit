@@ -36,102 +36,175 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 import org.fife.ui.rsyntaxtextarea.folding.Fold;
 import org.fife.ui.rsyntaxtextarea.folding.FoldManager;
 
-
 /**
  * Renders line numbers in the gutter.
  *
  * @author Robert Futrell
  * @version 1.0
  */
-public class LineNumberList extends AbstractGutterComponent
-								implements MouseInputListener {
+public class LineNumberList extends AbstractGutterComponent implements MouseInputListener {
 
-	private int currentLine;	// The last line the caret was on.
-	private int lastY = -1;		// Used to check if caret changes lines when line wrap is enabled.
-	private int lastVisibleLine;// Last line index painted.
+	/**
+	 * Listens for events in the text area we're interested in.
+	 */
+	private class Listener implements CaretListener, PropertyChangeListener {
 
-	private int cellHeight;		// Height of a line number "cell" when word wrap is off.
-	private int cellWidth;		// The width used for all line number cells.
-	private int ascent;			// The ascent to use when painting line numbers.
+		private boolean installed;
 
-	private Map<?,?> aaHints;
+		@Override
+		public void caretUpdate(final CaretEvent e) {
 
-	private int mouseDragStartOffset;
+			final int dot = LineNumberList.this.textArea.getCaretPosition();
+
+			// We separate the line wrap/no line wrap cases because word wrap
+			// can make a single line from the model (document) be on multiple
+			// lines on the screen (in the view); thus, we have to enhance the
+			// logic for that case a bit - we check the actual y-coordinate of
+			// the caret when line wrap is enabled. For the no-line-wrap case,
+			// getting the line number of the caret suffices. This increases
+			// efficiency in the no-line-wrap case.
+
+			if (!LineNumberList.this.textArea.getLineWrap()) {
+				final int line = LineNumberList.this.textArea.getDocument().getDefaultRootElement()
+						.getElementIndex(dot);
+				if (LineNumberList.this.currentLine != line) {
+					LineNumberList.this.repaintLine(line);
+					LineNumberList.this.repaintLine(LineNumberList.this.currentLine);
+					LineNumberList.this.currentLine = line;
+				}
+			} else
+				try {
+					final int y = LineNumberList.this.textArea.yForLineContaining(dot);
+					if (y != LineNumberList.this.lastY) {
+						LineNumberList.this.lastY = y;
+						LineNumberList.this.currentLine = LineNumberList.this.textArea.getDocument()
+								.getDefaultRootElement().getElementIndex(dot);
+						LineNumberList.this.repaint(); // *Could* be optimized...
+					}
+				} catch (final BadLocationException ble) {
+					ble.printStackTrace();
+				}
+
+		}
+
+		public void install(final RTextArea textArea) {
+			if (!this.installed) {
+				// System.out.println("Installing");
+				textArea.addCaretListener(this);
+				textArea.addPropertyChangeListener(this);
+				this.caretUpdate(null); // Force current line highlight repaint
+				this.installed = true;
+			}
+		}
+
+		@Override
+		public void propertyChange(final PropertyChangeEvent e) {
+
+			final String name = e.getPropertyName();
+
+			// If they change the current line highlight in any way...
+			if (RTextAreaBase.HIGHLIGHT_CURRENT_LINE_PROPERTY.equals(name)
+					|| RTextAreaBase.CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY.equals(name))
+				LineNumberList.this.repaintLine(LineNumberList.this.currentLine);
+
+		}
+
+		public void uninstall(final RTextArea textArea) {
+			if (this.installed) {
+				// System.out.println("Uninstalling");
+				textArea.removeCaretListener(this);
+				textArea.removePropertyChangeListener(this);
+				this.installed = false;
+			}
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private Map<?, ?> aaHints;
+	private int ascent; // The ascent to use when painting line numbers.
+
+	private int cellHeight; // Height of a line number "cell" when word wrap is off.
+	private int cellWidth; // The width used for all line number cells.
+	private int currentLine; // The last line the caret was on.
 
 	/**
 	 * Listens for events from the current text area.
 	 */
 	private Listener l;
 
+	private int lastVisibleLine;// Last line index painted.
+
+	private int lastY = -1; // Used to check if caret changes lines when line wrap is enabled.
+
 	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on
-	 * each paint.
+	 * The index at which line numbering should start. The default value is
+	 * <code>1</code>, but applications can change this if, for example, they are
+	 * displaying a subset of lines in a file.
+	 */
+	private int lineNumberingStartIndex;
+
+	private int mouseDragStartOffset;
+
+	/**
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
 	 */
 	private Insets textAreaInsets;
 
 	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on
-	 * each paint.
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
 	 */
 	private Rectangle visibleRect;
 
 	/**
-	 * The index at which line numbering should start.  The default value is
-	 * <code>1</code>, but applications can change this if, for example, they
-	 * are displaying a subset of lines in a file.
-	 */
-	private int lineNumberingStartIndex;
-
-
-	/**
-	 * Constructs a new <code>LineNumberList</code> using default values for
-	 * line number color (gray) and highlighting the current line.
+	 * Constructs a new <code>LineNumberList</code> using default values for line
+	 * number color (gray) and highlighting the current line.
 	 *
-	 * @param textArea The text component for which line numbers will be
-	 *        displayed.
+	 * @param textArea
+	 *            The text component for which line numbers will be displayed.
 	 */
-	public LineNumberList(RTextArea textArea) {
+	public LineNumberList(final RTextArea textArea) {
 		this(textArea, null);
 	}
-
 
 	/**
 	 * Constructs a new <code>LineNumberList</code>.
 	 *
-	 * @param textArea The text component for which line numbers will be
-	 *        displayed.
-	 * @param numberColor The color to use for the line numbers.  If this is
-	 *        <code>null</code>, gray will be used.
+	 * @param textArea
+	 *            The text component for which line numbers will be displayed.
+	 * @param numberColor
+	 *            The color to use for the line numbers. If this is
+	 *            <code>null</code>, gray will be used.
 	 */
-	public LineNumberList(RTextArea textArea, Color numberColor) {
+	public LineNumberList(final RTextArea textArea, final Color numberColor) {
 
 		super(textArea);
 
-		if (numberColor!=null) {
-			setForeground(numberColor);
-		}
-		else {
-			setForeground(Color.GRAY);
-		}
+		if (numberColor != null)
+			this.setForeground(numberColor);
+		else
+			this.setForeground(Color.GRAY);
 
 	}
 
-
 	/**
 	 * Overridden to set width of this component correctly when we are first
-	 * displayed (as keying off of the RTextArea gives us (0,0) when it isn't
-	 * yet displayed.
+	 * displayed (as keying off of the RTextArea gives us (0,0) when it isn't yet
+	 * displayed.
 	 */
 	@Override
 	public void addNotify() {
 		super.addNotify();
-		if (textArea!=null) {
-			l.install(textArea); // Won't double-install
-		}
-		updateCellWidths();
-		updateCellHeights();
+		if (this.textArea != null)
+			this.l.install(this.textArea); // Won't double-install
+		this.updateCellWidths();
+		this.updateCellHeights();
 	}
-
 
 	/**
 	 * Calculates the last line number index painted in this component.
@@ -140,69 +213,59 @@ public class LineNumberList extends AbstractGutterComponent
 	 */
 	private int calculateLastVisibleLineNumber() {
 		int lastLine = 0;
-		if (textArea!=null) {
-			lastLine = textArea.getLineCount()+getLineNumberingStartIndex()-1;
-		}
+		if (this.textArea != null)
+			lastLine = this.textArea.getLineCount() + this.getLineNumberingStartIndex() - 1;
 		return lastLine;
 	}
 
-
 	/**
-	 * Returns the starting line's line number.  The default value is
-	 * <code>1</code>.
+	 * Returns the starting line's line number. The default value is <code>1</code>.
 	 *
 	 * @return The index
 	 * @see #setLineNumberingStartIndex(int)
 	 */
 	public int getLineNumberingStartIndex() {
-		return lineNumberingStartIndex;
+		return this.lineNumberingStartIndex;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		int h = textArea!=null ? textArea.getHeight() : 100; // Arbitrary
-		return new Dimension(cellWidth, h);
+		final int h = this.textArea != null ? this.textArea.getHeight() : 100; // Arbitrary
+		return new Dimension(this.cellWidth, h);
 	}
 
-
 	/**
-	 * Returns the width of the empty border on this component's right-hand
-	 * side (or left-hand side, if the orientation is RTL).
+	 * Returns the width of the empty border on this component's right-hand side (or
+	 * left-hand side, if the orientation is RTL).
 	 *
 	 * @return The border width.
 	 */
 	private int getRhsBorderWidth() {
 		int w = 4;
-		if (textArea instanceof RSyntaxTextArea) {
-			if (((RSyntaxTextArea)textArea).isCodeFoldingEnabled()) {
+		if (this.textArea instanceof RSyntaxTextArea)
+			if (((RSyntaxTextArea) this.textArea).isCodeFoldingEnabled())
 				w = 0;
-			}
-		}
 		return w;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	void handleDocumentEvent(DocumentEvent e) {
-		int newLastLine = calculateLastVisibleLineNumber();
-		if (newLastLine!=lastVisibleLine) {
+	void handleDocumentEvent(final DocumentEvent e) {
+		final int newLastLine = this.calculateLastVisibleLineNumber();
+		if (newLastLine != this.lastVisibleLine) {
 			// Adjust the amount of space the line numbers take up,
 			// if necessary.
-			if (newLastLine/10 != lastVisibleLine/10) {
-				updateCellWidths();
-			}
-			lastVisibleLine = newLastLine;
-			repaint();
+			if (newLastLine / 10 != this.lastVisibleLine / 10)
+				this.updateCellWidths();
+			this.lastVisibleLine = newLastLine;
+			this.repaint();
 		}
 	}
-
 
 	@Override
 	protected void init() {
@@ -211,117 +274,100 @@ public class LineNumberList extends AbstractGutterComponent
 
 		// Initialize currentLine; otherwise, the current line won't start
 		// off as highlighted.
-		currentLine = 0;
-		setLineNumberingStartIndex(1);
+		this.currentLine = 0;
+		this.setLineNumberingStartIndex(1);
 
-		visibleRect = new Rectangle(); // Must be initialized
+		this.visibleRect = new Rectangle(); // Must be initialized
 
-		addMouseListener(this);
-		addMouseMotionListener(this);
+		this.addMouseListener(this);
+		this.addMouseMotionListener(this);
 
-		aaHints = RSyntaxUtilities.getDesktopAntiAliasHints();
+		this.aaHints = RSyntaxUtilities.getDesktopAntiAliasHints();
 
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	void lineHeightsChanged() {
-		updateCellHeights();
+		this.updateCellHeights();
 	}
 
-
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mouseDragged(MouseEvent e) {
-		if (mouseDragStartOffset>-1) {
-			int pos = textArea.viewToModel(new Point(0, e.getY()));
-			if (pos>=0) { // Not -1
-				textArea.setCaretPosition(mouseDragStartOffset);
-				textArea.moveCaretPosition(pos);
+	public void mouseDragged(final MouseEvent e) {
+		if (this.mouseDragStartOffset > -1) {
+			final int pos = this.textArea.viewToModel(new Point(0, e.getY()));
+			if (pos >= 0) { // Not -1
+				this.textArea.setCaretPosition(this.mouseDragStartOffset);
+				this.textArea.moveCaretPosition(pos);
 			}
 		}
 	}
 
-
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mouseMoved(MouseEvent e) {
+	public void mouseMoved(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mousePressed(MouseEvent e) {
-		if (textArea==null) {
+	public void mousePressed(final MouseEvent e) {
+		if (this.textArea == null)
 			return;
-		}
-		if (e.getButton()==MouseEvent.BUTTON1) {
-			int pos = textArea.viewToModel(new Point(0, e.getY()));
-			if (pos>=0) { // Not -1
-				textArea.setCaretPosition(pos);
-			}
-			mouseDragStartOffset = pos;
-		}
-		else {
-			mouseDragStartOffset = -1;
-		}
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			final int pos = this.textArea.viewToModel(new Point(0, e.getY()));
+			if (pos >= 0)
+				this.textArea.setCaretPosition(pos);
+			this.mouseDragStartOffset = pos;
+		} else
+			this.mouseDragStartOffset = -1;
 	}
-
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(final MouseEvent e) {
 	}
-
 
 	/**
 	 * Paints this component.
 	 *
-	 * @param g The graphics context.
+	 * @param g
+	 *            The graphics context.
 	 */
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(final Graphics g) {
 
-		if (textArea==null) {
+		if (this.textArea == null)
 			return;
-		}
 
-		visibleRect = g.getClipBounds(visibleRect);
-		if (visibleRect==null) { // ???
-			visibleRect = getVisibleRect();
-		}
-		//System.out.println("LineNumberList repainting: " + visibleRect);
-		if (visibleRect==null) {
+		this.visibleRect = g.getClipBounds(this.visibleRect);
+		if (this.visibleRect == null)
+			this.visibleRect = this.getVisibleRect();
+		// System.out.println("LineNumberList repainting: " + visibleRect);
+		if (this.visibleRect == null)
 			return;
-		}
 
-		Color bg = getBackground();
-		if (getGutter()!=null) { // Should always be true
-			bg = getGutter().getBackground();
-		}
+		Color bg = this.getBackground();
+		if (this.getGutter() != null)
+			bg = this.getGutter().getBackground();
 		g.setColor(bg);
-		g.fillRect(0,visibleRect.y, cellWidth,visibleRect.height);
-		g.setFont(getFont());
-		if (aaHints!=null) {
-			((Graphics2D)g).addRenderingHints(aaHints);
-		}
+		g.fillRect(0, this.visibleRect.y, this.cellWidth, this.visibleRect.height);
+		g.setFont(this.getFont());
+		if (this.aaHints != null)
+			((Graphics2D) g).addRenderingHints(this.aaHints);
 
-		if (textArea.getLineWrap()) {
-			paintWrappedLineNumbers(g, visibleRect);
+		if (this.textArea.getLineWrap()) {
+			this.paintWrappedLineNumbers(g, this.visibleRect);
 			return;
 		}
 
@@ -329,74 +375,72 @@ public class LineNumberList extends AbstractGutterComponent
 		// the line number (drawString expects y==baseline).
 		// We need to be "scrolled up" just enough for the missing part of
 		// the first line.
-		textAreaInsets = textArea.getInsets(textAreaInsets);
-		if (visibleRect.y<textAreaInsets.top) {
-			visibleRect.height -= (textAreaInsets.top - visibleRect.y);
-			visibleRect.y = textAreaInsets.top;
+		this.textAreaInsets = this.textArea.getInsets(this.textAreaInsets);
+		if (this.visibleRect.y < this.textAreaInsets.top) {
+			this.visibleRect.height -= this.textAreaInsets.top - this.visibleRect.y;
+			this.visibleRect.y = this.textAreaInsets.top;
 		}
-		int topLine = (visibleRect.y-textAreaInsets.top)/cellHeight;
-		int actualTopY = topLine*cellHeight + textAreaInsets.top;
-		int y = actualTopY + ascent;
+		int topLine = (this.visibleRect.y - this.textAreaInsets.top) / this.cellHeight;
+		final int actualTopY = topLine * this.cellHeight + this.textAreaInsets.top;
+		int y = actualTopY + this.ascent;
 
 		// Get the actual first line to paint, taking into account folding.
 		FoldManager fm = null;
-		if (textArea instanceof RSyntaxTextArea) {
-			fm = ((RSyntaxTextArea)textArea).getFoldManager();
+		if (this.textArea instanceof RSyntaxTextArea) {
+			fm = ((RSyntaxTextArea) this.textArea).getFoldManager();
 			topLine += fm.getHiddenLineCountAbove(topLine, true);
 		}
-		final int rhsBorderWidth = getRhsBorderWidth();
+		final int rhsBorderWidth = this.getRhsBorderWidth();
 
-/*
-		// Highlight the current line's line number, if desired.
-		if (textArea.getHighlightCurrentLine() && currentLine>=topLine &&
-				currentLine<=bottomLine) {
-			g.setColor(textArea.getCurrentLineHighlightColor());
-			g.fillRect(0,actualTopY+(currentLine-topLine)*cellHeight,
-						cellWidth,cellHeight);
-		}
-*/
+		/*
+		 * // Highlight the current line's line number, if desired. if
+		 * (textArea.getHighlightCurrentLine() && currentLine>=topLine &&
+		 * currentLine<=bottomLine) {
+		 * g.setColor(textArea.getCurrentLineHighlightColor());
+		 * g.fillRect(0,actualTopY+(currentLine-topLine)*cellHeight,
+		 * cellWidth,cellHeight); }
+		 */
 
 		// Paint line numbers
-		g.setColor(getForeground());
-		boolean ltr = getComponentOrientation().isLeftToRight();
+		g.setColor(this.getForeground());
+		final boolean ltr = this.getComponentOrientation().isLeftToRight();
 		if (ltr) {
-			FontMetrics metrics = g.getFontMetrics();
-			int rhs = getWidth() - rhsBorderWidth;
+			final FontMetrics metrics = g.getFontMetrics();
+			final int rhs = this.getWidth() - rhsBorderWidth;
 			int line = topLine + 1;
-			while (y<visibleRect.y+visibleRect.height+ascent && line<=textArea.getLineCount()) {
-				String number = Integer.toString(line + getLineNumberingStartIndex() - 1);
-				int width = metrics.stringWidth(number);
-				g.drawString(number, rhs-width,y);
-				y += cellHeight;
-				if (fm!=null) {
-					Fold fold = fm.getFoldForLine(line-1);
+			while (y < this.visibleRect.y + this.visibleRect.height + this.ascent
+					&& line <= this.textArea.getLineCount()) {
+				final String number = Integer.toString(line + this.getLineNumberingStartIndex() - 1);
+				final int width = metrics.stringWidth(number);
+				g.drawString(number, rhs - width, y);
+				y += this.cellHeight;
+				if (fm != null) {
+					Fold fold = fm.getFoldForLine(line - 1);
 					// Skip to next line to paint, taking extra care for lines with
 					// block ends and begins together, e.g. "} else {"
-					while (fold!=null && fold.isCollapsed()) {
-						int hiddenLineCount = fold.getLineCount();
-						if (hiddenLineCount==0) {
+					while (fold != null && fold.isCollapsed()) {
+						final int hiddenLineCount = fold.getLineCount();
+						if (hiddenLineCount == 0)
 							// Fold parser identified a 0-line fold region... This
 							// is really a bug, but we'll handle it gracefully.
 							break;
-						}
 						line += hiddenLineCount;
-						fold = fm.getFoldForLine(line-1);
+						fold = fm.getFoldForLine(line - 1);
 					}
 				}
 				line++;
 			}
-		}
-		else { // rtl
+		} else { // rtl
 			int line = topLine + 1;
-			while (y<visibleRect.y+visibleRect.height && line<textArea.getLineCount()) {
-				String number = Integer.toString(line + getLineNumberingStartIndex() - 1);
+			while (y < this.visibleRect.y + this.visibleRect.height && line < this.textArea.getLineCount()) {
+				final String number = Integer.toString(line + this.getLineNumberingStartIndex() - 1);
 				g.drawString(number, rhsBorderWidth, y);
-				y += cellHeight;
-				if (fm!=null) {
-					Fold fold = fm.getFoldForLine(line-1);
+				y += this.cellHeight;
+				if (fm != null) {
+					Fold fold = fm.getFoldForLine(line - 1);
 					// Skip to next line to paint, taking extra care for lines with
 					// block ends and begins together, e.g. "} else {"
-					while (fold!=null && fold.isCollapsed()) {
+					while (fold != null && fold.isCollapsed()) {
 						line += fold.getLineCount();
 						fold = fm.getFoldForLine(line);
 					}
@@ -407,108 +451,101 @@ public class LineNumberList extends AbstractGutterComponent
 
 	}
 
-
 	/**
 	 * Paints line numbers for text areas with line wrap enabled.
 	 *
-	 * @param g The graphics context.
-	 * @param visibleRect The visible rectangle of these line numbers.
+	 * @param g
+	 *            The graphics context.
+	 * @param visibleRect
+	 *            The visible rectangle of these line numbers.
 	 */
-	private void paintWrappedLineNumbers(Graphics g, Rectangle visibleRect) {
+	private void paintWrappedLineNumbers(final Graphics g, final Rectangle visibleRect) {
 
 		// The variables we use are as follows:
 		// - visibleRect is the "visible" area of the text area; e.g.
 		// [0,100, 300,100+(lineCount*cellHeight)-1].
 		// actualTop.y is the topmost-pixel in the first logical line we
-		// paint.  Note that we may well not paint this part of the logical
+		// paint. Note that we may well not paint this part of the logical
 		// line, as it may be broken into many physical lines, with the first
-		// few physical lines scrolled past.  Note also that this is NOT the
+		// few physical lines scrolled past. Note also that this is NOT the
 		// visible rect of this line number list; this line number list has
 		// visible rect == [0,0, insets.left-1,visibleRect.height-1].
 		// - offset (<=0) is the y-coordinate at which we begin painting when
-		// we begin painting with the first logical line.  This can be
+		// we begin painting with the first logical line. This can be
 		// negative, signifying that we've scrolled past the actual topmost
 		// part of this line.
 
 		// The algorithm is as follows:
-		// - Get the starting y-coordinate at which to paint.  This may be
-		//   above the first visible y-coordinate as we're in line-wrapping
-		//   mode, but we always paint entire logical lines.
+		// - Get the starting y-coordinate at which to paint. This may be
+		// above the first visible y-coordinate as we're in line-wrapping
+		// mode, but we always paint entire logical lines.
 		// - Paint that line's line number and highlight, if appropriate.
-		//   Increment y to be just below the are we just painted (i.e., the
-		//   beginning of the next logical line's view area).
-		// - Get the ending visual position for that line.  We can now loop
-		//   back, paint this line, and continue until our y-coordinate is
-		//   past the last visible y-value.
+		// Increment y to be just below the are we just painted (i.e., the
+		// beginning of the next logical line's view area).
+		// - Get the ending visual position for that line. We can now loop
+		// back, paint this line, and continue until our y-coordinate is
+		// past the last visible y-value.
 
 		// We avoid using modelToView/viewToModel where possible, as these
 		// methods trigger a parsing of the line into syntax tokens, which is
-		// costly.  It's cheaper to just grab the child views' bounds.
+		// costly. It's cheaper to just grab the child views' bounds.
 
 		// Some variables we'll be using.
-		int width = getWidth();
+		final int width = this.getWidth();
 
-		RTextAreaUI ui = (RTextAreaUI)textArea.getUI();
-		View v = ui.getRootView(textArea).getView(0);
-		//boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
-		Document doc = textArea.getDocument();
-		Element root = doc.getDefaultRootElement();
-		int lineCount = root.getElementCount();
-		int topPosition = textArea.viewToModel(
-								new Point(visibleRect.x,visibleRect.y));
+		final RTextAreaUI ui = (RTextAreaUI) this.textArea.getUI();
+		final View v = ui.getRootView(this.textArea).getView(0);
+		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
+		final Document doc = this.textArea.getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineCount = root.getElementCount();
+		final int topPosition = this.textArea.viewToModel(new Point(visibleRect.x, visibleRect.y));
 		int topLine = root.getElementIndex(topPosition);
 		FoldManager fm = null;
-		if (textArea instanceof RSyntaxTextArea) {
-			fm = ((RSyntaxTextArea)textArea).getFoldManager();
-		}
+		if (this.textArea instanceof RSyntaxTextArea)
+			fm = ((RSyntaxTextArea) this.textArea).getFoldManager();
 
 		// Compute the y at which to begin painting text, taking into account
 		// that 1 logical line => at least 1 physical line, so it may be that
-		// y<0.  The computed y-value is the y-value of the top of the first
+		// y<0. The computed y-value is the y-value of the top of the first
 		// (possibly) partially-visible view.
-		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
-		Rectangle r = LineNumberList.getChildViewBounds(v, topLine,
-												visibleEditorRect);
+		final Rectangle visibleEditorRect = ui.getVisibleEditorRect();
+		Rectangle r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
-		final int rhsBorderWidth = getRhsBorderWidth();
+		final int rhsBorderWidth = this.getRhsBorderWidth();
 		int rhs;
-		boolean ltr = getComponentOrientation().isLeftToRight();
-		if (ltr) {
+		final boolean ltr = this.getComponentOrientation().isLeftToRight();
+		if (ltr)
 			rhs = width - rhsBorderWidth;
-		}
-		else { // rtl
+		else
 			rhs = rhsBorderWidth;
-		}
-		int visibleBottom = visibleRect.y + visibleRect.height;
-		FontMetrics metrics = g.getFontMetrics();
+		final int visibleBottom = visibleRect.y + visibleRect.height;
+		final FontMetrics metrics = g.getFontMetrics();
 
 		// Keep painting lines until our y-coordinate is past the visible
 		// end of the text area.
-		g.setColor(getForeground());
+		g.setColor(this.getForeground());
 
 		while (y < visibleBottom) {
 
-			r = LineNumberList.getChildViewBounds(v, topLine, visibleEditorRect);
+			r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 
 			/*
-			// Highlight the current line's line number, if desired.
-			if (currentLineHighlighted && topLine==currentLine) {
-				g.setColor(textArea.getCurrentLineHighlightColor());
-				g.fillRect(0,y, width,(r.y+r.height)-y);
-				g.setColor(getForeground());
-			}
-			*/
+			 * // Highlight the current line's line number, if desired. if
+			 * (currentLineHighlighted && topLine==currentLine) {
+			 * g.setColor(textArea.getCurrentLineHighlightColor()); g.fillRect(0,y,
+			 * width,(r.y+r.height)-y); g.setColor(getForeground()); }
+			 */
 
 			// Paint the line number.
-			int index = (topLine+1) + getLineNumberingStartIndex() - 1;
-			String number = Integer.toString(index);
+			final int index = topLine + 1 + this.getLineNumberingStartIndex() - 1;
+			final String number = Integer.toString(index);
 			if (ltr) {
-				int strWidth = metrics.stringWidth(number);
-				g.drawString(number, rhs-strWidth,y+ascent);
-			}
-			else {
-				int x = rhsBorderWidth;
-				g.drawString(number, x, y+ascent);
+				final int strWidth = metrics.stringWidth(number);
+				g.drawString(number, rhs - strWidth, y + this.ascent);
+			} else {
+				final int x = rhsBorderWidth;
+				g.drawString(number, x, y + this.ascent);
 			}
 
 			// The next possible y-coordinate is just after the last line
@@ -517,21 +554,18 @@ public class LineNumberList extends AbstractGutterComponent
 
 			// Update topLine (we're actually using it for our "current line"
 			// variable now).
-			if (fm!=null) {
-				Fold fold = fm.getFoldForLine(topLine);
-				if (fold!=null && fold.isCollapsed()) {
+			if (fm != null) {
+				final Fold fold = fm.getFoldForLine(topLine);
+				if (fold != null && fold.isCollapsed())
 					topLine += fold.getCollapsedLineCount();
-				}
 			}
 			topLine++;
-			if (topLine>=lineCount) {
+			if (topLine >= lineCount)
 				break;
-			}
 
 		}
 
 	}
-
 
 	/**
 	 * Called when this component is removed from the view hierarchy.
@@ -539,211 +573,122 @@ public class LineNumberList extends AbstractGutterComponent
 	@Override
 	public void removeNotify() {
 		super.removeNotify();
-		if (textArea!=null) {
-			l.uninstall(textArea);
-		}
+		if (this.textArea != null)
+			this.l.uninstall(this.textArea);
 	}
-
 
 	/**
 	 * Repaints a single line in this list.
 	 *
-	 * @param line The line to repaint.
+	 * @param line
+	 *            The line to repaint.
 	 */
-	private void repaintLine(int line) {
-		int y = textArea.getInsets().top;
-		y += line*cellHeight;
-		repaint(0,y, cellWidth,cellHeight);
+	private void repaintLine(final int line) {
+		int y = this.textArea.getInsets().top;
+		y += line * this.cellHeight;
+		this.repaint(0, y, this.cellWidth, this.cellHeight);
 	}
 
-
 	/**
-	 * Overridden to ensure line number cell sizes are updated with the
-	 * font size change.
+	 * Overridden to ensure line number cell sizes are updated with the font size
+	 * change.
 	 *
-	 * @param font The new font to use for line numbers.
+	 * @param font
+	 *            The new font to use for line numbers.
 	 */
 	@Override
-	public void setFont(Font font) {
+	public void setFont(final Font font) {
 		super.setFont(font);
-		updateCellWidths();
-		updateCellHeights();
+		this.updateCellWidths();
+		this.updateCellHeights();
 	}
-
 
 	/**
-	 * Sets the starting line's line number.  The default value is
-	 * <code>1</code>.  Applications can call this method to change this value
-	 * if they are displaying a subset of lines in a file, for example.
+	 * Sets the starting line's line number. The default value is <code>1</code>.
+	 * Applications can call this method to change this value if they are displaying
+	 * a subset of lines in a file, for example.
 	 *
-	 * @param index The new index.
+	 * @param index
+	 *            The new index.
 	 * @see #getLineNumberingStartIndex()
 	 */
-	public void setLineNumberingStartIndex(int index) {
-		if (index!=lineNumberingStartIndex) {
-			lineNumberingStartIndex = index;
-			updateCellWidths();
-			repaint();
+	public void setLineNumberingStartIndex(final int index) {
+		if (index != this.lineNumberingStartIndex) {
+			this.lineNumberingStartIndex = index;
+			this.updateCellWidths();
+			this.repaint();
 		}
 	}
-
 
 	/**
 	 * Sets the text area being displayed.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 */
 	@Override
-	public void setTextArea(RTextArea textArea) {
+	public void setTextArea(final RTextArea textArea) {
 
-		if (l==null) {
-			l = new Listener();
-		}
+		if (this.l == null)
+			this.l = new Listener();
 
-		if (this.textArea!=null) {
-			l.uninstall(textArea);
-		}
+		if (this.textArea != null)
+			this.l.uninstall(textArea);
 
 		super.setTextArea(textArea);
-		lastVisibleLine = calculateLastVisibleLineNumber();
+		this.lastVisibleLine = this.calculateLastVisibleLineNumber();
 
-		if (textArea!=null) {
-			l.install(textArea); // Won't double-install
-			updateCellHeights();
-			updateCellWidths();
+		if (textArea != null) {
+			this.l.install(textArea); // Won't double-install
+			this.updateCellHeights();
+			this.updateCellWidths();
 		}
 
 	}
-
 
 	/**
 	 * Changes the height of the cells in the JList so that they are as tall as
-	 * font. This function should be called whenever the user changes the Font
-	 * of <code>textArea</code>.
+	 * font. This function should be called whenever the user changes the Font of
+	 * <code>textArea</code>.
 	 */
 	private void updateCellHeights() {
-		if (textArea!=null) {
-			cellHeight = textArea.getLineHeight();
-			ascent = textArea.getMaxAscent();
+		if (this.textArea != null) {
+			this.cellHeight = this.textArea.getLineHeight();
+			this.ascent = this.textArea.getMaxAscent();
+		} else {
+			this.cellHeight = 20; // Arbitrary number.
+			this.ascent = 5; // Also arbitrary
 		}
-		else {
-			cellHeight = 20; // Arbitrary number.
-			ascent = 5; // Also arbitrary
-		}
-		repaint();
+		this.repaint();
 	}
 
-
 	/**
-	 * Changes the width of the cells in the JList so you can see every digit
-	 * of each.
+	 * Changes the width of the cells in the JList so you can see every digit of
+	 * each.
 	 */
 	void updateCellWidths() {
 
-		int oldCellWidth = cellWidth;
-		cellWidth = getRhsBorderWidth();
+		final int oldCellWidth = this.cellWidth;
+		this.cellWidth = this.getRhsBorderWidth();
 
 		// Adjust the amount of space the line numbers take up, if necessary.
-		if (textArea!=null) {
-			Font font = getFont();
-			if (font!=null) {
-				FontMetrics fontMetrics = getFontMetrics(font);
+		if (this.textArea != null) {
+			final Font font = this.getFont();
+			if (font != null) {
+				final FontMetrics fontMetrics = this.getFontMetrics(font);
 				int count = 0;
-				int lineCount = textArea.getLineCount() +
-						getLineNumberingStartIndex() - 1;
+				int lineCount = this.textArea.getLineCount() + this.getLineNumberingStartIndex() - 1;
 				do {
-					lineCount = lineCount/10;
+					lineCount = lineCount / 10;
 					count++;
 				} while (lineCount >= 10);
-				cellWidth += fontMetrics.charWidth('9')*(count+1) + 3;
+				this.cellWidth += fontMetrics.charWidth('9') * (count + 1) + 3;
 			}
 		}
 
-		if (cellWidth!=oldCellWidth) { // Always true
-			revalidate();
-		}
+		if (this.cellWidth != oldCellWidth)
+			this.revalidate();
 
 	}
-
-
-	/**
-	 * Listens for events in the text area we're interested in.
-	 */
-	private class Listener implements CaretListener, PropertyChangeListener {
-
-		private boolean installed;
-
-		@Override
-		public void caretUpdate(CaretEvent e) {
-
-			int dot = textArea.getCaretPosition();
-
-			// We separate the line wrap/no line wrap cases because word wrap
-			// can make a single line from the model (document) be on multiple
-			// lines on the screen (in the view); thus, we have to enhance the
-			// logic for that case a bit - we check the actual y-coordinate of
-			// the caret when line wrap is enabled.  For the no-line-wrap case,
-			// getting the line number of the caret suffices.  This increases
-			// efficiency in the no-line-wrap case.
-
-			if (!textArea.getLineWrap()) {
-				int line = textArea.getDocument().getDefaultRootElement().
-										getElementIndex(dot);
-				if (currentLine!=line) {
-					repaintLine(line);
-					repaintLine(currentLine);
-					currentLine = line;
-				}
-			}
-			else { // lineWrap enabled; must check actual y position of caret
-				try {
-					int y = textArea.yForLineContaining(dot);
-					if (y!=lastY) {
-						lastY = y;
-						currentLine = textArea.getDocument().
-								getDefaultRootElement().getElementIndex(dot);
-						repaint(); // *Could* be optimized...
-					}
-				} catch (BadLocationException ble) {
-					ble.printStackTrace();
-				}
-			}
-
-		}
-
-		public void install(RTextArea textArea) {
-			if (!installed) {
-				//System.out.println("Installing");
-				textArea.addCaretListener(this);
-				textArea.addPropertyChangeListener(this);
-				caretUpdate(null); // Force current line highlight repaint
-				installed = true;
-			}
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent e) {
-
-			String name = e.getPropertyName();
-
-			// If they change the current line highlight in any way...
-			if (RTextArea.HIGHLIGHT_CURRENT_LINE_PROPERTY.equals(name) ||
-				RTextArea.CURRENT_LINE_HIGHLIGHT_COLOR_PROPERTY.equals(name)) {
-				repaintLine(currentLine);
-			}
-
-		}
-
-		public void uninstall(RTextArea textArea) {
-			if (installed) {
-				//System.out.println("Uninstalling");
-				textArea.removeCaretListener(this);
-				textArea.removePropertyChangeListener(this);
-				installed = false;
-			}
-		}
-
-	}
-
 
 }

@@ -8,7 +8,6 @@
  */
 package org.fife.ui.rsyntaxtextarea;
 
-
 /**
  * A range of text in a document.
  *
@@ -17,60 +16,57 @@ package org.fife.ui.rsyntaxtextarea;
  */
 public class DocumentRange implements Comparable<DocumentRange> {
 
-	private int startOffs;
 	private int endOffs;
-
+	private int startOffs;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param startOffs The starting offset in the document, inclusive.
-	 * @param endOffs The ending offset in the document, exclusive.
-	 * @throws IllegalArgumentException If <code>endOffs</code> is less than
-	 *         <code>startOffs</code>, or either argument is less than zero.
+	 * @param startOffs
+	 *            The starting offset in the document, inclusive.
+	 * @param endOffs
+	 *            The ending offset in the document, exclusive.
+	 * @throws IllegalArgumentException
+	 *             If <code>endOffs</code> is less than <code>startOffs</code>, or
+	 *             either argument is less than zero.
 	 */
-	public DocumentRange(int startOffs, int endOffs) {
-		set(startOffs, endOffs);
+	public DocumentRange(final int startOffs, final int endOffs) {
+		this.set(startOffs, endOffs);
 	}
-
 
 	/**
 	 * Compares this document range to another.
 	 *
-	 * @param other Another document range.
+	 * @param other
+	 *            Another document range.
 	 * @return How the two should be sorted relative to each other.
 	 */
 	@Override
-	public int compareTo(DocumentRange other) {
-		if (other==null) {
+	public int compareTo(final DocumentRange other) {
+		if (other == null)
 			return 1;
-		}
-		int diff = startOffs - other.startOffs;
-		if (diff!=0) {
+		final int diff = this.startOffs - other.startOffs;
+		if (diff != 0)
 			return diff;
-		}
-		return endOffs - other.endOffs;
+		return this.endOffs - other.endOffs;
 	}
-
 
 	/**
 	 * Returns whether this document range is equal to another one.
 	 *
-	 * @param other Another object, presumably a document range.
-	 * @return Whether <code>other</code> is also a document range, and equal
-	 *         to this one.
+	 * @param other
+	 *            Another object, presumably a document range.
+	 * @return Whether <code>other</code> is also a document range, and equal to
+	 *         this one.
 	 */
 	@Override
-	public boolean equals(Object other) {
-		if (other==this) {
+	public boolean equals(final Object other) {
+		if (other == this)
 			return true;
-		}
-		if (other instanceof DocumentRange) {
-			return this.compareTo((DocumentRange)other)==0;
-		}
+		if (other instanceof DocumentRange)
+			return this.compareTo((DocumentRange) other) == 0;
 		return false;
 	}
-
 
 	/**
 	 * Gets the end offset of the range.
@@ -79,9 +75,8 @@ public class DocumentRange implements Comparable<DocumentRange> {
 	 * @see #getStartOffset()
 	 */
 	public int getEndOffset() {
-		return endOffs;
+		return this.endOffs;
 	}
-
 
 	/**
 	 * Gets the starting offset of the range.
@@ -90,9 +85,8 @@ public class DocumentRange implements Comparable<DocumentRange> {
 	 * @see #getEndOffset()
 	 */
 	public int getStartOffset() {
-		return startOffs;
+		return this.startOffs;
 	}
-
 
 	/**
 	 * Overridden simply as a best practice, since {@link #equals(Object)} is
@@ -102,45 +96,39 @@ public class DocumentRange implements Comparable<DocumentRange> {
 	 */
 	@Override
 	public int hashCode() {
-		return startOffs + endOffs;
+		return this.startOffs + this.endOffs;
 	}
 
-
 	/**
-	 * Returns whether this document range has zero length.  This can happen,
-	 * for example, with regex searches of forms like
-	 * <code>"foo|"</code>, where the right-hand sub-expression matches empty
-	 * strings.
+	 * Returns whether this document range has zero length. This can happen, for
+	 * example, with regex searches of forms like <code>"foo|"</code>, where the
+	 * right-hand sub-expression matches empty strings.
 	 *
 	 * @return Whether this document range has zero length.
 	 */
 	public boolean isZeroLength() {
-		return startOffs == endOffs;
+		return this.startOffs == this.endOffs;
 	}
-
 
 	/**
 	 * Sets the document range.
 	 *
-	 * @param start The new start value, inclusive.
-	 * @param end The new end value, exclusive.
-	 * @throws IllegalArgumentException If <code>end</code> is less than
-	 *         <code>start</code>, or either argument is less than zero.
+	 * @param start
+	 *            The new start value, inclusive.
+	 * @param end
+	 *            The new end value, exclusive.
+	 * @throws IllegalArgumentException
+	 *             If <code>end</code> is less than <code>start</code>, or either
+	 *             argument is less than zero.
 	 */
-	public void set(int start, int end) {
-		if (start<0 || end<0) {
-			throw new IllegalArgumentException(
-					"start and end must be >= 0 (" + start + "-" + end + ")");
-		}
-		if (end<start) {
-			throw new IllegalArgumentException(
-					"'end' cannot be less than 'start' (" +
-					start + "-" + end + ")");
-		}
+	public void set(final int start, final int end) {
+		if (start < 0 || end < 0)
+			throw new IllegalArgumentException("start and end must be >= 0 (" + start + "-" + end + ")");
+		if (end < start)
+			throw new IllegalArgumentException("'end' cannot be less than 'start' (" + start + "-" + end + ")");
 		this.startOffs = start;
 		this.endOffs = end;
 	}
-
 
 	/**
 	 * Returns a string representation of this object.
@@ -149,21 +137,20 @@ public class DocumentRange implements Comparable<DocumentRange> {
 	 */
 	@Override
 	public String toString() {
-		return "[DocumentRange: " + startOffs + "-" + endOffs + "]";
+		return "[DocumentRange: " + this.startOffs + "-" + this.endOffs + "]";
 	}
-
 
 	/**
 	 * Translates this document range by a given amount.
 	 *
-	 * @param amount The amount to translate this range by.
+	 * @param amount
+	 *            The amount to translate this range by.
 	 * @return This (modified) range.
 	 */
-	public DocumentRange translate(int amount) {
-		startOffs += amount;
-		endOffs += amount;
+	public DocumentRange translate(final int amount) {
+		this.startOffs += amount;
+		this.endOffs += amount;
 		return this;
 	}
-
 
 }

@@ -8,11 +8,10 @@
  */
 package org.fife.ui.rsyntaxtextarea;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-
 
 /**
  * The location of a file at a (remote) URL.
@@ -23,46 +22,44 @@ import java.net.URL;
 class URLFileLocation extends FileLocation {
 
 	/**
-	 * URL of the remote file.
-	 */
-	private URL url;
-
-	/**
 	 * A prettied-up full path of the URL (password removed, etc.).
 	 */
-	private String fileFullPath;
+	private final String fileFullPath;
 
 	/**
 	 * A prettied-up filename (leading slash, and possibly "<code>%2F</code>",
 	 * removed).
 	 */
-	private String fileName;
+	private final String fileName;
 
+	/**
+	 * URL of the remote file.
+	 */
+	private final URL url;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param url The URL of the file.
+	 * @param url
+	 *            The URL of the file.
 	 */
-	URLFileLocation(URL url) {
+	URLFileLocation(final URL url) {
 		this.url = url;
-		fileFullPath = createFileFullPath();
-		fileName = createFileName();
+		this.fileFullPath = this.createFileFullPath();
+		this.fileName = this.createFileName();
 	}
 
-
 	/**
-	 * Creates a "prettied-up" URL to use.  This will be stripped of
-	 * sensitive information such as passwords.
+	 * Creates a "prettied-up" URL to use. This will be stripped of sensitive
+	 * information such as passwords.
 	 *
 	 * @return The full path to use.
 	 */
 	private String createFileFullPath() {
-		String fullPath = url.toString();
+		String fullPath = this.url.toString();
 		fullPath = fullPath.replaceFirst("://([^:]+)(?:.+)@", "://$1@");
 		return fullPath;
 	}
-
 
 	/**
 	 * Creates the "prettied-up" filename to use.
@@ -70,23 +67,20 @@ class URLFileLocation extends FileLocation {
 	 * @return The base name of the file of this URL.
 	 */
 	private String createFileName() {
-		String fileName = url.getPath();
-		if (fileName.startsWith("/%2F/")) { // Absolute path
+		String fileName = this.url.getPath();
+		if (fileName.startsWith("/%2F/"))
 			fileName = fileName.substring(4);
-		}
-		else if (fileName.startsWith("/")) { // All others
+		else if (fileName.startsWith("/"))
 			fileName = fileName.substring(1);
-		}
 		return fileName;
 	}
 
-
 	/**
 	 * Returns the last time this file was modified, or
-	 * {@link TextEditorPane#LAST_MODIFIED_UNKNOWN} if this value cannot be
-	 * computed (such as for a remote file).
+	 * {@link TextEditorPane#LAST_MODIFIED_UNKNOWN} if this value cannot be computed
+	 * (such as for a remote file).
 	 *
-	 * @return The last time this file was modified.  This will always be
+	 * @return The last time this file was modified. This will always be
 	 *         {@link TextEditorPane#LAST_MODIFIED_UNKNOWN} for URL's.
 	 */
 	@Override
@@ -94,42 +88,37 @@ class URLFileLocation extends FileLocation {
 		return TextEditorPane.LAST_MODIFIED_UNKNOWN;
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getFileFullPath() {
-		return fileFullPath;
+		return this.fileFullPath;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public String getFileName() {
-		return fileName;
+		return this.fileName;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected InputStream getInputStream() throws IOException {
-		return url.openStream();
+		return this.url.openStream();
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected OutputStream getOutputStream() throws IOException {
-		return url.openConnection().getOutputStream();
+		return this.url.openConnection().getOutputStream();
 	}
-
 
 	/**
 	 * Returns whether this file location is a local file.
@@ -139,14 +128,13 @@ class URLFileLocation extends FileLocation {
 	 */
 	@Override
 	public boolean isLocal() {
-		return "file".equalsIgnoreCase(url.getProtocol());
+		return "file".equalsIgnoreCase(this.url.getProtocol());
 	}
 
-
 	/**
-	 * Returns whether this file location is a local file and already
-	 * exists.  This method always returns <code>false</code> since we
-	 * cannot check this value easily.
+	 * Returns whether this file location is a local file and already exists. This
+	 * method always returns <code>false</code> since we cannot check this value
+	 * easily.
 	 *
 	 * @return <code>false</code> always.
 	 * @see #isLocal()
@@ -155,6 +143,5 @@ class URLFileLocation extends FileLocation {
 	public boolean isLocalAndExists() {
 		return false;
 	}
-
 
 }

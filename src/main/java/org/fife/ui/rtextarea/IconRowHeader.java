@@ -32,17 +32,18 @@ import javax.swing.text.Element;
 import javax.swing.text.Position;
 import javax.swing.text.View;
 
-
 /**
- * Renders icons in the {@link Gutter}.  This can be used to visually mark
- * lines containing syntax errors, lines with breakpoints set on them, etc.<p>
+ * Renders icons in the {@link Gutter}. This can be used to visually mark lines
+ * containing syntax errors, lines with breakpoints set on them, etc.
+ * <p>
  *
  * This component has built-in support for displaying icons representing
  * "bookmarks;" that is, lines a user can cycle through via F2 and Shift+F2.
- * Bookmarked lines are toggled via Ctrl+F2, or by clicking in the icon area
- * at the line to bookmark.  In order to enable bookmarking, you must first
- * assign an icon to represent a bookmarked line, then actually enable the
- * feature.  This is actually done on the parent {@link Gutter} component:<p>
+ * Bookmarked lines are toggled via Ctrl+F2, or by clicking in the icon area at
+ * the line to bookmark. In order to enable bookmarking, you must first assign
+ * an icon to represent a bookmarked line, then actually enable the feature.
+ * This is actually done on the parent {@link Gutter} component:
+ * <p>
  *
  * <pre>
  * Gutter gutter = scrollPane.getGutter();
@@ -57,47 +58,58 @@ import javax.swing.text.View;
 public class IconRowHeader extends AbstractGutterComponent implements MouseListener {
 
 	/**
-	 * The icons to render.
+	 * Implementation of the icons rendered.
 	 */
-	protected List<GutterIconImpl> trackingIcons;
+	private static class GutterIconImpl implements GutterIconInfo, Comparable<GutterIconInfo> {
+
+		private final Icon icon;
+		private final Position pos;
+		private final String toolTip;
+
+		GutterIconImpl(final Icon icon, final Position pos, final String toolTip) {
+			this.icon = icon;
+			this.pos = pos;
+			this.toolTip = toolTip;
+		}
+
+		@Override
+		public int compareTo(final GutterIconInfo other) {
+			if (other != null)
+				return this.pos.getOffset() - other.getMarkedOffset();
+			return -1;
+		}
+
+		@Override
+		public boolean equals(final Object o) {
+			return o == this;
+		}
+
+		@Override
+		public Icon getIcon() {
+			return this.icon;
+		}
+
+		@Override
+		public int getMarkedOffset() {
+			return this.pos.getOffset();
+		}
+
+		@Override
+		public String getToolTip() {
+			return this.toolTip;
+		}
+
+		@Override
+		public int hashCode() {
+			return this.icon.hashCode(); // FindBugs
+		}
+
+	}
 
 	/**
-	 * The width of this component.
+	 *
 	 */
-	protected int width;
-
-	/**
-	 * Whether this component listens for mouse clicks and toggles "bookmark"
-	 * icons on them.
-	 */
-	private boolean bookmarkingEnabled;
-
-	/**
-	 * The icon to use for bookmarks.
-	 */
-	private Icon bookmarkIcon;
-
-	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on
-	 * each paint.
-	 */
-	protected Rectangle visibleRect;
-
-	/**
-	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on
-	 * each paint.
-	 */
-	protected Insets textAreaInsets;
-
-	/**
-	 * The first line in the active line range.
-	 */
-	protected int activeLineRangeStart;
-
-	/**
-	 * The end line in the active line range.
-	 */
-	protected int activeLineRangeEnd;
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The color used to highlight the active code block.
@@ -105,78 +117,118 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	private Color activeLineRangeColor;
 
 	/**
-	 * Whether this component should use the gutter's background color (as
-	 * opposed to using a LookAndFeel-dependent color, which is the default
-	 * behavior).
+	 * The end line in the active line range.
+	 */
+	protected int activeLineRangeEnd;
+
+	/**
+	 * The first line in the active line range.
+	 */
+	protected int activeLineRangeStart;
+
+	/**
+	 * The icon to use for bookmarks.
+	 */
+	private Icon bookmarkIcon;
+
+	/**
+	 * Whether this component listens for mouse clicks and toggles "bookmark" icons
+	 * on them.
+	 */
+	private boolean bookmarkingEnabled;
+
+	/**
+	 * Whether this component should use the gutter's background color (as opposed
+	 * to using a LookAndFeel-dependent color, which is the default behavior).
 	 */
 	private boolean inheritsGutterBackground;
 
+	/**
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
+	 */
+	protected Insets textAreaInsets;
+
+	/**
+	 * The icons to render.
+	 */
+	protected List<GutterIconImpl> trackingIcons;
+
+	/**
+	 * Used in {@link #paintComponent(Graphics)} to prevent reallocation on each
+	 * paint.
+	 */
+	protected Rectangle visibleRect;
+
+	/**
+	 * The width of this component.
+	 */
+	protected int width;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param textArea The parent text area.
+	 * @param textArea
+	 *            The parent text area.
 	 */
-	public IconRowHeader(RTextArea textArea) {
+	public IconRowHeader(final RTextArea textArea) {
 		super(textArea);
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param offs The offset to track.
-	 * @param icon The icon to display.  This should be small (say 16x16).
+	 * @param offs
+	 *            The offset to track.
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #removeTrackingIcon(Object)
 	 */
-	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon)
-												throws BadLocationException {
-		return addOffsetTrackingIcon(offs, icon, null);
+	public GutterIconInfo addOffsetTrackingIcon(final int offs, final Icon icon) throws BadLocationException {
+		return this.addOffsetTrackingIcon(offs, icon, null);
 	}
 
-
 	/**
-	 * Adds an icon that tracks an offset in the document, and is displayed
-	 * adjacent to the line numbers.  This is useful for marking things such
-	 * as source code errors.
+	 * Adds an icon that tracks an offset in the document, and is displayed adjacent
+	 * to the line numbers. This is useful for marking things such as source code
+	 * errors.
 	 *
-	 * @param offs The offset to track.
-	 * @param icon The icon to display.  This should be small (say 16x16).
-	 * @param tip A tool tip for the icon.
+	 * @param offs
+	 *            The offset to track.
+	 * @param icon
+	 *            The icon to display. This should be small (say 16x16).
+	 * @param tip
+	 *            A tool tip for the icon.
 	 * @return A tag for this icon.
-	 * @throws BadLocationException If <code>offs</code> is an invalid offset
-	 *         into the text area.
+	 * @throws BadLocationException
+	 *             If <code>offs</code> is an invalid offset into the text area.
 	 * @see #removeTrackingIcon(Object)
 	 */
-	public GutterIconInfo addOffsetTrackingIcon(int offs, Icon icon, String tip)
-												throws BadLocationException {
+	public GutterIconInfo addOffsetTrackingIcon(final int offs, final Icon icon, final String tip)
+			throws BadLocationException {
 		// Despite its documentation, AbstractDocument does *not* throw BLEs
 		// when creating sticky positions for offsets that do not exist.
 		// We must check for that ourselves.
-		if (offs < 0 || offs > textArea.getDocument().getLength()) {
-			throw new BadLocationException("Offset " + offs + " not in " +
-				"required range of 0-" + textArea.getDocument().getLength(),
-				offs);
-		}
-		Position pos = textArea.getDocument().createPosition(offs);
-		GutterIconImpl ti = new GutterIconImpl(icon, pos, tip);
-		if (trackingIcons==null) {
-			trackingIcons = new ArrayList<GutterIconImpl>(1); // Usually small
-		}
-		int index = Collections.binarySearch(trackingIcons, ti);
-		if (index<0) {
-			index = -(index+1);
-		}
-		trackingIcons.add(index, ti);
-		repaint();
+		if (offs < 0 || offs > this.textArea.getDocument().getLength())
+			throw new BadLocationException(
+					"Offset " + offs + " not in " + "required range of 0-" + this.textArea.getDocument().getLength(),
+					offs);
+		final Position pos = this.textArea.getDocument().createPosition(offs);
+		final GutterIconImpl ti = new GutterIconImpl(icon, pos, tip);
+		if (this.trackingIcons == null)
+			this.trackingIcons = new ArrayList<>(1); // Usually small
+		int index = Collections.binarySearch(this.trackingIcons, ti);
+		if (index < 0)
+			index = -(index + 1);
+		this.trackingIcons.add(index, ti);
+		this.repaint();
 		return ti;
 	}
-
 
 	/**
 	 * Clears the active line range.
@@ -184,12 +236,11 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @see #setActiveLineRange(int, int)
 	 */
 	public void clearActiveLineRange() {
-		if (activeLineRangeStart!=-1 || activeLineRangeEnd!=-1) {
-			activeLineRangeStart = activeLineRangeEnd = -1;
-			repaint();
+		if (this.activeLineRangeStart != -1 || this.activeLineRangeEnd != -1) {
+			this.activeLineRangeStart = this.activeLineRangeEnd = -1;
+			this.repaint();
 		}
 	}
-
 
 	/**
 	 * Returns the color used to paint the active line range, if any.
@@ -198,155 +249,141 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @see #setActiveLineRangeColor(Color)
 	 */
 	public Color getActiveLineRangeColor() {
-		return activeLineRangeColor;
+		return this.activeLineRangeColor;
 	}
-
 
 	/**
 	 * Returns the icon to use for bookmarks.
 	 *
-	 * @return The icon to use for bookmarks.  If this is <code>null</code>,
+	 * @return The icon to use for bookmarks. If this is <code>null</code>,
 	 *         bookmarking is effectively disabled.
 	 * @see #setBookmarkIcon(Icon)
 	 * @see #isBookmarkingEnabled()
 	 */
 	public Icon getBookmarkIcon() {
-		return bookmarkIcon;
+		return this.bookmarkIcon;
 	}
-
 
 	/**
 	 * Returns the bookmarks known to this gutter.
 	 *
-	 * @return The bookmarks.  If there are no bookmarks, an empty array is
-	 *         returned.
+	 * @return The bookmarks. If there are no bookmarks, an empty array is returned.
 	 */
 	public GutterIconInfo[] getBookmarks() {
 
-		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
+		final List<GutterIconInfo> retVal = new ArrayList<>(1);
 
-		if (trackingIcons!=null) {
-			for (int i=0; i<trackingIcons.size(); i++) {
-				GutterIconImpl ti = getTrackingIcon(i);
-				if (ti.getIcon()==bookmarkIcon) {
+		if (this.trackingIcons != null)
+			for (int i = 0; i < this.trackingIcons.size(); i++) {
+				final GutterIconImpl ti = this.getTrackingIcon(i);
+				if (ti.getIcon() == this.bookmarkIcon)
 					retVal.add(ti);
-				}
 			}
-		}
 
-		GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
+		final GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
 		return retVal.toArray(array);
 
 	}
-
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	void handleDocumentEvent(DocumentEvent e) {
-		int newLineCount = textArea.getLineCount();
-		if (newLineCount!=currentLineCount) {
-			currentLineCount = newLineCount;
-			repaint();
-		}
-	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		int h = textArea!=null ? textArea.getHeight() : 100; // Arbitrary
-		return new Dimension(width, h);
+		final int h = this.textArea != null ? this.textArea.getHeight() : 100; // Arbitrary
+		return new Dimension(this.width, h);
 	}
-
 
 	/**
 	 * Overridden to display the tool tip of any icons on this line.
 	 *
-	 * @param e The location the mouse is hovering over.
+	 * @param e
+	 *            The location the mouse is hovering over.
 	 */
 	@Override
-	public String getToolTipText(MouseEvent e) {
+	public String getToolTipText(final MouseEvent e) {
 		try {
-			int line = viewToModelLine(e.getPoint());
-			if (line>-1) {
-				GutterIconInfo[] infos = getTrackingIcons(line);
-				if (infos.length>0) {
+			final int line = this.viewToModelLine(e.getPoint());
+			if (line > -1) {
+				final GutterIconInfo[] infos = this.getTrackingIcons(line);
+				if (infos.length > 0)
 					// TODO: Display all messages?
-					return infos[infos.length-1].getToolTip();
-				}
+					return infos[infos.length - 1].getToolTip();
 			}
-		} catch (BadLocationException ble) {
+		} catch (final BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
 		return null;
 	}
 
-
-	protected GutterIconImpl getTrackingIcon(int index) {
-		return trackingIcons.get(index);
+	protected GutterIconImpl getTrackingIcon(final int index) {
+		return this.trackingIcons.get(index);
 	}
-
 
 	/**
 	 * Returns the tracking icons at the specified line.
 	 *
-	 * @param line The line.
-	 * @return The tracking icons at that line.  If there are no tracking
-	 *         icons there, this will be an empty array.
-	 * @throws BadLocationException If <code>line</code> is invalid.
+	 * @param line
+	 *            The line.
+	 * @return The tracking icons at that line. If there are no tracking icons
+	 *         there, this will be an empty array.
+	 * @throws BadLocationException
+	 *             If <code>line</code> is invalid.
 	 */
-	public GutterIconInfo[] getTrackingIcons(int line)
-								throws BadLocationException {
+	public GutterIconInfo[] getTrackingIcons(final int line) throws BadLocationException {
 
-		List<GutterIconInfo> retVal = new ArrayList<GutterIconInfo>(1);
+		final List<GutterIconInfo> retVal = new ArrayList<>(1);
 
-		if (trackingIcons!=null) {
-			int start = textArea.getLineStartOffset(line);
-			int end = textArea.getLineEndOffset(line);
-			if (line==textArea.getLineCount()-1) {
+		if (this.trackingIcons != null) {
+			final int start = this.textArea.getLineStartOffset(line);
+			int end = this.textArea.getLineEndOffset(line);
+			if (line == this.textArea.getLineCount() - 1)
 				end++; // Hack
-			}
-			for (int i=0; i<trackingIcons.size(); i++) {
-				GutterIconImpl ti = getTrackingIcon(i);
-				int offs = ti.getMarkedOffset();
-				if (offs>=start && offs<end) {
+			for (int i = 0; i < this.trackingIcons.size(); i++) {
+				final GutterIconImpl ti = this.getTrackingIcon(i);
+				final int offs = ti.getMarkedOffset();
+				if (offs >= start && offs < end)
 					retVal.add(ti);
-				}
-				else if (offs>=end) {
+				else if (offs >= end)
 					break; // Quit early
-				}
 			}
 		}
 
-		GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
+		final GutterIconInfo[] array = new GutterIconInfo[retVal.size()];
 		return retVal.toArray(array);
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void handleDocumentEvent(final DocumentEvent e) {
+		final int newLineCount = this.textArea.getLineCount();
+		if (newLineCount != this.currentLineCount) {
+			this.currentLineCount = newLineCount;
+			this.repaint();
+		}
+	}
 
 	@Override
 	protected void init() {
 
 		super.init();
 
-		visibleRect = new Rectangle();
-		width = 16;
-		addMouseListener(this);
-		activeLineRangeStart = activeLineRangeEnd = -1;
-		setActiveLineRangeColor(null);
+		this.visibleRect = new Rectangle();
+		this.width = 16;
+		this.addMouseListener(this);
+		this.activeLineRangeStart = this.activeLineRangeEnd = -1;
+		this.setActiveLineRangeColor(null);
 
 		// Must explicitly set our background color, otherwise we inherit that
 		// of the parent Gutter.
-		updateBackground();
+		this.updateBackground();
 
 		ToolTipManager.sharedInstance().registerComponent(this);
 
 	}
-
 
 	/**
 	 * Returns whether bookmarking is enabled.
@@ -355,287 +392,263 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @see #setBookmarkingEnabled(boolean)
 	 */
 	public boolean isBookmarkingEnabled() {
-		return bookmarkingEnabled;
+		return this.bookmarkingEnabled;
 	}
-
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	void lineHeightsChanged() {
-		repaint();
+		this.repaint();
 	}
 
-
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mouseClicked(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(final MouseEvent e) {
 	}
 
-
 	@Override
-	public void mousePressed(MouseEvent e) {
-		if (bookmarkingEnabled && bookmarkIcon!=null) {
+	public void mousePressed(final MouseEvent e) {
+		if (this.bookmarkingEnabled && this.bookmarkIcon != null)
 			try {
-				int line = viewToModelLine(e.getPoint());
-				if (line>-1) {
-					toggleBookmark(line);
-				}
-			} catch (BadLocationException ble) {
+				final int line = this.viewToModelLine(e.getPoint());
+				if (line > -1)
+					this.toggleBookmark(line);
+			} catch (final BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 			}
-		}
 	}
-
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(final MouseEvent e) {
 	}
 
+	/**
+	 * Paints the background of this component.
+	 *
+	 * @param g
+	 *            The graphics context.
+	 * @param visibleRect
+	 *            The visible bounds of this component.
+	 */
+	protected void paintBackgroundImpl(final Graphics g, final Rectangle visibleRect) {
+		Color bg = this.getBackground();
+		if (this.inheritsGutterBackground && this.getGutter() != null)
+			bg = this.getGutter().getBackground();
+		g.setColor(bg);
+		g.fillRect(0, visibleRect.y, this.width, visibleRect.height);
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(final Graphics g) {
 
-		if (textArea==null) {
+		if (this.textArea == null)
+			return;
+
+		this.visibleRect = g.getClipBounds(this.visibleRect);
+		if (this.visibleRect == null)
+			this.visibleRect = this.getVisibleRect();
+		// System.out.println("IconRowHeader repainting: " + visibleRect);
+		if (this.visibleRect == null)
+			return;
+		this.paintBackgroundImpl(g, this.visibleRect);
+
+		if (this.textArea.getLineWrap()) {
+			this.paintComponentWrapped(g);
 			return;
 		}
 
-		visibleRect = g.getClipBounds(visibleRect);
-		if (visibleRect==null) { // ???
-			visibleRect = getVisibleRect();
-		}
-		//System.out.println("IconRowHeader repainting: " + visibleRect);
-		if (visibleRect==null) {
-			return;
-		}
-		paintBackgroundImpl(g, visibleRect);
-
-		if (textArea.getLineWrap()) {
-			paintComponentWrapped(g);
-			return;
-		}
-
-		Document doc = textArea.getDocument();
-		Element root = doc.getDefaultRootElement();
-		textAreaInsets = textArea.getInsets(textAreaInsets);
-		if (visibleRect.y<textAreaInsets.top) {
-			visibleRect.height -= (textAreaInsets.top - visibleRect.y);
-			visibleRect.y = textAreaInsets.top;
+		final Document doc = this.textArea.getDocument();
+		final Element root = doc.getDefaultRootElement();
+		this.textAreaInsets = this.textArea.getInsets(this.textAreaInsets);
+		if (this.visibleRect.y < this.textAreaInsets.top) {
+			this.visibleRect.height -= this.textAreaInsets.top - this.visibleRect.y;
+			this.visibleRect.y = this.textAreaInsets.top;
 		}
 
 		// Get the first and last lines to paint.
-		int cellHeight = textArea.getLineHeight();
-		int topLine = (visibleRect.y-textAreaInsets.top)/cellHeight;
-		int bottomLine = Math.min(topLine+visibleRect.height/cellHeight+1,
-							root.getElementCount());
+		final int cellHeight = this.textArea.getLineHeight();
+		final int topLine = (this.visibleRect.y - this.textAreaInsets.top) / cellHeight;
+		final int bottomLine = Math.min(topLine + this.visibleRect.height / cellHeight + 1, root.getElementCount());
 
 		// Get where to start painting (top of the row).
 		// We need to be "scrolled up" up just enough for the missing part of
 		// the first line.
-		int y = topLine*cellHeight + textAreaInsets.top;
+		final int y = topLine * cellHeight + this.textAreaInsets.top;
 
-		if ((activeLineRangeStart>=topLine&&activeLineRangeStart<=bottomLine) ||
-			(activeLineRangeEnd>=topLine && activeLineRangeEnd<=bottomLine) ||
-			(activeLineRangeStart<=topLine && activeLineRangeEnd>=bottomLine)) {
+		if (this.activeLineRangeStart >= topLine && this.activeLineRangeStart <= bottomLine
+				|| this.activeLineRangeEnd >= topLine && this.activeLineRangeEnd <= bottomLine
+				|| this.activeLineRangeStart <= topLine && this.activeLineRangeEnd >= bottomLine) {
 
-			g.setColor(activeLineRangeColor);
-			int firstLine = Math.max(activeLineRangeStart, topLine);
-			int y1 = firstLine * cellHeight + textAreaInsets.top;
-			int lastLine = Math.min(activeLineRangeEnd, bottomLine);
-			int y2 = (lastLine+1) * cellHeight + textAreaInsets.top - 1;
+			g.setColor(this.activeLineRangeColor);
+			final int firstLine = Math.max(this.activeLineRangeStart, topLine);
+			final int y1 = firstLine * cellHeight + this.textAreaInsets.top;
+			final int lastLine = Math.min(this.activeLineRangeEnd, bottomLine);
+			final int y2 = (lastLine + 1) * cellHeight + this.textAreaInsets.top - 1;
 
 			int j = y1;
-			while (j<=y2) {
-				int yEnd = Math.min(y2, j+getWidth());
-				int xEnd = yEnd-j;
-				g.drawLine(0,j, xEnd,yEnd);
+			while (j <= y2) {
+				final int yEnd = Math.min(y2, j + this.getWidth());
+				final int xEnd = yEnd - j;
+				g.drawLine(0, j, xEnd, yEnd);
 				j += 2;
 			}
 
 			int i = 2;
-			while (i<getWidth()) {
-				int yEnd = y1 + getWidth() - i;
-				g.drawLine(i,y1, getWidth(),yEnd);
+			while (i < this.getWidth()) {
+				final int yEnd = y1 + this.getWidth() - i;
+				g.drawLine(i, y1, this.getWidth(), yEnd);
 				i += 2;
 			}
 
-			if (firstLine==activeLineRangeStart) {
-				g.drawLine(0,y1, getWidth(),y1);
-			}
-			if (lastLine==activeLineRangeEnd) {
-				g.drawLine(0,y2, getWidth(),y2);
-			}
+			if (firstLine == this.activeLineRangeStart)
+				g.drawLine(0, y1, this.getWidth(), y1);
+			if (lastLine == this.activeLineRangeEnd)
+				g.drawLine(0, y2, this.getWidth(), y2);
 
 		}
 
-		if (trackingIcons!=null) {
+		if (this.trackingIcons != null) {
 			int lastLine = bottomLine;
-			for (int i=trackingIcons.size()-1; i>=0; i--) { // Last to first
-				GutterIconInfo ti = getTrackingIcon(i);
-				int offs = ti.getMarkedOffset();
-				if (offs>=0 && offs<=doc.getLength()) {
-					int line = root.getElementIndex(offs);
-					if (line<=lastLine && line>=topLine) {
-						Icon icon = ti.getIcon();
-						if (icon!=null) {
-							int y2 = y + (line-topLine)*cellHeight;
-							y2 += (cellHeight-icon.getIconHeight())/2;
+			for (int i = this.trackingIcons.size() - 1; i >= 0; i--) { // Last to first
+				final GutterIconInfo ti = this.getTrackingIcon(i);
+				final int offs = ti.getMarkedOffset();
+				if (offs >= 0 && offs <= doc.getLength()) {
+					final int line = root.getElementIndex(offs);
+					if (line <= lastLine && line >= topLine) {
+						final Icon icon = ti.getIcon();
+						if (icon != null) {
+							int y2 = y + (line - topLine) * cellHeight;
+							y2 += (cellHeight - icon.getIconHeight()) / 2;
 							ti.getIcon().paintIcon(this, g, 0, y2);
-							lastLine = line-1; // Paint only 1 icon per line
+							lastLine = line - 1; // Paint only 1 icon per line
 						}
-					}
-					else if (line<topLine) {
+					} else if (line < topLine)
 						break;
-					}
 				}
 			}
 		}
 
 	}
 
-
-	/**
-	 * Paints the background of this component.
-	 *
-	 * @param g The graphics context.
-	 * @param visibleRect The visible bounds of this component.
-	 */
-	protected void paintBackgroundImpl(Graphics g, Rectangle visibleRect) {
-		Color bg = getBackground();
-		if (inheritsGutterBackground && getGutter()!=null) {
-			bg = getGutter().getBackground();
-		}
-		g.setColor(bg);
-		g.fillRect(0,visibleRect.y, width,visibleRect.height);
-	}
-
-
 	/**
 	 * Paints icons when line wrapping is enabled.
 	 *
-	 * @param g The graphics context.
+	 * @param g
+	 *            The graphics context.
 	 */
-	private void paintComponentWrapped(Graphics g) {
+	private void paintComponentWrapped(final Graphics g) {
 
 		// The variables we use are as follows:
 		// - visibleRect is the "visible" area of the text area; e.g.
 		// [0,100, 300,100+(lineCount*cellHeight)-1].
 		// actualTop.y is the topmost-pixel in the first logical line we
-		// paint.  Note that we may well not paint this part of the logical
+		// paint. Note that we may well not paint this part of the logical
 		// line, as it may be broken into many physical lines, with the first
-		// few physical lines scrolled past.  Note also that this is NOT the
+		// few physical lines scrolled past. Note also that this is NOT the
 		// visible rect of this line number list; this line number list has
 		// visible rect == [0,0, insets.left-1,visibleRect.height-1].
 		// - offset (<=0) is the y-coordinate at which we begin painting when
-		// we begin painting with the first logical line.  This can be
+		// we begin painting with the first logical line. This can be
 		// negative, signifying that we've scrolled past the actual topmost
 		// part of this line.
 
 		// The algorithm is as follows:
-		// - Get the starting y-coordinate at which to paint.  This may be
-		//   above the first visible y-coordinate as we're in line-wrapping
-		//   mode, but we always paint entire logical lines.
+		// - Get the starting y-coordinate at which to paint. This may be
+		// above the first visible y-coordinate as we're in line-wrapping
+		// mode, but we always paint entire logical lines.
 		// - Paint that line's line number and highlight, if appropriate.
-		//   Increment y to be just below the are we just painted (i.e., the
-		//   beginning of the next logical line's view area).
-		// - Get the ending visual position for that line.  We can now loop
-		//   back, paint this line, and continue until our y-coordinate is
-		//   past the last visible y-value.
+		// Increment y to be just below the are we just painted (i.e., the
+		// beginning of the next logical line's view area).
+		// - Get the ending visual position for that line. We can now loop
+		// back, paint this line, and continue until our y-coordinate is
+		// past the last visible y-value.
 
 		// We avoid using modelToView/viewToModel where possible, as these
 		// methods trigger a parsing of the line into syntax tokens, which is
-		// costly.  It's cheaper to just grab the child views' bounds.
+		// costly. It's cheaper to just grab the child views' bounds.
 
-		RTextAreaUI ui = (RTextAreaUI)textArea.getUI();
-		View v = ui.getRootView(textArea).getView(0);
-//		boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
-		Document doc = textArea.getDocument();
-		Element root = doc.getDefaultRootElement();
-		int lineCount = root.getElementCount();
-		int topPosition = textArea.viewToModel(
-								new Point(visibleRect.x,visibleRect.y));
+		final RTextAreaUI ui = (RTextAreaUI) this.textArea.getUI();
+		final View v = ui.getRootView(this.textArea).getView(0);
+		// boolean currentLineHighlighted = textArea.getHighlightCurrentLine();
+		final Document doc = this.textArea.getDocument();
+		final Element root = doc.getDefaultRootElement();
+		final int lineCount = root.getElementCount();
+		final int topPosition = this.textArea.viewToModel(new Point(this.visibleRect.x, this.visibleRect.y));
 		int topLine = root.getElementIndex(topPosition);
 
 		// Compute the y at which to begin painting text, taking into account
 		// that 1 logical line => at least 1 physical line, so it may be that
-		// y<0.  The computed y-value is the y-value of the top of the first
+		// y<0. The computed y-value is the y-value of the top of the first
 		// (possibly) partially-visible view.
-		Rectangle visibleEditorRect = ui.getVisibleEditorRect();
-		Rectangle r = IconRowHeader.getChildViewBounds(v, topLine,
-												visibleEditorRect);
+		final Rectangle visibleEditorRect = ui.getVisibleEditorRect();
+		Rectangle r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
 		int y = r.y;
 
-		int visibleBottom = visibleRect.y + visibleRect.height;
+		final int visibleBottom = this.visibleRect.y + this.visibleRect.height;
 
 		// Get the first possibly visible icon index.
 		int currentIcon = -1;
-		if (trackingIcons!=null) {
-			for (int i=0; i<trackingIcons.size(); i++) {
-				GutterIconImpl icon = getTrackingIcon(i);
-				int offs = icon.getMarkedOffset();
-				if (offs>=0 && offs<=doc.getLength()) {
-					int line = root.getElementIndex(offs);
-					if (line>=topLine) {
+		if (this.trackingIcons != null)
+			for (int i = 0; i < this.trackingIcons.size(); i++) {
+				final GutterIconImpl icon = this.getTrackingIcon(i);
+				final int offs = icon.getMarkedOffset();
+				if (offs >= 0 && offs <= doc.getLength()) {
+					final int line = root.getElementIndex(offs);
+					if (line >= topLine) {
 						currentIcon = i;
 						break;
 					}
 				}
 			}
-		}
 
 		// Keep painting lines until our y-coordinate is past the visible
 		// end of the text area.
-		g.setColor(getForeground());
-		int cellHeight = textArea.getLineHeight();
+		g.setColor(this.getForeground());
+		final int cellHeight = this.textArea.getLineHeight();
 		while (y < visibleBottom) {
 
-			r = getChildViewBounds(v, topLine, visibleEditorRect);
-//			int lineEndY = r.y+r.height;
+			r = AbstractGutterComponent.getChildViewBounds(v, topLine, visibleEditorRect);
+			// int lineEndY = r.y+r.height;
 
 			/*
-			// Highlight the current line's line number, if desired.
-			if (currentLineHighlighted && topLine==currentLine) {
-				g.setColor(textArea.getCurrentLineHighlightColor());
-				g.fillRect(0,y, width,lineEndY-y);
-				g.setColor(getForeground());
-			}
-			*/
+			 * // Highlight the current line's line number, if desired. if
+			 * (currentLineHighlighted && topLine==currentLine) {
+			 * g.setColor(textArea.getCurrentLineHighlightColor()); g.fillRect(0,y,
+			 * width,lineEndY-y); g.setColor(getForeground()); }
+			 */
 
 			// Possibly paint an icon.
-			if (currentIcon>-1) {
+			if (currentIcon > -1) {
 				// We want to paint the last icon added for this line.
 				GutterIconImpl toPaint = null;
-				while (currentIcon<trackingIcons.size()) {
-					GutterIconImpl ti = getTrackingIcon(currentIcon);
-					int offs = ti.getMarkedOffset();
-					if (offs>=0 && offs<=doc.getLength()) {
-						int line = root.getElementIndex(offs);
-						if (line==topLine) {
+				while (currentIcon < this.trackingIcons.size()) {
+					final GutterIconImpl ti = this.getTrackingIcon(currentIcon);
+					final int offs = ti.getMarkedOffset();
+					if (offs >= 0 && offs <= doc.getLength()) {
+						final int line = root.getElementIndex(offs);
+						if (line == topLine)
 							toPaint = ti;
-						}
-						else if (line>topLine) {
+						else if (line > topLine)
 							break;
-						}
 					}
 					currentIcon++;
 				}
-				if (toPaint!=null) {
-					Icon icon = toPaint.getIcon();
-					if (icon!=null) {
-						int y2 = y + (cellHeight-icon.getIconHeight())/2;
+				if (toPaint != null) {
+					final Icon icon = toPaint.getIcon();
+					if (icon != null) {
+						final int y2 = y + (cellHeight - icon.getIconHeight()) / 2;
 						icon.paintIcon(this, g, 0, y2);
 					}
 				}
@@ -648,28 +661,12 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 			// Update topLine (we're actually using it for our "current line"
 			// variable now).
 			topLine++;
-			if (topLine>=lineCount) {
+			if (topLine >= lineCount)
 				break;
-			}
 
 		}
 
 	}
-
-
-	/**
-	 * Removes the specified tracking icon.
-	 *
-	 * @param tag A tag for a tracking icon.
-	 * @see #removeAllTrackingIcons()
-	 * @see #addOffsetTrackingIcon(int, Icon)
-	 */
-	public void removeTrackingIcon(Object tag) {
-		if (trackingIcons!=null && trackingIcons.remove(tag)) {
-			repaint();
-		}
-	}
-
 
 	/**
 	 * Removes all tracking icons.
@@ -678,189 +675,188 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	 * @see #addOffsetTrackingIcon(int, Icon)
 	 */
 	public void removeAllTrackingIcons() {
-		if (trackingIcons!=null && trackingIcons.size()>0) {
-			trackingIcons.clear();
-			repaint();
+		if (this.trackingIcons != null && this.trackingIcons.size() > 0) {
+			this.trackingIcons.clear();
+			this.repaint();
 		}
 	}
-
 
 	/**
 	 * Removes all bookmark tracking icons.
 	 */
 	private void removeBookmarkTrackingIcons() {
-		if (trackingIcons!=null) {
-			for (Iterator<GutterIconImpl> i=trackingIcons.iterator();
-					i.hasNext();) {
-				GutterIconImpl ti = i.next();
-				if (ti.getIcon()==bookmarkIcon) {
+		if (this.trackingIcons != null)
+			for (final Iterator<GutterIconImpl> i = this.trackingIcons.iterator(); i.hasNext();) {
+				final GutterIconImpl ti = i.next();
+				if (ti.getIcon() == this.bookmarkIcon)
 					i.remove();
-				}
 			}
-		}
 	}
 
+	/**
+	 * Removes the specified tracking icon.
+	 *
+	 * @param tag
+	 *            A tag for a tracking icon.
+	 * @see #removeAllTrackingIcons()
+	 * @see #addOffsetTrackingIcon(int, Icon)
+	 */
+	public void removeTrackingIcon(final Object tag) {
+		if (this.trackingIcons != null && this.trackingIcons.remove(tag))
+			this.repaint();
+	}
 
 	/**
 	 * Highlights a range of lines in the icon area.
 	 *
-	 * @param startLine The start of the line range.
-	 * @param endLine The end of the line range.
+	 * @param startLine
+	 *            The start of the line range.
+	 * @param endLine
+	 *            The end of the line range.
 	 * @see #clearActiveLineRange()
 	 */
-	public void setActiveLineRange(int startLine, int endLine) {
-		if (startLine!=activeLineRangeStart ||
-				endLine!=activeLineRangeEnd) {
-			activeLineRangeStart = startLine;
-			activeLineRangeEnd = endLine;
-			repaint();
+	public void setActiveLineRange(final int startLine, final int endLine) {
+		if (startLine != this.activeLineRangeStart || endLine != this.activeLineRangeEnd) {
+			this.activeLineRangeStart = startLine;
+			this.activeLineRangeEnd = endLine;
+			this.repaint();
 		}
 	}
-
 
 	/**
 	 * Sets the color to use to render active line ranges.
 	 *
-	 * @param color The color to use.  If this is null, then the default
-	 *        color is used.
+	 * @param color
+	 *            The color to use. If this is null, then the default color is used.
 	 * @see #getActiveLineRangeColor()
 	 * @see Gutter#DEFAULT_ACTIVE_LINE_RANGE_COLOR
 	 */
 	public void setActiveLineRangeColor(Color color) {
-		if (color==null) {
+		if (color == null)
 			color = Gutter.DEFAULT_ACTIVE_LINE_RANGE_COLOR;
-		}
-		if (!color.equals(activeLineRangeColor)) {
-			activeLineRangeColor = color;
-			repaint();
+		if (!color.equals(this.activeLineRangeColor)) {
+			this.activeLineRangeColor = color;
+			this.repaint();
 		}
 	}
 
-
 	/**
-	 * Sets the icon to use for bookmarks.  Any previous bookmark icons
-	 * are removed.
+	 * Sets the icon to use for bookmarks. Any previous bookmark icons are removed.
 	 *
-	 * @param icon The new bookmark icon.  If this is <code>null</code>,
-	 *        bookmarking is effectively disabled.
+	 * @param icon
+	 *            The new bookmark icon. If this is <code>null</code>, bookmarking
+	 *            is effectively disabled.
 	 * @see #getBookmarkIcon()
 	 * @see #isBookmarkingEnabled()
 	 */
-	public void setBookmarkIcon(Icon icon) {
-		removeBookmarkTrackingIcons();
-		bookmarkIcon = icon;
-		repaint();
+	public void setBookmarkIcon(final Icon icon) {
+		this.removeBookmarkTrackingIcons();
+		this.bookmarkIcon = icon;
+		this.repaint();
 	}
 
-
 	/**
-	 * Sets whether bookmarking is enabled.  Note that a bookmarking icon
-	 * must be set via {@link #setBookmarkIcon(Icon)} before bookmarks are
-	 * truly enabled.
+	 * Sets whether bookmarking is enabled. Note that a bookmarking icon must be set
+	 * via {@link #setBookmarkIcon(Icon)} before bookmarks are truly enabled.
 	 *
-	 * @param enabled Whether bookmarking is enabled.  If this is
-	 *        <code>false</code>, any bookmark icons are removed.
+	 * @param enabled
+	 *            Whether bookmarking is enabled. If this is <code>false</code>, any
+	 *            bookmark icons are removed.
 	 * @see #isBookmarkingEnabled()
 	 * @see #setBookmarkIcon(Icon)
 	 */
-	public void setBookmarkingEnabled(boolean enabled) {
-		if (enabled!=bookmarkingEnabled) {
-			bookmarkingEnabled = enabled;
-			if (!enabled) {
-				removeBookmarkTrackingIcons();
-			}
-			repaint();
+	public void setBookmarkingEnabled(final boolean enabled) {
+		if (enabled != this.bookmarkingEnabled) {
+			this.bookmarkingEnabled = enabled;
+			if (!enabled)
+				this.removeBookmarkTrackingIcons();
+			this.repaint();
 		}
 	}
 
-
 	/**
-	 * Sets whether the icon area inherits the gutter background (as opposed
-	 * to painting with its own, default "panel" color, which is the default).
+	 * Sets whether the icon area inherits the gutter background (as opposed to
+	 * painting with its own, default "panel" color, which is the default).
 	 *
-	 * @param inherits Whether the gutter background should be used in the icon
-	 *        row header.  If this is <code>false</code>, a default,
-	 *        Look-and-feel-dependent color is used.
+	 * @param inherits
+	 *            Whether the gutter background should be used in the icon row
+	 *            header. If this is <code>false</code>, a default,
+	 *            Look-and-feel-dependent color is used.
 	 */
-	public void setInheritsGutterBackground(boolean inherits) {
-		if (inherits!=inheritsGutterBackground) {
-			inheritsGutterBackground = inherits;
-			repaint();
+	public void setInheritsGutterBackground(final boolean inherits) {
+		if (inherits != this.inheritsGutterBackground) {
+			this.inheritsGutterBackground = inherits;
+			this.repaint();
 		}
 	}
 
-
 	/**
-	 * Sets the text area being displayed.  This will clear any tracking
-	 * icons currently displayed.
+	 * Sets the text area being displayed. This will clear any tracking icons
+	 * currently displayed.
 	 *
-	 * @param textArea The text area.
+	 * @param textArea
+	 *            The text area.
 	 */
 	@Override
-	public void setTextArea(RTextArea textArea) {
-		removeAllTrackingIcons();
+	public void setTextArea(final RTextArea textArea) {
+		this.removeAllTrackingIcons();
 		super.setTextArea(textArea);
 	}
 
-
 	/**
-	 * Programatically toggles whether there is a bookmark for the specified
-	 * line.  If bookmarking is not enabled, this method does nothing.
+	 * Programatically toggles whether there is a bookmark for the specified line.
+	 * If bookmarking is not enabled, this method does nothing.
 	 *
-	 * @param line The line.
+	 * @param line
+	 *            The line.
 	 * @return Whether a bookmark is now at the specified line.
-	 * @throws BadLocationException If <code>line</code> is an invalid line
-	 *         number in the text area.
+	 * @throws BadLocationException
+	 *             If <code>line</code> is an invalid line number in the text area.
 	 */
-	public boolean toggleBookmark(int line) throws BadLocationException {
+	public boolean toggleBookmark(final int line) throws BadLocationException {
 
-		if (!isBookmarkingEnabled() || getBookmarkIcon()==null) {
+		if (!this.isBookmarkingEnabled() || this.getBookmarkIcon() == null)
 			return false;
-		}
 
-		GutterIconInfo[] icons = getTrackingIcons(line);
-		if (icons.length==0) {
-			int offs = textArea.getLineStartOffset(line);
-			addOffsetTrackingIcon(offs, bookmarkIcon);
+		final GutterIconInfo[] icons = this.getTrackingIcons(line);
+		if (icons.length == 0) {
+			final int offs = this.textArea.getLineStartOffset(line);
+			this.addOffsetTrackingIcon(offs, this.bookmarkIcon);
 			return true;
 		}
 
 		boolean found = false;
-		for (int i=0; i<icons.length; i++) {
-			if (icons[i].getIcon()==bookmarkIcon) {
-				removeTrackingIcon(icons[i]);
+		for (final GutterIconInfo icon : icons)
+			if (icon.getIcon() == this.bookmarkIcon) {
+				this.removeTrackingIcon(icon);
 				found = true;
 				// Don't quit, in case they manipulate the document so > 1
 				// bookmark is on a single line (kind of flaky, but it
-				// works...).  If they delete all chars in the document,
+				// works...). If they delete all chars in the document,
 				// AbstractDocument gets a little flaky with the returned line
 				// number for viewToModel(), so this is just us trying to save
 				// face a little.
 			}
-		}
 		if (!found) {
-			int offs = textArea.getLineStartOffset(line);
-			addOffsetTrackingIcon(offs, bookmarkIcon);
+			final int offs = this.textArea.getLineStartOffset(line);
+			this.addOffsetTrackingIcon(offs, this.bookmarkIcon);
 		}
 
 		return !found;
 
 	}
 
-
 	/**
-	 * Sets our background color to that of standard "panels" in this
-	 * LookAndFeel.  This is necessary because, otherwise, we'd inherit the
-	 * background color of our parent component (the Gutter).
+	 * Sets our background color to that of standard "panels" in this LookAndFeel.
+	 * This is necessary because, otherwise, we'd inherit the background color of
+	 * our parent component (the Gutter).
 	 */
 	private void updateBackground() {
 		Color bg = UIManager.getColor("Panel.background");
-		if (bg==null) { // UIManager properties aren't guaranteed to exist
+		if (bg == null)
 			bg = new JPanel().getBackground();
-		}
-		setBackground(bg);
+		this.setBackground(bg);
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -868,73 +864,21 @@ public class IconRowHeader extends AbstractGutterComponent implements MouseListe
 	@Override
 	public void updateUI() {
 		super.updateUI(); // Does nothing
-		updateBackground();
+		this.updateBackground();
 	}
-
 
 	/**
 	 * Returns the line rendered at the specified location.
 	 *
-	 * @param p The location in this row header.
+	 * @param p
+	 *            The location in this row header.
 	 * @return The corresponding line in the editor.
-	 * @throws BadLocationException ble If an error occurs.
+	 * @throws BadLocationException
+	 *             ble If an error occurs.
 	 */
-	private int viewToModelLine(Point p) throws BadLocationException {
-		int offs = textArea.viewToModel(p);
-		return offs>-1 ? textArea.getLineOfOffset(offs) : -1;
+	private int viewToModelLine(final Point p) throws BadLocationException {
+		final int offs = this.textArea.viewToModel(p);
+		return offs > -1 ? this.textArea.getLineOfOffset(offs) : -1;
 	}
-
-
-	/**
-	 * Implementation of the icons rendered.
-	 */
-	private static class GutterIconImpl implements GutterIconInfo,
-			Comparable<GutterIconInfo> {
-
-		private Icon icon;
-		private Position pos;
-		private String toolTip;
-
-		GutterIconImpl(Icon icon, Position pos, String toolTip) {
-			this.icon = icon;
-			this.pos = pos;
-			this.toolTip = toolTip;
-		}
-
-		@Override
-		public int compareTo(GutterIconInfo other) {
-			if (other!=null) {
-				return pos.getOffset() - other.getMarkedOffset();
-			}
-			return -1;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			return o==this;
-		}
-
-		@Override
-		public Icon getIcon() {
-			return icon;
-		}
-
-		@Override
-		public int getMarkedOffset() {
-			return pos.getOffset();
-		}
-
-		@Override
-		public String getToolTip() {
-			return toolTip;
-		}
-
-		@Override
-		public int hashCode() {
-			return icon.hashCode(); // FindBugs
-		}
-
-	}
-
 
 }

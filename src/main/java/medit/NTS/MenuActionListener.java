@@ -6,12 +6,13 @@ import java.awt.event.ActionListener;
 public abstract class MenuActionListener implements ActionListener {
 
 	public String code, name, exename;
-	public MenuActionListener(String nCode, String nName, String nExename) {
-		code = nCode;
-		name = nName;
-		exename = nExename;
+
+	public MenuActionListener(final String nCode, final String nName, final String nExename) {
+		this.code = nCode;
+		this.name = nName;
+		this.exename = nExename;
 	}
-	
+
 	@Override
 	public abstract void actionPerformed(ActionEvent e);
 

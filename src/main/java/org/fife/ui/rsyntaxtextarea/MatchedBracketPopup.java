@@ -33,7 +33,6 @@ import javax.swing.text.BadLocationException;
 
 import org.fife.ui.rsyntaxtextarea.focusabletip.TipUtil;
 
-
 /**
  * A tool tip-like popup that shows the line of code containing the bracket
  * matched to that at the caret position, if it is scrolled out of the user's
@@ -44,82 +43,168 @@ import org.fife.ui.rsyntaxtextarea.focusabletip.TipUtil;
  */
 class MatchedBracketPopup extends JWindow {
 
-	private RSyntaxTextArea textArea;
+	/**
+	 * Action performed when Escape is pressed in this popup.
+	 */
+	private class EscapeAction extends AbstractAction {
 
-	private transient Listener listener;
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
 
-	private static final int LEFT_EMPTY_BORDER = 5;
-
-
-	MatchedBracketPopup(Window parent, RSyntaxTextArea textArea, int
-			offsToRender) {
-
-		super(parent);
-		this.textArea = textArea;
-		JPanel cp = new JPanel(new BorderLayout());
-		cp.setBorder(BorderFactory.createCompoundBorder(
-				TipUtil.getToolTipBorder(),
-				BorderFactory.createEmptyBorder(2, LEFT_EMPTY_BORDER, 5, 5)));
-		cp.setBackground(TipUtil.getToolTipBackground());
-		setContentPane(cp);
-
-		cp.add(new JLabel(getText(offsToRender)));
-
-		installKeyBindings();
-		listener = new Listener();
-		setLocation();
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			MatchedBracketPopup.this.listener.uninstallAndHide();
+		}
 
 	}
 
+	/**
+	 * Listens for events in this popup.
+	 */
+	private class Listener extends WindowAdapter implements ComponentListener {
+
+		Listener() {
+
+			MatchedBracketPopup.this.addWindowFocusListener(this);
+
+			// If anything happens to the "parent" window, hide this popup
+			final Window parent = (Window) MatchedBracketPopup.this.getParent();
+			parent.addWindowFocusListener(this);
+			parent.addWindowListener(this);
+			parent.addComponentListener(this);
+
+		}
+
+		private boolean checkForParentWindowEvent(final WindowEvent e) {
+			if (e.getSource() == MatchedBracketPopup.this.getParent()) {
+				this.uninstallAndHide();
+				return true;
+			}
+			return false;
+		}
+
+		@Override
+		public void componentHidden(final ComponentEvent e) {
+			this.uninstallAndHide();
+		}
+
+		@Override
+		public void componentMoved(final ComponentEvent e) {
+			this.uninstallAndHide();
+		}
+
+		@Override
+		public void componentResized(final ComponentEvent e) {
+			this.uninstallAndHide();
+		}
+
+		@Override
+		public void componentShown(final ComponentEvent e) {
+			this.uninstallAndHide();
+		}
+
+		private void uninstallAndHide() {
+			final Window parent = (Window) MatchedBracketPopup.this.getParent();
+			parent.removeWindowFocusListener(this);
+			parent.removeWindowListener(this);
+			parent.removeComponentListener(this);
+			MatchedBracketPopup.this.removeWindowFocusListener(this);
+			MatchedBracketPopup.this.setVisible(false);
+			MatchedBracketPopup.this.dispose();
+		}
+
+		@Override
+		public void windowActivated(final WindowEvent e) {
+			this.checkForParentWindowEvent(e);
+		}
+
+		@Override
+		public void windowIconified(final WindowEvent e) {
+			this.checkForParentWindowEvent(e);
+		}
+
+		@Override
+		public void windowLostFocus(final WindowEvent e) {
+			this.uninstallAndHide();
+		}
+
+	}
+
+	private static final int LEFT_EMPTY_BORDER = 5;
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private transient Listener listener;
+
+	private final RSyntaxTextArea textArea;
+
+	MatchedBracketPopup(final Window parent, final RSyntaxTextArea textArea, final int offsToRender) {
+
+		super(parent);
+		this.textArea = textArea;
+		final JPanel cp = new JPanel(new BorderLayout());
+		cp.setBorder(BorderFactory.createCompoundBorder(TipUtil.getToolTipBorder(),
+				BorderFactory.createEmptyBorder(2, MatchedBracketPopup.LEFT_EMPTY_BORDER, 5, 5)));
+		cp.setBackground(TipUtil.getToolTipBackground());
+		this.setContentPane(cp);
+
+		cp.add(new JLabel(this.getText(offsToRender)));
+
+		this.installKeyBindings();
+		this.listener = new Listener();
+		this.setLocation();
+
+	}
 
 	/**
 	 * Overridden to ensure this popup stays in a specific size range.
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension size = super.getPreferredSize();
-		if (size!=null) {
+		final Dimension size = super.getPreferredSize();
+		if (size != null)
 			size.width = Math.min(size.width, 800);
-		}
 		return size;
 	}
 
-
-	private String getText(int offsToRender) {
+	private String getText(final int offsToRender) {
 
 		int line = 0;
 		try {
-			line = textArea.getLineOfOffset(offsToRender);
-		} catch (BadLocationException ble) {
+			line = this.textArea.getLineOfOffset(offsToRender);
+		} catch (final BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 			return null;
 		}
 
-		int lastLine = line + 1;
+		final int lastLine = line + 1;
 
 		// Render prior line if the open brace line has no other text on it
-		if (line > 0) {
+		if (line > 0)
 			try {
-				int startOffs = textArea.getLineStartOffset(line);
-				int length = textArea.getLineEndOffset(line) - startOffs;
-				String text = textArea.getText(startOffs, length);
-				if (text.trim().length() == 1) {
+				final int startOffs = this.textArea.getLineStartOffset(line);
+				final int length = this.textArea.getLineEndOffset(line) - startOffs;
+				final String text = this.textArea.getText(startOffs, length);
+				if (text.trim().length() == 1)
 					line--;
-				}
-			} catch (BadLocationException ble) {
-				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			} catch (final BadLocationException ble) {
+				UIManager.getLookAndFeel().provideErrorFeedback(this.textArea);
 				ble.printStackTrace();
 			}
-		}
 
-		Font font = textArea.getFontForTokenType(TokenTypes.IDENTIFIER);
-		StringBuilder sb = new StringBuilder("<html>");
+		final Font font = this.textArea.getFontForTokenType(TokenTypes.IDENTIFIER);
+		final StringBuilder sb = new StringBuilder("<html>");
 		sb.append("<style>body { font-size:\"").append(font.getSize());
 		sb.append("pt\" }</style><nobr>");
 		while (line < lastLine) {
-			Token t = textArea.getTokenListForLine(line);
-			while (t!=null && t.isPaintable()) {
-				t.appendHTMLRepresentation(sb, textArea, true, true);
+			Token t = this.textArea.getTokenListForLine(line);
+			while (t != null && t.isPaintable()) {
+				t.appendHTMLRepresentation(sb, this.textArea, true, true);
 				t = t.getNextToken();
 			}
 			sb.append("<br>");
@@ -130,116 +215,26 @@ class MatchedBracketPopup extends JWindow {
 
 	}
 
-
 	/**
 	 * Adds key bindings to this popup.
 	 */
 	private void installKeyBindings() {
 
-		InputMap im = getRootPane().getInputMap(
-				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		ActionMap am = getRootPane().getActionMap();
+		final InputMap im = this.getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap am = this.getRootPane().getActionMap();
 
-		KeyStroke escapeKS = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+		final KeyStroke escapeKS = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 		im.put(escapeKS, "onEscape");
 		am.put("onEscape", new EscapeAction());
 	}
 
-
 	/**
-	 * Positions this popup to be in the top right-hand corner of the parent
-	 * editor.
+	 * Positions this popup to be in the top right-hand corner of the parent editor.
 	 */
 	private void setLocation() {
-		Point topLeft = textArea.getVisibleRect().getLocation();
-		SwingUtilities.convertPointToScreen(topLeft, textArea);
+		final Point topLeft = this.textArea.getVisibleRect().getLocation();
+		SwingUtilities.convertPointToScreen(topLeft, this.textArea);
 		topLeft.y = Math.max(topLeft.y - 24, 0);
-		setLocation(topLeft.x - LEFT_EMPTY_BORDER, topLeft.y);
-	}
-
-
-	/**
-	 * Action performed when Escape is pressed in this popup.
-	 */
-	private class EscapeAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			listener.uninstallAndHide();
-		}
-
-	}
-
-
-	/**
-	 * Listens for events in this popup.
-	 */
-	private class Listener extends WindowAdapter implements ComponentListener {
-
-		Listener() {
-
-			addWindowFocusListener(this);
-
-			// If anything happens to the "parent" window, hide this popup
-			Window parent = (Window)getParent();
-			parent.addWindowFocusListener(this);
-			parent.addWindowListener(this);
-			parent.addComponentListener(this);
-
-		}
-
-		@Override
-		public void componentResized(ComponentEvent e) {
-			uninstallAndHide();
-		}
-
-		@Override
-		public void componentMoved(ComponentEvent e) {
-			uninstallAndHide();
-		}
-
-		@Override
-		public void componentShown(ComponentEvent e) {
-			uninstallAndHide();
-		}
-
-		@Override
-		public void componentHidden(ComponentEvent e) {
-			uninstallAndHide();
-		}
-
-		@Override
-		public void windowActivated(WindowEvent e) {
-			checkForParentWindowEvent(e);
-		}
-
-		@Override
-		public void windowLostFocus(WindowEvent e) {
-			uninstallAndHide();
-		}
-
-		@Override
-		public void windowIconified(WindowEvent e) {
-			checkForParentWindowEvent(e);
-		}
-
-		private boolean checkForParentWindowEvent(WindowEvent e) {
-			if (e.getSource()==getParent()) {
-				uninstallAndHide();
-				return true;
-			}
-			return false;
-		}
-
-		private void uninstallAndHide() {
-			Window parent = (Window)getParent();
-			parent.removeWindowFocusListener(this);
-			parent.removeWindowListener(this);
-			parent.removeComponentListener(this);
-			removeWindowFocusListener(this);
-			setVisible(false);
-			dispose();
-		}
-
+		this.setLocation(topLeft.x - MatchedBracketPopup.LEFT_EMPTY_BORDER, topLeft.y);
 	}
 }

@@ -47,7 +47,7 @@ public class TextActionManager {
 				new Thread(() -> {
 					try {
 						final String text = TextActionManager.this.instance.textPane.getSelectedText();
-						TextActionManager.this.instance.textPane.replaceSelection(toTitleCase(text));
+						TextActionManager.this.instance.textPane.replaceSelection(this.toTitleCase(text));
 					} catch (final Exception e3) {
 					}
 				}).start();
