@@ -9,11 +9,11 @@ import java.util.TimerTask;
 import medit.MainFrame;
 
 /**
- * This very important class is setting up timers,
- * which free memory every 60seconds, if amount of used
- * memory is bigger or equal to 200mb. Please remember that
- * this also is using timer to update bottom label of main window
+ * This very important class is setting up timers, which free memory every
+ * 60seconds, if amount of used memory is bigger or equal to 200mb. Please
+ * remember that this also is using timer to update bottom label of main window
  * content.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -21,17 +21,17 @@ import medit.MainFrame;
 public class TimerTaskActionManager {
 
 	/**
-	 * MainFrame instance used by this class
-	 * to reference bottombar.
+	 * MainFrame instance used by this class to reference bottombar.
 	 */
-	
+
 	private final MainFrame instance;
 
 	/**
 	 * This is constructor that we pass MainFrame instance to.
+	 * 
 	 * @param instance
 	 */
-	
+
 	public TimerTaskActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}

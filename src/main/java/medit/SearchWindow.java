@@ -20,8 +20,9 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
 /**
- * This window is reproducing look of Windows search form.
- * It contains many advanced options for searching.
+ * This window is reproducing look of Windows search form. It contains many
+ * advanced options for searching.
+ * 
  * @author Krzysztof Szewczyk
  *
  */

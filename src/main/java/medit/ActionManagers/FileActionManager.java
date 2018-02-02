@@ -28,11 +28,12 @@ import medit.Crash;
 import medit.MainFrame;
 
 /**
- * This class is big and unusual among other ActionManagers,
- * like EditActionManager.
+ * This class is big and unusual among other ActionManagers, like
+ * EditActionManager.
  * 
- * Althrough, this class is really important because of it creating
- * main menu items for MEdit and main JToolBar buttons.
+ * Althrough, this class is really important because of it creating main menu
+ * items for MEdit and main JToolBar buttons.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -40,31 +41,30 @@ import medit.MainFrame;
 public class FileActionManager {
 
 	/**
-	 * This variable is holding MainFrame instance that is used
-	 * in this class.
+	 * This variable is holding MainFrame instance that is used in this class.
 	 * 
 	 * It's final, because we can't change this.
 	 */
-	
+
 	private final MainFrame instance;
 
 	/**
-	 * This constructor is creating new FileActionManager, and
-	 * is assigning its paramenter into MainFrame instance used
-	 * by this ActionManager class.
+	 * This constructor is creating new FileActionManager, and is assigning its
+	 * paramenter into MainFrame instance used by this ActionManager class.
 	 * 
 	 * @param instance
 	 */
-	
+
 	public FileActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
 	/**
 	 * This function is creating new Exit menu item in it's parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Exit(final JMenu parent) {
 		final JMenuItem mntmExit = new JMenuItem("Exit");
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
@@ -78,9 +78,10 @@ public class FileActionManager {
 
 	/**
 	 * This function is creating new Exit button in parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
-	
+
 	public void Exit(final JToolBar toolBar) {
 		final JButton btnSaveButton = new JButton("");
 		btnSaveButton.addActionListener(e -> {
@@ -93,9 +94,10 @@ public class FileActionManager {
 		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/list-remove.png")));
 		toolBar.add(btnSaveButton);
 	}
-	
+
 	/**
 	 * This function is creating New menu item in parent JMenu.
+	 * 
 	 * @param parent
 	 */
 
@@ -123,9 +125,10 @@ public class FileActionManager {
 		}));
 		parent.add(mntmNew);
 	}
-	
+
 	/**
 	 * This function is creating New button in parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
 
@@ -158,9 +161,10 @@ public class FileActionManager {
 		btnNewButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-new.png")));
 		toolBar.add(btnNewButton);
 	}
-	
+
 	/**
 	 * This function is creating Open menu item in parent JMenu.
+	 * 
 	 * @param parent
 	 */
 
@@ -189,9 +193,10 @@ public class FileActionManager {
 		});
 		parent.add(mntmOpen);
 	}
-	
+
 	/**
 	 * This function is creating Open menu item in parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
 
@@ -221,9 +226,10 @@ public class FileActionManager {
 		btnOpenButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-open.png")));
 		toolBar.add(btnOpenButton);
 	}
-	
+
 	/**
 	 * This function is creating OpenDir element in selected JMenu as parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -244,10 +250,12 @@ public class FileActionManager {
 	}
 
 	/**
-	 * This function is creating print menu item in selected JMenu, which is used like parent.
+	 * This function is creating print menu item in selected JMenu, which is used
+	 * like parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Print(final JMenu parent) {
 		final JMenuItem mntmSaveAs = new JMenuItem("Print ...");
 		mntmSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK | InputEvent.ALT_MASK));
@@ -259,9 +267,10 @@ public class FileActionManager {
 
 	/**
 	 * This function is creating reload from disk menu item in selected JMenu.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void ReloadFromDisk(final JMenu parent) {
 		final JMenuItem mntmReloadFileFrom = new JMenuItem("Reload file from disk");
 		mntmReloadFileFrom.addActionListener(e -> new Thread(() -> {
@@ -297,9 +306,11 @@ public class FileActionManager {
 		mntmReloadFileFrom.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_U, InputEvent.CTRL_MASK));
 		parent.add(mntmReloadFileFrom);
 	}
-	
+
 	/**
-	 * This function is creating remove from disk menu item in selected JMenu, which is it's parent.
+	 * This function is creating remove from disk menu item in selected JMenu, which
+	 * is it's parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -322,9 +333,10 @@ public class FileActionManager {
 
 	/**
 	 * This function is creating save menu item in selected parent JMenu.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Save(final JMenu parent) {
 		final JMenuItem mntmSave = new JMenuItem("Save");
 		mntmSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
@@ -384,9 +396,10 @@ public class FileActionManager {
 		});
 		parent.add(mntmSave);
 	}
-	
+
 	/**
 	 * This function is creating save button in selected JToolBar.
+	 * 
 	 * @param toolBar
 	 */
 
@@ -451,9 +464,11 @@ public class FileActionManager {
 		btnSaveButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/document-save.png")));
 		toolBar.add(btnSaveButton);
 	}
-	
+
 	/**
-	 * This function is creating save as menu item in selected JMenu, which is used as parent.
+	 * This function is creating save as menu item in selected JMenu, which is used
+	 * as parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -496,9 +511,10 @@ public class FileActionManager {
 
 	/**
 	 * This function is creating separator in selected JMenu, used as parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Separator(final JMenu parent) {
 		final JSeparator separator = new JSeparator();
 		parent.add(separator);

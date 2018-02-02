@@ -16,9 +16,10 @@ import medit.MainFrame;
 import medit.SearchWindow;
 
 /**
- * This big class is a bit different from other ActionManagers,
- * because it's split into many methods.
- * This class is setting up edit menu and edit toolbar things.
+ * This big class is a bit different from other ActionManagers, because it's
+ * split into many methods. This class is setting up edit menu and edit toolbar
+ * things.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -28,23 +29,25 @@ public class EditActionManager {
 	/**
 	 * This is MainFrame instance used by this class.
 	 */
-	
+
 	private final MainFrame instance;
 
 	/**
 	 * This is constructor, that it's required to pass MainFrame instance to.
+	 * 
 	 * @param instance
 	 */
-	
+
 	public EditActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
 	/**
 	 * This function is creating copy menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Copy(final JMenuItem parent) {
 		final JMenuItem mntmCopy = new JMenuItem("Copy");
 		mntmCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
@@ -54,9 +57,10 @@ public class EditActionManager {
 
 	/**
 	 * This function is creating copy button in selected parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
-	
+
 	public void Copy(final JToolBar toolBar) {
 		final JButton btnCopyButton = new JButton("");
 		btnCopyButton.addActionListener(e -> new Thread(() -> EditActionManager.this.instance.textPane.copy()).start());
@@ -68,18 +72,20 @@ public class EditActionManager {
 
 	/**
 	 * This function is creating cut menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Cut(final JMenuItem parent) {
 		final JMenuItem mntmCut = new JMenuItem("Cut");
 		mntmCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
 		mntmCut.addActionListener(e -> new Thread(() -> EditActionManager.this.instance.textPane.cut()).start());
 		parent.add(mntmCut);
 	}
-	
+
 	/**
 	 * This function is creating cut button in selected JToolBar.
+	 * 
 	 * @param toolBar
 	 */
 
@@ -91,9 +97,10 @@ public class EditActionManager {
 		btnCutButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-cut.png")));
 		toolBar.add(btnCutButton);
 	}
-	
+
 	/**
 	 * This function is creating delete menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -104,9 +111,10 @@ public class EditActionManager {
 				e -> new Thread(() -> EditActionManager.this.instance.textPane.replaceSelection("")).start());
 		parent.add(mntmDelete);
 	}
-	
+
 	/**
 	 * This function is creating delete button in selected parent JToolBar
+	 * 
 	 * @param toolBar
 	 */
 
@@ -122,18 +130,20 @@ public class EditActionManager {
 
 	/**
 	 * This function is creating paste menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void Paste(final JMenuItem parent) {
 		final JMenuItem mntmPaste = new JMenuItem("Paste");
 		mntmPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
 		mntmPaste.addActionListener(e -> new Thread(() -> EditActionManager.this.instance.textPane.paste()).start());
 		parent.add(mntmPaste);
 	}
-	
+
 	/**
 	 * This function is creating paste button in selected JToolBar.
+	 * 
 	 * @param toolBar
 	 */
 
@@ -146,9 +156,10 @@ public class EditActionManager {
 		btnPasteButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-paste.png")));
 		toolBar.add(btnPasteButton);
 	}
-	
+
 	/**
 	 * This function is creating redo menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -162,9 +173,10 @@ public class EditActionManager {
 
 	/**
 	 * This function is creating redo button in selected parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
-	
+
 	public void Redo(final JToolBar toolBar) {
 		final JButton btnRedoButton = new JButton("");
 		btnRedoButton.addActionListener(
@@ -174,9 +186,10 @@ public class EditActionManager {
 		btnRedoButton.setIcon(new ImageIcon(MainFrame.class.getResource("/medit/assets/actions/edit-redo.png")));
 		toolBar.add(btnRedoButton);
 	}
-	
+
 	/**
 	 * This function is creating search menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -190,9 +203,10 @@ public class EditActionManager {
 		}).start());
 		parent.add(mntmUndo);
 	}
-	
+
 	/**
 	 * This function is creating separator in selected parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -200,9 +214,10 @@ public class EditActionManager {
 		final JSeparator separator_4 = new JSeparator();
 		parent.add(separator_4);
 	}
-	
+
 	/**
 	 * This function is creating Undo menu item in selected parent.
+	 * 
 	 * @param parent
 	 */
 
@@ -216,9 +231,10 @@ public class EditActionManager {
 
 	/**
 	 * This function is creating undo menu item in selected parent JToolBar.
+	 * 
 	 * @param toolBar
 	 */
-	
+
 	public void Undo(final JToolBar toolBar) {
 		final JButton btnUndoButton = new JButton("");
 		btnUndoButton.addActionListener(

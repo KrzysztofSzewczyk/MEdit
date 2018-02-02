@@ -27,8 +27,8 @@ import medit.NSS.NSSLoader;
 import medit.NSS.NSSRunnable;
 
 /**
- * This class is allowing user to script MEdit using
- * own scripts written in B++.
+ * This class is allowing user to script MEdit using own scripts written in B++.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -41,6 +41,7 @@ public class ScriptsActionManager {
 
 	/**
 	 * Constructor that is assigning its parameter to internal instance variable.
+	 * 
 	 * @param instance
 	 */
 	public ScriptsActionManager(final MainFrame instance) {
@@ -49,6 +50,7 @@ public class ScriptsActionManager {
 
 	/**
 	 * Setup scripts menu. This function is pretty self-documenting.
+	 * 
 	 * @param mnTools
 	 */
 	public void SetupScripts(final JMenu mnTools) {
@@ -71,19 +73,20 @@ public class ScriptsActionManager {
 										return;
 									}
 									File codefile = new File(this.codefn);
-									if(!codefile.exists()) {
-										JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
-												"Script referenced by \"scripts.xml\" file, named \"" + this.codefn + "\", does not exist.", "Error.",
-												JOptionPane.ERROR_MESSAGE);
+									if (!codefile.exists()) {
+										JOptionPane
+												.showMessageDialog(ScriptsActionManager.this.instance,
+														"Script referenced by \"scripts.xml\" file, named \""
+																+ this.codefn + "\", does not exist.",
+														"Error.", JOptionPane.ERROR_MESSAGE);
 										return;
 									} else {
 										ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 										try {
 											engine.eval(new FileReader(this.codefn));
 											Invocable invocable = (Invocable) engine;
-											Object result = null;
 											try {
-												result = invocable.invokeFunction("start", instance);
+												invocable.invokeFunction("start", instance);
 											} catch (NoSuchMethodException e) {
 												JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
 														"Script does not contain start function.", "Error.",

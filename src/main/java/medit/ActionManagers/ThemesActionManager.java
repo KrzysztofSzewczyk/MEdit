@@ -14,8 +14,8 @@ import medit.Crash;
 import medit.MainFrame;
 
 /**
- * This class is creating menu items for each of themes available in
- * MEdit.
+ * This class is creating menu items for each of themes available in MEdit.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -23,23 +23,25 @@ import medit.MainFrame;
 public class ThemesActionManager {
 
 	/**
-	 * This is instance of MainFrame used by this class,
-	 * to reference textPane variable.
+	 * This is instance of MainFrame used by this class, to reference textPane
+	 * variable.
 	 */
-	
+
 	private final MainFrame instance;
 
 	/**
 	 * Constructor passing MainFrame instance.
+	 * 
 	 * @param instance
 	 */
-	
+
 	public ThemesActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	/**
 	 * Function registering themes for 'parent' JMenu.
+	 * 
 	 * @param parent
 	 */
 

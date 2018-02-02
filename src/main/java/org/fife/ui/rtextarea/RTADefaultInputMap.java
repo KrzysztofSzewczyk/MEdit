@@ -37,7 +37,7 @@ import javax.swing.text.DefaultEditorKit;
  * <li>etc.
  * </ul>
  */
-@SuppressWarnings({ })
+@SuppressWarnings({})
 public class RTADefaultInputMap extends InputMap {
 
 	/**

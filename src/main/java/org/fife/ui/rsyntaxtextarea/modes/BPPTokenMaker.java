@@ -1599,8 +1599,8 @@ public class BPPTokenMaker extends AbstractJFlexCTokenMaker {
 			case 122:
 				break;
 			case 49: {
-				this.addToken(BPPTokenMaker.isE4xSupported() ? TokenTypes.MARKUP_TAG_ATTRIBUTE
-						: TokenTypes.ERROR_IDENTIFIER);
+				this.addToken(
+						BPPTokenMaker.isE4xSupported() ? TokenTypes.MARKUP_TAG_ATTRIBUTE : TokenTypes.ERROR_IDENTIFIER);
 			}
 			case 123:
 				break;

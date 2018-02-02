@@ -1,8 +1,8 @@
 package medit.NSS;
 
 /**
- * This class is 'entry' of new script system.
- * It's representing script.
+ * This class is 'entry' of new script system. It's representing script.
+ * 
  * @author Krzysztof Szewczyk
  *
  */

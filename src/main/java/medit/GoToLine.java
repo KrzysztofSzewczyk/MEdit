@@ -16,9 +16,9 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 /**
- * This is GoToLine dialog, which we know from many
- * text editors out there, that is jumping to selected line
- * in textPane, which we reference using internal MainFrame instance.
+ * This is GoToLine dialog, which we know from many text editors out there, that
+ * is jumping to selected line in textPane, which we reference using internal
+ * MainFrame instance.
  * 
  * @author Krzysztof Szewczyk
  *
@@ -64,23 +64,23 @@ public class GoToLine extends JDialog {
 				final JButton okButton = new JButton("OK");
 				okButton.addActionListener(new ActionListener() {
 					/**
-					 * ActionPerformed element of ActionListener, that is
-					 * jumping to likne selected in textField.
-					 * In case of error, it's displaying universal message
-					 * box that is telling user that something is wrong.
+					 * ActionPerformed element of ActionListener, that is jumping to likne selected
+					 * in textField. In case of error, it's displaying universal message box that is
+					 * telling user that something is wrong.
 					 */
-					
+
 					@Override
 					public void actionPerformed(final ActionEvent arg0) {
 						new Thread(new Runnable() {
 
 							/**
-							 * This function is calculating position that we need
-							 * to set in textPane, to locate cursor at selected line.
+							 * This function is calculating position that we need to set in textPane, to
+							 * locate cursor at selected line.
+							 * 
 							 * @param newlineno
 							 * @return
 							 */
-							
+
 							public int newCursor(final int newlineno) {
 								int pos = 0;
 								int i = 0;
@@ -95,7 +95,7 @@ public class GoToLine extends JDialog {
 								sc.close();
 								return pos;
 							}
-							
+
 							@Override
 							public void run() {
 								try {
@@ -107,10 +107,10 @@ public class GoToLine extends JDialog {
 									return;
 								}
 							}
-							
+
 						});
 					}
-					
+
 				});
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);

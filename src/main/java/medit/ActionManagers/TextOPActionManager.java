@@ -12,8 +12,9 @@ import medit.GoToLine;
 import medit.MainFrame;
 
 /**
- * This class contains code, that is embedding items into Text Operations
- * menu. It's created on MEdit ActionManager template.
+ * This class contains code, that is embedding items into Text Operations menu.
+ * It's created on MEdit ActionManager template.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -25,18 +26,18 @@ public class TextOPActionManager {
 	 */
 	private final MainFrame instance;
 
-	
 	/**
-	 * Creating TextOPActionManager, by passing MainFrame
-	 * instance.
+	 * Creating TextOPActionManager, by passing MainFrame instance.
+	 * 
 	 * @param instance
 	 */
 	public TextOPActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	/**
 	 * Creating menu items for Text Operations menu.
+	 * 
 	 * @param mnTextOperations
 	 */
 
@@ -45,8 +46,8 @@ public class TextOPActionManager {
 		mnTextOperations.add(mnCase);
 		final JMenuItem mntmThisWay = new JMenuItem("THIS WAY");
 		/**
-		 * Creating action listener for uppercasing menu item, which
-		 * is creating new thread to uppercase selected text.
+		 * Creating action listener for uppercasing menu item, which is creating new
+		 * thread to uppercase selected text.
 		 */
 		mntmThisWay.addActionListener(e -> new Thread(() -> {
 			try {
@@ -57,8 +58,8 @@ public class TextOPActionManager {
 		mnCase.add(mntmThisWay);
 		final JMenuItem mntmThisWay_1 = new JMenuItem("this way");
 		/**
-		 * Creating action listener for lowercasing menu item, which
-		 * is creating new thread to lowercasing selected text.
+		 * Creating action listener for lowercasing menu item, which is creating new
+		 * thread to lowercasing selected text.
 		 */
 		mntmThisWay_1.addActionListener(e -> new Thread(() -> {
 			try {
@@ -69,9 +70,9 @@ public class TextOPActionManager {
 		mnCase.add(mntmThisWay_1);
 		final JMenuItem mntmThisWay_2 = new JMenuItem("This Way");
 		/**
-		 * Creating action listener for uppercasing first letter of each word
-		 * menu item, which is creating new thread to uppercase first letter of
-		 * each word of selected text.
+		 * Creating action listener for uppercasing first letter of each word menu item,
+		 * which is creating new thread to uppercase first letter of each word of
+		 * selected text.
 		 */
 		mntmThisWay_2.addActionListener(new ActionListener() {
 			@Override
@@ -97,8 +98,9 @@ public class TextOPActionManager {
 		mnCase.add(mntmThisWay_2);
 		final JMenuItem mntmThisWay_4 = new JMenuItem("ThIs WaY");
 		/**
-		 * Creating action listener for uppercasing letter, which index mod 2 = 0 menu item, which
-		 * is creating new thread to uppercase letter, which index mod 2 = 0 of selected text.
+		 * Creating action listener for uppercasing letter, which index mod 2 = 0 menu
+		 * item, which is creating new thread to uppercase letter, which index mod 2 = 0
+		 * of selected text.
 		 */
 		mntmThisWay_4.addActionListener(e -> new Thread(() -> {
 			try {
@@ -115,8 +117,9 @@ public class TextOPActionManager {
 		mnCase.add(mntmThisWay_4);
 		final JMenuItem mntmRandom = new JMenuItem("RanDOm");
 		/**
-		 * Creating action listener for uppercasing and lowercasing random letters in menu item, which
-		 * is creating new thread to uppercase and lowercase random letters in selected text.
+		 * Creating action listener for uppercasing and lowercasing random letters in
+		 * menu item, which is creating new thread to uppercase and lowercase random
+		 * letters in selected text.
 		 */
 		mntmRandom.addActionListener(e -> new Thread(() -> {
 			try {

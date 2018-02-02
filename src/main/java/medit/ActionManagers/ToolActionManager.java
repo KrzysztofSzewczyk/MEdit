@@ -23,9 +23,9 @@ import medit.NTS.NTSLoader;
 import medit.NTS.NTSRunnable;
 
 /**
- * This class is nearly copy+paste of ScriptActionManager.
- * It's aim is to create elements in tools menu based on
- * tools.xml file.
+ * This class is nearly copy+paste of ScriptActionManager. It's aim is to create
+ * elements in tools menu based on tools.xml file.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -34,23 +34,25 @@ public class ToolActionManager {
 	/**
 	 * MainFrame instance used by this class
 	 */
-	
+
 	private final MainFrame instance;
 
 	/**
 	 * Constructor assigning passed instance to internal instance.
+	 * 
 	 * @param instance
 	 */
-	
+
 	public ToolActionManager(final MainFrame instance) {
 		this.instance = instance;
 	}
 
 	/**
 	 * This function is setting up tools menu.
+	 * 
 	 * @param mnTools
 	 */
-	
+
 	public void SetupTools(final JMenu mnTools) {
 		final NTSLoader tsldr = new NTSLoader();
 		try {

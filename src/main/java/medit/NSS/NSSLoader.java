@@ -20,6 +20,7 @@ import medit.Crash;
 
 /**
  * This class is loading scripts for new script system.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -30,14 +31,15 @@ public class NSSLoader {
 
 	/**
 	 * This function is loading every scripts from selected file.
+	 * 
 	 * @param string
 	 * @return
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	
-	public List<NSSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException { 
+
+	public List<NSSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException {
 		if (!new File(string).exists())
 			return null;
 		final File inputFile = new File(string);

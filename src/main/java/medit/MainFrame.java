@@ -35,8 +35,8 @@ import medit.ActionManagers.ToolActionManager;
 import medit.ActionManagers.WindowActionManager;
 
 /**
- * Main frame for MEdit project. That's where the whole magic is done.
- * It was split to many files, which are located in ActionManagers.
+ * Main frame for MEdit project. That's where the whole magic is done. It was
+ * split to many files, which are located in ActionManagers.
  *
  * @author Krzysztof Szewczyk
  */
@@ -44,11 +44,11 @@ import medit.ActionManagers.WindowActionManager;
 public class MainFrame extends JFrame {
 
 	/**
-	 * Many public variables, that were privatized before.
-	 * They are public, because our MainFrame is not standalone class
-	 * now and it references many ActionManagers.
+	 * Many public variables, that were privatized before. They are public, because
+	 * our MainFrame is not standalone class now and it references many
+	 * ActionManagers.
 	 */
-	
+
 	public static int instances = 1;
 	public static final long serialVersionUID = 1L;
 	public JPanel contentPane;
@@ -105,7 +105,6 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnAbout);
 		final JMenu mnTextOperations = new JMenu("Text Operations");
 		menuBar.add(mnTextOperations);
-		
 
 		/**
 		 * Menu action managers setup.
@@ -140,10 +139,10 @@ public class MainFrame extends JFrame {
 
 		final TextOPActionManager topam = new TextOPActionManager(this);
 		topam.SetupTextOP(mnTextOperations);
-		
+
 		final AboutActionManager aam = new AboutActionManager();
 		aam.About(mnAbout);
-		
+
 		final LanguageActionManager lam = new LanguageActionManager(this);
 		lam.SetUp(mnSyntaxHighlighting);
 
@@ -158,7 +157,7 @@ public class MainFrame extends JFrame {
 
 		final ToolActionManager toolam = new ToolActionManager(this);
 		toolam.SetupTools(mnTools);
-		
+
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
 		sam.SetupScripts(mnScripts);
 

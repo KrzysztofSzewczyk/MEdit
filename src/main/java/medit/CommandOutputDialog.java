@@ -14,9 +14,9 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 /**
- * This dialog is the on that pops up after
- * executing tool. It contains information about
- * tool execution status and it's output.
+ * This dialog is the on that pops up after executing tool. It contains
+ * information about tool execution status and it's output.
+ * 
  * @author Krzysztof Szewczyk
  *
  */

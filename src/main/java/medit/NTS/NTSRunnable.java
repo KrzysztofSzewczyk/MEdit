@@ -2,6 +2,7 @@ package medit.NTS;
 
 /**
  * This page is extending runnable type to suit my needs.
+ * 
  * @author Krzysztof Szewczyk
  *
  */

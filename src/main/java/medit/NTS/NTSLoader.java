@@ -20,6 +20,7 @@ import medit.Crash;
 
 /**
  * This class is loader of tools for the new tool system.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -29,15 +30,16 @@ public class NTSLoader {
 	private final List<NTSEntry> tools = new ArrayList<>();
 
 	/**
-	 * This function is loading all tools from specified file to ArrayList
-	 * and is returning constructed ArrayList to calling method.
+	 * This function is loading all tools from specified file to ArrayList and is
+	 * returning constructed ArrayList to calling method.
+	 * 
 	 * @param string
 	 * @return
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	
+
 	public List<NTSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException {
 		if (!new File(string).exists())
 			return null;

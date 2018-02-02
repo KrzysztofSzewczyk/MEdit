@@ -11,11 +11,12 @@ import javax.swing.WindowConstants;
 import medit.AboutBox;
 
 /**
- * This action manager was splitted a little bit uselessly,
- * but to keep structure of MEdit, it's there.
+ * This action manager was splitted a little bit uselessly, but to keep
+ * structure of MEdit, it's there.
  * 
- * This class is creating menu item in selected menu that after
- * clicking displays an AboutBox dialog.
+ * This class is creating menu item in selected menu that after clicking
+ * displays an AboutBox dialog.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -24,9 +25,10 @@ public class AboutActionManager {
 
 	/**
 	 * This function is creating menu item in selected menu.
+	 * 
 	 * @param parent
 	 */
-	
+
 	public void About(final JMenu parent) {
 		final JMenuItem mntmAbout = new JMenuItem("About MEdit");
 		mntmAbout.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_MASK));
