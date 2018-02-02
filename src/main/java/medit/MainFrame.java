@@ -24,6 +24,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 
 import medit.ActionManagers.AboutActionManager;
 import medit.ActionManagers.BottombarActionManager;
+import medit.ActionManagers.CodeCompletionActionManager;
 import medit.ActionManagers.EditActionManager;
 import medit.ActionManagers.FileActionManager;
 import medit.ActionManagers.LanguageActionManager;
@@ -160,6 +161,9 @@ public class MainFrame extends JFrame {
 
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
 		sam.SetupScripts(mnScripts);
+		
+		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
+		ccam.SetUpCodeCompletion();
 
 		/**
 		 * Language submenu setup

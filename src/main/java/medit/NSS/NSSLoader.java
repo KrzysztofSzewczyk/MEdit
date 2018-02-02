@@ -49,7 +49,7 @@ public class NSSLoader {
 		doc.getDocumentElement().normalize();
 		if (doc.getDocumentElement().getNodeName() != "medit") {
 			final Crash dialog = new Crash(
-					new Exception("Parent element in tool config file has to be equal to \"medit\"!"));
+					new Exception("Parent element in script config file has to be equal to \"medit\"!"));
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
