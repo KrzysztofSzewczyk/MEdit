@@ -1,5 +1,12 @@
 package medit.NSS;
 
+/**
+ * This class is 'entry' of new script system.
+ * It's representing script.
+ * @author Krzysztof Szewczyk
+ *
+ */
+
 public abstract class NSSEntry {
 	String codefn;
 	String name;
