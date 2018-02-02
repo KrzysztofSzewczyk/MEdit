@@ -1,33 +1,63 @@
-<project>
-    
-	<path id="blob"> 
-	  <fileset dir=".">
-	    <include name="blob/**/*.class"/>
-	  </fileset>
-	</path> 
-	
-    <target name="clean">
-        <delete dir="build"/>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. --><project basedir="." default="build" name="MEdit">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../java-oxygen/eclipse/"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.8"/>
+    <property name="source" value="1.8"/>
+    <path id="MEdit.classpath">
+        <pathelement location="bin"/>
+        <pathelement location="blob"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src/main/java">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.xtend"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
     </target>
-
-    <target name="compile">
-        <mkdir dir="build/classes"/>
-    	<javac srcdir="src" destdir="build/classes">
-    		<classpath refid="blob"/>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" includeantruntime="false" source="${source}" target="${target}">
+            <src path="src/main/java"/>
+            <classpath refid="MEdit.classpath"/>
         </javac>
     </target>
-
-    <target name="jar">
-        <mkdir dir="build/jar"/>
-        <jar destfile="build/jar/MEdit.jar" basedir="build/classes">
-            <manifest>
-                <attribute name="Main-Class" value="medit.Start"/>
-            </manifest>
-        </jar>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
     </target>
-
-    <target name="run">
-       <java jar="build/jar/MEdit.jar" fork="true"/>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
     </target>
-    
+    <target name="New_configuration (1)">
+        <java classname="medit.Start" failonerror="true" fork="yes">
+            <classpath refid="MEdit.classpath"/>
+        </java>
+    </target>
+    <target name="New_configuration">
+        <java classname="medit.Start" failonerror="true" fork="yes">
+            <classpath refid="MEdit.classpath"/>
+        </java>
+    </target>
 </project>
