@@ -1,10 +1,4 @@
 <project>
-
-    <path id="build.classpath">
-        <fileset dir=".">
-            <include name="darcula.jar"/>
-        </fileset>
-    </path>
     
     <target name="clean">
         <delete dir="build"/>
@@ -20,7 +14,6 @@
     <target name="jar">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/MEdit.jar" basedir="build/classes">
-            <zipgroupfileset dir="." includes="darcula.jar" /> 
             <manifest>
                 <attribute name="Main-Class" value="medit.Start"/>
             </manifest>
