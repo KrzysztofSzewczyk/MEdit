@@ -4,99 +4,123 @@ package medit.BPP.visitor;
 import medit.BPP.syntaxtree.*;
 import java.util.*;
 
-public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
+public class DepthFirstRetArguVisitor<R, A> implements IRetArguVisitor<R, A> {
 
 
   @Override
-  public void visit(final NodeChoice n, final A argu) {
-    n.choice.accept(this, argu);
-    return;
+  public R visit(final NodeChoice n, final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
+    final R nRes = n.choice.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final NodeList n, final A argu) {
+  public R visit(final NodeList n, final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
+    R nRes = null;
     for (final Iterator<INode> e = n.elements(); e.hasNext();) {
-      e.next().accept(this, argu);
+      @SuppressWarnings("unused")
+      final R sRes = e.next().accept(this, argu);
     }
-    return;
+    return nRes;
   }
 
   @Override
-  public void visit(final NodeListOptional n, final A argu) {
+  public R visit(final NodeListOptional n, final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
     if (n.present()) {
+      R nRes = null;
       for (final Iterator<INode> e = n.elements(); e.hasNext();) {
-        e.next().accept(this, argu);
+        @SuppressWarnings("unused")
+        R sRes = e.next().accept(this, argu);
         }
-      return;
+      return nRes;
     } else
-      return;
+      return null;
   }
 
   @Override
-  public void visit(final NodeOptional n, final A argu) {
+  public R visit(final NodeOptional n, final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
     if (n.present()) {
-      n.node.accept(this, argu);
-      return;
+      final R nRes = n.node.accept(this, argu);
+      return nRes;
     } else
-      return;
+      return null;
   }
 
   @Override
-  public void visit(final NodeSequence n, final A argu) {
+  public R visit(final NodeSequence n, final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
+    R nRes = null;
     for (final Iterator<INode> e = n.elements(); e.hasNext();) {
-      e.next().accept(this, argu);
+      @SuppressWarnings("unused")
+      R subRet = e.next().accept(this, argu);
     }
-    return;
+    return nRes;
   }
 
   @Override
-  public void visit(final NodeTCF n, @SuppressWarnings("unused") final A argu) {
+  public R visit(final NodeTCF n, @SuppressWarnings("unused") final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
+    R nRes = null;
     @SuppressWarnings("unused")
     final String tkIm = n.tokenImage;
-    return;
+    return nRes;
   }
 
   @Override
-  public void visit(final NodeToken n, @SuppressWarnings("unused") final A argu) {
+  public R visit(final NodeToken n, @SuppressWarnings("unused") final A argu) {
+    /* You have to adapt which data is returned (result variables below are just examples) */
+    R nRes = null;
     @SuppressWarnings("unused")
     final String tkIm = n.tokenImage;
-    return;
+    return nRes;
   }
 
   @Override
-  public void visit(final Start n, final A argu) {
+  public R visit(final Start n, final A argu) {
+    R nRes = null;
     // f0 -> ( #0 Require() #1 "." )+
     n.f0.accept(this, argu);
     // f1 -> ( StatementExpression() )*
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final Require n, final A argu) {
+  public R visit(final Require n, final A argu) {
+    R nRes = null;
     // f0 -> "with"
     n.f0.accept(this, argu);
     // f1 -> ( < IDENTIFIER > )+
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final MathExpression n, final A argu) {
+  public R visit(final MathExpression n, final A argu) {
+    R nRes = null;
     // f0 -> AdditiveExpression()
     n.f0.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final AdditiveExpression n, final A argu) {
+  public R visit(final AdditiveExpression n, final A argu) {
+    R nRes = null;
     // f0 -> MultiplicativeExpression()
     n.f0.accept(this, argu);
     // f1 -> ( #0 ( %0 "+"
     // .. .. . .. | %1 "-" )
     // .. .. . #1 MultiplicativeExpression() )*
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final MultiplicativeExpression n, final A argu) {
+  public R visit(final MultiplicativeExpression n, final A argu) {
+    R nRes = null;
     // f0 -> UnaryExpression()
     n.f0.accept(this, argu);
     // f1 -> ( #0 ( %0 "*"
@@ -104,60 +128,74 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     // .. .. . .. | %2 "%" )
     // .. .. . #1 UnaryExpression() )*
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final UnaryExpression n, final A argu) {
+  public R visit(final UnaryExpression n, final A argu) {
+    R nRes = null;
     // f0 -> . %0 #0 "(" #1 MathExpression() #2 ")"
     // .. .. | %1 < INTEGER_LITERAL >
     // .. .. | %2 VariableName()
     n.f0.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final RelationalExprssion n, final A argu) {
+  public R visit(final RelationalExprssion n, final A argu) {
+    R nRes = null;
     // f0 -> RelationalEqualityExpression()
     n.f0.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final RelationalEqualityExpression n, final A argu) {
+  public R visit(final RelationalEqualityExpression n, final A argu) {
+    R nRes = null;
     // f0 -> RelationalGreaterExpression()
     n.f0.accept(this, argu);
     // f1 -> [ #0 ( %0 "=="
     // .. .. . .. | %1 "!=" )
     // .. .. . #1 RelationalGreaterExpression() ]
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final RelationalGreaterExpression n, final A argu) {
+  public R visit(final RelationalGreaterExpression n, final A argu) {
+    R nRes = null;
     // f0 -> RelationalLessExpression()
     n.f0.accept(this, argu);
     // f1 -> [ #0 ( %0 ">"
     // .. .. . .. | %1 ">=" )
     // .. .. . #1 RelationalLessExpression() ]
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final RelationalLessExpression n, final A argu) {
+  public R visit(final RelationalLessExpression n, final A argu) {
+    R nRes = null;
     // f0 -> UnaryRelational()
     n.f0.accept(this, argu);
     // f1 -> [ #0 ( %0 "<"
     // .. .. . .. | %1 "<=" )
     // .. .. . #1 UnaryRelational() ]
     n.f1.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final UnaryRelational n, final A argu) {
+  public R visit(final UnaryRelational n, final A argu) {
+    R nRes = null;
     // f0 -> MathExpression()
     n.f0.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final IfExpression n, final A argu) {
+  public R visit(final IfExpression n, final A argu) {
+    R nRes = null;
     // f0 -> "if"
     n.f0.accept(this, argu);
     // f1 -> RelationalExprssion()
@@ -168,10 +206,12 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     n.f3.accept(this, argu);
     // f4 -> "end"
     n.f4.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final WhileExpression n, final A argu) {
+  public R visit(final WhileExpression n, final A argu) {
+    R nRes = null;
     // f0 -> "while"
     n.f0.accept(this, argu);
     // f1 -> RelationalExprssion()
@@ -182,10 +222,12 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     n.f3.accept(this, argu);
     // f4 -> "end"
     n.f4.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final VariableDeclaration n, final A argu) {
+  public R visit(final VariableDeclaration n, final A argu) {
+    R nRes = null;
     // f0 -> "var"
     n.f0.accept(this, argu);
     // f1 -> VariableName()
@@ -196,10 +238,12 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     n.f3.accept(this, argu);
     // f4 -> "."
     n.f4.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final VariableAssign n, final A argu) {
+  public R visit(final VariableAssign n, final A argu) {
+    R nRes = null;
     // f0 -> VariableName()
     n.f0.accept(this, argu);
     // f1 -> "="
@@ -208,16 +252,20 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     n.f2.accept(this, argu);
     // f3 -> "."
     n.f3.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final VariableName n, final A argu) {
+  public R visit(final VariableName n, final A argu) {
+    R nRes = null;
     // f0 -> < IDENTIFIER >
     n.f0.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final JavaStaticMethods n, final A argu) {
+  public R visit(final JavaStaticMethods n, final A argu) {
+    R nRes = null;
     // f0 -> < IDENTIFIER >
     n.f0.accept(this, argu);
     // f1 -> ( #0 ":" #1 < IDENTIFIER > )+
@@ -232,16 +280,19 @@ public class DepthFirstVoidArguVisitor<A> implements IVoidArguVisitor<A> {
     n.f5.accept(this, argu);
     // f6 -> "."
     n.f6.accept(this, argu);
+    return nRes;
   }
 
   @Override
-  public void visit(final StatementExpression n, final A argu) {
+  public R visit(final StatementExpression n, final A argu) {
+    R nRes = null;
     // f0 -> . %0 VariableDeclaration()
     // .. .. | %1 VariableAssign()
     // .. .. | %2 JavaStaticMethods()
     // .. .. | %3 IfExpression()
     // .. .. | %4 WhileExpression()
     n.f0.accept(this, argu);
+    return nRes;
   }
 
 }

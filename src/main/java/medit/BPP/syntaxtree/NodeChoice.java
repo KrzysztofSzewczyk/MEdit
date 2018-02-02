@@ -8,42 +8,42 @@ import medit.BPP.visitor.IVoidVisitor;
 
 public class NodeChoice implements INode {
 
-	private static final long serialVersionUID = 1411L;
+  public INode choice;
 
-	public INode choice;
+  public int which;
 
-	public int total;
+  public int total;
 
-	public int which;
+  private static final long serialVersionUID = 1411L;
 
-	public NodeChoice(final INode node) {
-		this(node, -1, -1);
-	}
+  public NodeChoice(final INode node) {
+   this(node, -1, -1);
+  }
 
-	public NodeChoice(final INode node, final int whichChoice, final int totalChoices) {
-		this.choice = node;
-		this.which = whichChoice;
-		this.total = totalChoices;
-	}
+  public NodeChoice(final INode node, final int whichChoice, final int totalChoices) {
+    choice = node;
+    which = whichChoice;
+    total = totalChoices;
+  }
 
-	@Override
-	public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu) {
-		return this.choice.accept(vis, argu);
-	}
+  @Override
+  public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu) {
+    return choice.accept(vis, argu);
+  }
 
-	@Override
-	public <R> R accept(final IRetVisitor<R> vis) {
-		return this.choice.accept(vis);
-	}
+  @Override
+  public <R> R accept(final IRetVisitor<R> vis) {
+    return choice.accept(vis);
+  }
 
-	@Override
-	public <A> void accept(final IVoidArguVisitor<A> vis, final A argu) {
-		this.choice.accept(vis, argu);
-	}
+  @Override
+  public <A> void accept(final IVoidArguVisitor<A> vis, final A argu) {
+    choice.accept(vis, argu);
+  }
 
-	@Override
-	public void accept(final IVoidVisitor vis) {
-		this.choice.accept(vis);
-	}
+  @Override
+  public void accept(final IVoidVisitor vis) {
+    choice.accept(vis);
+  }
 
 }

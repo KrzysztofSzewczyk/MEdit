@@ -53,18 +53,6 @@ TOKEN : /* SYMBOLS */
 | 	< ASSIGN: "=" > 
 }
 
-/*
-	Literals, maybe can said “value” or “data” (in St4tic) example:
-
-	def myAge = 24.
-	def var	= 666.
-
-	if 11 > 10 do
-		…
-	stop
-
-	a values “24, 666, 11, 10” is checked or parsed as literals.
-*/
 TOKEN : /* LITERALS */
 {
   < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* | "0"   >
@@ -77,13 +65,6 @@ TOKEN : /* IDENTIFIERS */
 |  < #DIGIT: ["0"-"9"] >
 }
 
-/* GRAMMAR start here */
-
-/*
-	This is an enter point for St4tic parsing without it, a parser can't started,
-	for this rule we need mandatory to specifying a “require” (if you notice “+”, one or many)
-	and after it a program instructions (notice “*”, no-one or many):
-*/
 void Start():{}
 {
   (    Require() "."
@@ -93,19 +74,11 @@ void Start():{}
   )*
 }
 
-/*
-	Here for packages importation can be one word after “require” or many like :
-	
-	require java .
-	require java lang .
-	...
-*/
 void Require():{}
 {	"with"	(	  < IDENTIFIER >
 	)+
 }
 
-/* Simple Math Operations */
 void MathExpression():{ } 
 {
   AdditiveExpression()
@@ -126,7 +99,6 @@ void UnaryExpression():{}
   "(" MathExpression() ")" | < INTEGER_LITERAL > | VariableName()
 }
 
-/* Start Simple Relational Test */
 void RelationalExprssion():{}
 {	RelationalEqualityExpression()
 }
@@ -163,24 +135,7 @@ void RelationalLessExpression():{}
 void UnaryRelational():{}{
 	   MathExpression()	
 }
-/* End Simple Relational Test */
 
-/*
-	"if" expression is a classcal test if true do something
-	like in :
-	-----------------------------------------------
-		Java				|	VB
-	-----------------------------------------------
-	if( 1 > 0 )				|	If 1 > 0 Then	{						|		...		...					|	End If
-	}						|
-							|	 
-	Here is :
-	if 1 > 0 do
-		...
-	stop
-
-	"stop" is end of if block 
-*/
 void IfExpression():{}
 {	"if" RelationalExprssion() "begin"
 		(
@@ -188,24 +143,6 @@ void IfExpression():{}
 	"end"
 }
 
-/*
-	"while" expression is a classcal test while true repeat something
-	like in :
-	-----------------------------------------------
-		Java				|	VB
-	-----------------------------------------------
-	while( 1 > 0 )			|	While 1 > 0
-	{						|		...
-		...					|	End While
-	}						|
-							|	 
-	Here is :
-	while 1 > 0 do
-		...
-	stop
-
-	"stop" is end of while block 
-*/
 void WhileExpression():{}
 {
 	"while" RelationalExprssion() "begin"
@@ -214,14 +151,6 @@ void WhileExpression():{}
 		) *
 	"end"}
 
-/*
-	Variable declaration expresion is a syntax of variables
-	declaration in St4tic
-	in Perl we declare variables by using keyword "my"
-	or VB by using "dim", St4tic use "def" for definition
-	or define it.
-	like def var = 1. 
-*/
 void VariableDeclaration():{}
 {	"var" VariableName() "=" MathExpression() "."
 }
@@ -235,17 +164,12 @@ void VariableName():{}
 }
 
 void JavaStaticMethods():{}
-{	< IDENTIFIER > /* Class Name */	(	  ":" < IDENTIFIER > /* Member or Method */
+{	< IDENTIFIER >	(	  ":" < IDENTIFIER >
 	)+
 
 	"(" MathExpression() ( "," MathExpression() )* ")" "."	  
 }
 
-/*
-	“statement expression” is program body or algorithm can content 
-	a many variables declaration, variables assign, logical tests (if;while) 
-	or Java methods calling (remember in St4tic just public static methods).
-*/
 void StatementExpression():{}
 {
   VariableDeclaration()

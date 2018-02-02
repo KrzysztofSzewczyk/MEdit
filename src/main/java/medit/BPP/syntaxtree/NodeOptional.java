@@ -8,46 +8,45 @@ import medit.BPP.visitor.IVoidVisitor;
 
 public class NodeOptional implements INode {
 
-	private static final long serialVersionUID = 1411L;
+  public INode node;
 
-	public INode node;
+  private static final long serialVersionUID = 1411L;
 
-	public NodeOptional() {
-		this.node = null;
-	}
+  public NodeOptional() {
+    node = null;
+  }
 
-	public NodeOptional(final INode n) {
-		this.addNode(n);
-	}
+  public NodeOptional(final INode n) {
+    addNode(n);
+  }
 
-	@Override
-	public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu) {
-		return vis.visit(this, argu);
-	}
+  public void addNode(final INode n) {
+    if (node != null)
+      throw new Error("Attempt to set optional node twice");
+    node = n;
+  }
 
-	@Override
-	public <R> R accept(final IRetVisitor<R> vis) {
-		return vis.visit(this);
-	}
+  public boolean present() {
+    return (node != null); }
 
-	@Override
-	public <A> void accept(final IVoidArguVisitor<A> vis, final A argu) {
-		vis.visit(this, argu);
-	}
+  @Override
+  public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu) {
+    return vis.visit(this, argu);
+  }
 
-	@Override
-	public void accept(final IVoidVisitor vis) {
-		vis.visit(this);
-	}
+  @Override
+  public <R> R accept(final IRetVisitor<R> vis) {
+    return vis.visit(this);
+  }
 
-	public void addNode(final INode n) {
-		if (this.node != null)
-			throw new Error("Attempt to set optional node twice");
-		this.node = n;
-	}
+  @Override
+  public <A> void accept(final IVoidArguVisitor<A> vis, final A argu) {
+    vis.visit(this, argu);
+  }
 
-	public boolean present() {
-		return this.node != null;
-	}
+  @Override
+  public void accept(final IVoidVisitor vis) {
+    vis.visit(this);
+  }
 
 }

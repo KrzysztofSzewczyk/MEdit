@@ -8,24 +8,24 @@ import medit.BPP.visitor.IVoidVisitor;
 
 public interface INodeList extends INode {
 
-	@Override
-	public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu);
+  public void addNode(final INode n);
 
-	@Override
-	public <R> R accept(final IRetVisitor<R> vis);
+  public INode elementAt(int i);
 
-	@Override
-	public <A> void accept(final IVoidArguVisitor<A> vis, final A argu);
+  public java.util.Iterator<INode> elements();
 
-	@Override
-	public void accept(final IVoidVisitor vis);
+  public int size();
 
-	public void addNode(final INode n);
+  @Override
+  public <R, A> R accept(final IRetArguVisitor<R, A> vis, final A argu);
 
-	public INode elementAt(int i);
+  @Override
+  public <R> R accept(final IRetVisitor<R> vis);
 
-	public java.util.Iterator<INode> elements();
+  @Override
+  public <A> void accept(final IVoidArguVisitor<A> vis, final A argu);
 
-	public int size();
+  @Override
+  public void accept(final IVoidVisitor vis);
 
 }

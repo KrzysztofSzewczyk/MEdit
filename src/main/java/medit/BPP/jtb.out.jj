@@ -74,12 +74,6 @@ TOKEN :
 | < #DIGIT : ["0"-"9"] >
 }
 
-/* GRAMMAR start here */
-/*
-	This is an enter point for St4tic parsing without it, a parser can't started,
-	for this rule we need mandatory to specifying a “require” (if you notice “+”, one or many)
-	and after it a program instructions (notice “*”, no-one or many):
-*/
 Start Start() :
 {
   // --- JTB generated node declarations ---
@@ -110,13 +104,6 @@ Start Start() :
   { return new Start(n0, n5); }
 }
 
-/*
-	Here for packages importation can be one word after “require” or many like :
-	
-	require java .
-	require java lang .
-	...
-*/
 Require Require() :
 {
   // --- JTB generated node declarations ---
@@ -138,7 +125,6 @@ Require Require() :
   { return new Require(n0, n2); }
 }
 
-/* Simple Math Operations */
 MathExpression MathExpression() :
 {
   // --- JTB generated node declarations ---
@@ -266,7 +252,6 @@ UnaryExpression UnaryExpression() :
   { return new UnaryExpression(n0); }
 }
 
-/* Start Simple Relational Test */
 RelationalExprssion RelationalExprssion() :
 {
   // --- JTB generated node declarations ---
@@ -395,23 +380,6 @@ UnaryRelational UnaryRelational() :
   { return new UnaryRelational(n0); }
 }
 
-/* End Simple Relational Test */
-/*
-	"if" expression is a classcal test if true do something
-	like in :
-	-----------------------------------------------
-		Java				|	VB
-	-----------------------------------------------
-	if( 1 > 0 )				|	If 1 > 0 Then	{						|		...		...					|	End If
-	}						|
-							|	 
-	Here is :
-	if 1 > 0 do
-		...
-	stop
-
-	"stop" is end of if block 
-*/
 IfExpression IfExpression() :
 {
   // --- JTB generated node declarations ---
@@ -441,24 +409,6 @@ IfExpression IfExpression() :
   { return new IfExpression(n0, n2, n3, n5, n7); }
 }
 
-/*
-	"while" expression is a classcal test while true repeat something
-	like in :
-	-----------------------------------------------
-		Java				|	VB
-	-----------------------------------------------
-	while( 1 > 0 )			|	While 1 > 0
-	{						|		...
-		...					|	End While
-	}						|
-							|	 
-	Here is :
-	while 1 > 0 do
-		...
-	stop
-
-	"stop" is end of while block 
-*/
 WhileExpression WhileExpression() :
 {
   // --- JTB generated node declarations ---
@@ -488,14 +438,6 @@ WhileExpression WhileExpression() :
   { return new WhileExpression(n0, n2, n3, n5, n7); }
 }
 
-/*
-	Variable declaration expresion is a syntax of variables
-	declaration in St4tic
-	in Perl we declare variables by using keyword "my"
-	or VB by using "dim", St4tic use "def" for definition
-	or define it.
-	like def var = 1. 
-*/
 VariableDeclaration VariableDeclaration() :
 {
   // --- JTB generated node declarations ---
@@ -610,11 +552,6 @@ JavaStaticMethods JavaStaticMethods() :
   { return new JavaStaticMethods(n0, n2, n8, n10, n11, n16, n18); }
 }
 
-/*
-	“statement expression” is program body or algorithm can content 
-	a many variables declaration, variables assign, logical tests (if;while) 
-	or Java methods calling (remember in St4tic just public static methods).
-*/
 StatementExpression StatementExpression() :
 {
   // --- JTB generated node declarations ---
