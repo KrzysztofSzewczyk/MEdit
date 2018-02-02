@@ -37,7 +37,7 @@ public class TimerTaskActionManager {
 	}
 
 	/**
-	 * Timers updating labels and running GC every minute, if ram ussage hits 200
+	 * Timers updating labels and running GC every minute, if ram ussage hits 300
 	 * MB.
 	 */
 
@@ -46,7 +46,7 @@ public class TimerTaskActionManager {
 		gctimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				if (ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024 * 1024 >= 200)
+				if (ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getUsed() / 1024 * 1024 >= 300)
 					Runtime.getRuntime().gc();
 			}
 		}, 0, 60);
