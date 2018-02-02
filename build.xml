@@ -1,12 +1,21 @@
 <project>
 
+    <path id="build.classpath">
+        <fileset dir="lib">
+            <include name="**/*.jar"/>
+            <include name="**/*.zip"/>
+        </fileset>
+    </path>
+    
     <target name="clean">
         <delete dir="build"/>
     </target>
 
     <target name="compile">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes">
+            <classpath refid="build.classpath"/>
+        </javac>
     </target>
 
     <target name="jar">
