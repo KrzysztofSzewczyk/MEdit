@@ -31,7 +31,7 @@ you have to install JDK, JRE, and ANT only.
 
 ## Documentation
 
-You can find documentation [here](https://krzysztofszewczyk.github.io/MEdit/)
+You can find documentation [here](https://krzysztofszewczyk.github.io/MEdit/). Be sure to check our wiki [there](https://github.com/KrzysztofSzewczyk/MEdit/wiki)!
 
 ## Why not GPL?
 
