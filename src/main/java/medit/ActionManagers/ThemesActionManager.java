@@ -6,9 +6,14 @@ import java.io.IOException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.fife.ui.rsyntaxtextarea.Theme;
+
+import com.bulenkov.darcula.DarculaLaf;
 
 import medit.Crash;
 import medit.MainFrame;
@@ -164,6 +169,39 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmVisualStudio);
+		
+		final JSeparator separator = new JSeparator();
+		parent.add(separator);
+		
+		final JMenuItem mntmClassicLF = new JMenuItem("Classic L&F");
+		mntmVisualStudio.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		parent.add(mntmClassicLF);
+		
+		final JMenuItem mntmDarculaLF = new JMenuItem("Darcula L&F");
+		mntmVisualStudio.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(final ActionEvent e) {
+				try {
+					UIManager.setLookAndFeel(new DarculaLaf());
+				} catch (final UnsupportedLookAndFeelException ioe) { // Never happens
+					final Crash dialog = new Crash(ioe);
+					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					dialog.setVisible(true);
+				}
+			}
+		});
+		parent.add(mntmDarculaLF);
 	}
 
 }
