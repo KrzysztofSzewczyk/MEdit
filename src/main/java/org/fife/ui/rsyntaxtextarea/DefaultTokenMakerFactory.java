@@ -30,6 +30,7 @@ class DefaultTokenMakerFactory extends AbstractTokenMakerFactory implements Synt
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT, pkg + "ActionScriptTokenMaker");
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86, pkg + "AssemblerX86TokenMaker");
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_BBCODE, pkg + "BBCodeTokenMaker");
+		this.putMapping(SyntaxConstants.SYNTAX_STYLE_BPP, pkg + "BPPTokenMaker");
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_C, pkg + "CTokenMaker");
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_CLOJURE, pkg + "ClojureTokenMaker");
 		this.putMapping(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS, pkg + "CPlusPlusTokenMaker");

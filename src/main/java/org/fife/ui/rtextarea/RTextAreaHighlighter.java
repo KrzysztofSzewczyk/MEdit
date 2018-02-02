@@ -106,7 +106,6 @@ public class RTextAreaHighlighter extends BasicHighlighter {
 	 * A straightforward implementation of <code>HighlightInfo</code> for painting
 	 * layered highlights.
 	 */
-	@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 	protected static class LayeredHighlightInfoImpl extends HighlightInfoImpl implements LayeredHighlightInfo {
 
 		/*

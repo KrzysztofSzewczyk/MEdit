@@ -42,6 +42,11 @@ public interface SyntaxConstants {
 	 * Style for highlighting BBCode.
 	 */
 	String SYNTAX_STYLE_BBCODE = "text/bbcode";
+	
+	/**
+	 * Style for highlighting B++.
+	 */
+	String SYNTAX_STYLE_BPP = "text/bpp";
 
 	/**
 	 * Style for highlighting C.

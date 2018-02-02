@@ -42,7 +42,6 @@ import java.io.Reader;
  * @author Robert Futrell
  * @version 0.9
  */
-@SuppressWarnings({ "checkstyle:magicnumber" })
 public class UnicodeReader extends Reader {
 
 	/**

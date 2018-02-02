@@ -51,7 +51,6 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 // FIXME: Replace Utilities calls with custom versions (in RSyntaxUtilities) to
 // cut down on all of the modelToViews, as each call causes
 // a getTokenList => expensive!
-@SuppressWarnings({ "checkstyle:constantname" })
 public class RTextAreaEditorKit extends DefaultEditorKit {
 
 	/**

@@ -38,7 +38,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @version 1.0
  * @see Theme
  */
-@SuppressWarnings({ "checkstyle:magicnumber" })
 public class SyntaxScheme implements Cloneable, TokenTypes {
 
 	/**

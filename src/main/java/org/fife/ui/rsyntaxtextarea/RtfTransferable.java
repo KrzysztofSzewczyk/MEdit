@@ -29,6 +29,7 @@ class RtfTransferable implements Transferable {
 	/**
 	 * The "flavors" the text can be returned as.
 	 */
+	@SuppressWarnings("deprecation")
 	private static final DataFlavor[] FLAVORS = { new DataFlavor("text/rtf", "RTF"), DataFlavor.stringFlavor,
 			DataFlavor.plainTextFlavor // deprecated
 	};

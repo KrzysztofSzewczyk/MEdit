@@ -3,7 +3,9 @@ package medit.ActionManagers;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 
 import medit.MainFrame;
 
@@ -19,7 +21,9 @@ public class LanguageActionManager {
 		final JMenu mnA = new JMenu("A");
 		final JMenuItem mntmActionscript = new JMenuItem("ActionScript");
 		final JMenuItem mntmAssembler = new JMenuItem("Assembly"); // Like this one
+		final JMenu mnB = new JMenu("B");
 		final JMenuItem mntmBbcode = new JMenuItem("BBCode");
+		final JMenuItem mntmBpp = new JMenuItem("B++ (MEdit scripting language)");
 		final JMenu mnC = new JMenu("C");
 		final JMenuItem mntmC = new JMenuItem("C");
 		final JMenuItem mntmC_1 = new JMenuItem("C++");
@@ -73,7 +77,7 @@ public class LanguageActionManager {
 
 		parent.add(mntmNo);
 		parent.add(mnA);
-		parent.add(mntmBbcode);
+		parent.add(mnB);
 		parent.add(mnC);
 		parent.add(mnD);
 		parent.add(mntmFortan);
@@ -101,6 +105,8 @@ public class LanguageActionManager {
 				e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT));
 		mntmBbcode.addActionListener(
 				e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE));
+		mntmBpp.addActionListener(
+				e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BPP));
 		mntmClojure.addActionListener(
 				e -> this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE));
 		mntmC_2.addActionListener(
@@ -174,6 +180,8 @@ public class LanguageActionManager {
 
 		mnA.add(mntmActionscript);
 		mnA.add(mntmAssembler);
+		mnB.add(mntmBpp);
+		mnB.add(mntmBbcode);
 		mnC.add(mntmC);
 		mnC.add(mntmC_1);
 		mnC.add(mntmC_2);

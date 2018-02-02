@@ -37,7 +37,7 @@ import javax.swing.text.DefaultEditorKit;
  * <li>etc.
  * </ul>
  */
-@SuppressWarnings({ "checkstyle:linelength" })
+@SuppressWarnings({ })
 public class RTADefaultInputMap extends InputMap {
 
 	/**

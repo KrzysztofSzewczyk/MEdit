@@ -56,6 +56,7 @@ class ClipboardHistoryPopup extends JWindow {
 	/**
 	 * The list component used in this popup.
 	 */
+	@SuppressWarnings("rawtypes")
 	private static final class ChoiceList extends JList {
 
 		/**
@@ -63,6 +64,7 @@ class ClipboardHistoryPopup extends JWindow {
 		 */
 		private static final long serialVersionUID = 1L;
 
+		@SuppressWarnings("unchecked")
 		private ChoiceList() {
 			super(new DefaultListModel());
 			this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -108,6 +110,7 @@ class ClipboardHistoryPopup extends JWindow {
 
 		}
 
+		@SuppressWarnings("unchecked")
 		private void setContents(final List<String> contents) {
 			final DefaultListModel model = (DefaultListModel) this.getModel();
 			model.clear();

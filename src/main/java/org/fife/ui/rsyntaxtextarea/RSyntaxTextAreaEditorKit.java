@@ -66,7 +66,6 @@ import org.fife.ui.rtextarea.RecordableTextAction;
  * @author Robert Futrell
  * @version 0.5
  */
-@SuppressWarnings({ "checkstyle:constantname" })
 public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 
 	/**

@@ -72,7 +72,6 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Robert Futrell
  * @version 1.0
  */
-@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 public class Theme {
 
 	/**

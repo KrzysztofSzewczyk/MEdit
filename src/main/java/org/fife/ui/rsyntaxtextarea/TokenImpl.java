@@ -30,7 +30,6 @@ import javax.swing.text.Utilities;
  * @author Robert Futrell
  * @version 0.3
  */
-@SuppressWarnings({ "checkstyle:visibilitymodifier" })
 public class TokenImpl implements Token {
 
 	/**

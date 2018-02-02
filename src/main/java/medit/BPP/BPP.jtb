@@ -1,179 +1,0 @@
-
-options {
-  JDK_VERSION = "1.5";
-  STATIC = false;
-}
-
-PARSER_BEGIN(BPP) 
-package medit.BPP;
-
-import medit.BPP.syntaxtree.*;
-import medit.BPP.visitor.*;
-import medit.BPP.interpreter.*;
-
-public class BPP {
-  
-}
-PARSER_END(BPP)
-
-SKIP :
-{
-  " "
-| "\t"
-| "\n"
-| "\r"
-| <"\"" (~["\n","\r"])* ("\n"|"\r"|"\r\n")>
-}
-
-TOKEN :
-{
-	< REQUERE: "with" >
-| 	< IF: "if" >
-| 	< WHILE: "while" >
-| 	< DO: "begin" >
-| 	< STOP: "end" >
-| 	< DEF : "var" >
-}
-
-TOKEN : /* SYMBOLS */
-{
-	< DOT: "." >
-| 	< COLON: ":" >
-| 	< EQ: "==" >
-| 	< GT: ">"  >
-| 	< LT: "<"  >
-| 	< GE: ">=" >
-| 	< LE: "<=" >
-| 	< NE: "!=" >
-| 	< PLUS: "+">
-| 	< MINUS: "-" >
-| 	< MUL: "*" >
-| 	< DIV: "/" >
-| 	< MOD: "%" >
-| 	< ASSIGN: "=" > 
-}
-
-TOKEN : /* LITERALS */
-{
-  < INTEGER_LITERAL: ["1"-"9"] (["0"-"9"])* | "0"   >
-}
-
-TOKEN : /* IDENTIFIERS */
-{
-  < IDENTIFIER: <LETTER> (<LETTER>|<DIGIT>)* >
-|  < #LETTER: ["_","a"-"z","A"-"Z"] >
-|  < #DIGIT: ["0"-"9"] >
-}
-
-void Start():{}
-{
-  (    Require() "."
-  )+
-
-  (    StatementExpression()
-  )*
-}
-
-void Require():{}
-{	"with"	(	  < IDENTIFIER >
-	)+
-}
-
-void MathExpression():{ } 
-{
-  AdditiveExpression()
-}
-
-void AdditiveExpression():{}
-{
-  MultiplicativeExpression() ( ( "+" | "-" ) MultiplicativeExpression() )*
-}
-
-void MultiplicativeExpression():{}
-{
-  UnaryExpression() ( ( "*" | "/" | "%" ) UnaryExpression() )*
-}
-
-void UnaryExpression():{}
-{
-  "(" MathExpression() ")" | < INTEGER_LITERAL > | VariableName()
-}
-
-void RelationalExprssion():{}
-{	RelationalEqualityExpression()
-}
-
-void RelationalEqualityExpression():{}
-{	RelationalGreaterExpression()	[	  (	     "==" | "!="	  )
-	  RelationalGreaterExpression()	]
-}
-
-void RelationalGreaterExpression():{}
-{
-	RelationalLessExpression()
-	[
-	  (
-	     ">" | ">="
-	  )
-	   RelationalLessExpression()
-	]
-}
-
-void RelationalLessExpression():{}
-{
-	UnaryRelational()
-	[
-	  (
-	     "<" | "<="
-	  )
-	  
-	  UnaryRelational()
-	  
-	]
-}
-
-void UnaryRelational():{}{
-	   MathExpression()	
-}
-
-void IfExpression():{}
-{	"if" RelationalExprssion() "begin"
-		(
-		  StatementExpression()		) *
-	"end"
-}
-
-void WhileExpression():{}
-{
-	"while" RelationalExprssion() "begin"
-		(
-		  StatementExpression()
-		) *
-	"end"}
-
-void VariableDeclaration():{}
-{	"var" VariableName() "=" MathExpression() "."
-}
-
-void VariableAssign():{}
-{	VariableName() "=" MathExpression() "."
-}
-
-void VariableName():{}
-{	< IDENTIFIER >
-}
-
-void JavaStaticMethods():{}
-{	< IDENTIFIER >	(	  ":" < IDENTIFIER >
-	)+
-
-	"(" MathExpression() ( "," MathExpression() )* ")" "."	  
-}
-
-void StatementExpression():{}
-{
-  VariableDeclaration()
-| LOOKAHEAD(2) VariableAssign()
-| JavaStaticMethods()
-| IfExpression()
-| WhileExpression()}

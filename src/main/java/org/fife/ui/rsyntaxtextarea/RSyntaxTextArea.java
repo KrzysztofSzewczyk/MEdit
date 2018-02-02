@@ -1045,6 +1045,7 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 	 * necessary style information (font, foreground color and background color).
 	 * Does nothing for <code>null</code> selections.
 	 */
+	@SuppressWarnings("deprecation")
 	public void copyAsRtf() {
 
 		final int selStart = this.getSelectionStart();
