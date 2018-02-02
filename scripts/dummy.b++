@@ -1,0 +1,3 @@
+function start(instance) {
+	javax.swing.JOptionPane.showMessageDialog(instance, "Hello from B++ Script");
+}

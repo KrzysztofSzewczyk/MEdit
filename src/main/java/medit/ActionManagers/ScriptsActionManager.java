@@ -90,8 +90,6 @@ public class ScriptsActionManager {
 														JOptionPane.ERROR_MESSAGE);
 												return;
 											}
-											System.out.println(result);
-											System.out.println(result.getClass());
 										} catch (FileNotFoundException | ScriptException e) {
 											final Crash dialog = new Crash(e);
 											dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

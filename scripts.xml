@@ -1,0 +1,7 @@
+<?xml version = "1.0"?>
+<medit>
+	<script>
+		<name>Dummy Script</name>
+		<scriptfile>scripts/dummy.b++</scriptfile>
+	</script>
+</medit>

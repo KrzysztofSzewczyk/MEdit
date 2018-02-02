@@ -37,7 +37,7 @@ public class NSSLoader {
 	 * @throws IOException
 	 */
 	
-	public List<NSSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException {
+	public List<NSSEntry> loadAll(final String string) throws ParserConfigurationException, SAXException, IOException { 
 		if (!new File(string).exists())
 			return null;
 		final File inputFile = new File(string);
