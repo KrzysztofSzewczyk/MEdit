@@ -19,7 +19,7 @@ Eclipse should build it automatically, if not you should press build button.
 You can make .jar file by doubleclicking jardesc file and following instructions
 appearing on screen.
 
-As of now you can use jdk and ant! Check out [this](CONTRIBUTING.MD) file for information
+As of now you can use jdk and ant! Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information
 on building, (and eventually contributing to repository) using ant.
 
 ## Dependencies
@@ -28,6 +28,10 @@ There are no depedencies for actually building this project (JDK, Eclipse and JR
 should be installed, but it's rather obvious). To make changes to form, you are
 recommended to use Eclipse WindowBuilder. If you'd prefer to build it using ANT,
 you have to install JDK, JRE, and ANT only.
+
+## Documentation
+
+You can find documentation [here](https://krzysztofszewczyk.github.io/MEdit/)
 
 ## Why not GPL?
 
