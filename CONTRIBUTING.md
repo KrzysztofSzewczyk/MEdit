@@ -3,7 +3,7 @@
 We'd love pull requests from everyone. By participating in this project, you
 agree to abide by the MEdit [code of conduct].
 
-[code of conduct]: https://github.com/KrzysztofSzewczyk/MEdit/CODE_OF_CONDUCT.MD
+[code of conduct]: https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CODE_OF_CONDUCT.md
 
 Fork, then clone the repo:
 
