@@ -1,4 +1,4 @@
-# MEdit
+# ![MEdit](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/MEdit.png)
 
 [![Build Status](https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master)](https://travis-ci.org/KrzysztofSzewczyk/MEdit)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
