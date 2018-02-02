@@ -12,6 +12,7 @@
     <target name="jar">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/MEdit.jar" basedir="build/classes">
+            <zipgroupfileset dir="." includes="darcula.jar" /> 
             <manifest>
                 <attribute name="Main-Class" value="medit.Start"/>
             </manifest>
