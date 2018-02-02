@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
@@ -174,11 +175,15 @@ public class ThemesActionManager {
 		parent.add(separator);
 		
 		final JMenuItem mntmClassicLF = new JMenuItem("Classic L&F");
-		mntmVisualStudio.addActionListener(new ActionListener() {
+		mntmClassicLF.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				try {
+					//instance.setVisible(false);
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					SwingUtilities.updateComponentTreeUI(instance);
+					instance.pack();
+					//instance.setVisible(true);
 				} catch (final ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -189,11 +194,15 @@ public class ThemesActionManager {
 		parent.add(mntmClassicLF);
 		
 		final JMenuItem mntmDarculaLF = new JMenuItem("Darcula L&F");
-		mntmVisualStudio.addActionListener(new ActionListener() {
+		mntmDarculaLF.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
 				try {
+					//instance.setVisible(false);
 					UIManager.setLookAndFeel(new DarculaLaf());
+					SwingUtilities.updateComponentTreeUI(instance);
+					instance.pack();
+					//instance.setVisible(true);
 				} catch (final UnsupportedLookAndFeelException ioe) { // Never happens
 					final Crash dialog = new Crash(ioe);
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
