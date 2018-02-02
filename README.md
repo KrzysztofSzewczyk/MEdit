@@ -1,6 +1,9 @@
-# ![MEdit](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/MEdit.png)
 
-[![Build Status](https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master)](https://travis-ci.org/KrzysztofSzewczyk/MEdit)
+<p align="center">
+  <img src="https://github.com/KrzysztofSzewczyk/MEdit/blob/master/MEdit.png">
+</p>
+
+<a href="https://travis-ci.org/KrzysztofSzewczyk/MEdit"><img src="https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master"></a>
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 [![Join the chat at https://gitter.im/MITEdit/Lobby](https://badges.gitter.im/MITEdit/Lobby.svg)](https://gitter.im/MITEdit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
