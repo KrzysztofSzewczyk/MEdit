@@ -19,6 +19,7 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
@@ -144,8 +145,11 @@ public class MainFrame extends JFrame {
 		final AboutActionManager aam = new AboutActionManager();
 		aam.About(mnAbout);
 
+		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
+		ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NONE);
+		
 		final LanguageActionManager lam = new LanguageActionManager(this);
-		lam.SetUp(mnSyntaxHighlighting);
+		lam.SetUp(mnSyntaxHighlighting, ccam);
 
 		final ThemesActionManager tam = new ThemesActionManager(this);
 		tam.RegisterThemes(mnThemes);
@@ -161,9 +165,6 @@ public class MainFrame extends JFrame {
 
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
 		sam.SetupScripts(mnScripts);
-		
-		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
-		ccam.SetUpCodeCompletion();
 
 		/**
 		 * Language submenu setup
@@ -213,6 +214,8 @@ public class MainFrame extends JFrame {
 		this.textPane.setHyperlinksEnabled(true);
 		this.textPane.setPaintMatchedBracketPair(true);
 		this.textPane.setPaintTabLines(true);
+		scrollPane.setIconRowHeaderEnabled(true);
+		scrollPane.setLineNumbersEnabled(true);
 		try {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));

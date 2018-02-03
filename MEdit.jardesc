@@ -11,9 +11,8 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=MEdit/src\/main\/java"/>
         <folder path="/MEdit/docs"/>
         <file path="/MEdit/LICENSE"/>
-        <javaElement handleIdentifier="=MEdit/blob"/>
-        <javaElement handleIdentifier="=MEdit/src\/main\/java"/>
     </selectedElements>
 </jardesc>

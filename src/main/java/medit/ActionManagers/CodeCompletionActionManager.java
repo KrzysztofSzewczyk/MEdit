@@ -2,7 +2,6 @@ package medit.ActionManagers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
 
 import javax.swing.WindowConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,7 +20,6 @@ import org.xml.sax.SAXException;
 
 import medit.Crash;
 import medit.MainFrame;
-import medit.NSS.NSSEntry;
 
 /**
  * This very important class is setting up code completion for MEdit
@@ -32,6 +30,13 @@ import medit.NSS.NSSEntry;
 
 public class CodeCompletionActionManager {
 
+	/**
+	 * This field is storing old autocompletion
+	 * to get it removed later.
+	 */
+	
+	private AutoCompletion oldAC;
+	
 	/**
 	 * MainFrame instance used by this class to reference bottombar.
 	 */
@@ -52,16 +57,20 @@ public class CodeCompletionActionManager {
 	 * Setup code completion
 	 */
 
-	public void SetUpCodeCompletion() {
-		CompletionProvider provider = createCompletionProvider();
+	public void SetUpCodeCompletion(String language) {
+		language = language.substring(5);
+		if(oldAC!=null) oldAC.uninstall();
+		CompletionProvider provider = createCompletionProvider(language);
 		AutoCompletion ac = new AutoCompletion(provider);
+		ac.setAutoActivationDelay(100);
 		ac.install(instance.textPane);
+		oldAC = ac;
 	}
 
 	/**
 	 * Get code completion entries
 	 */
-	private CompletionProvider createCompletionProvider() {
+	private CompletionProvider createCompletionProvider(String language) {
 		DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		if(new File("completion.xml").exists()) {
 			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -88,7 +97,7 @@ public class CodeCompletionActionManager {
 				dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				dialog.setVisible(true);
 			}
-			final NodeList nList = doc.getElementsByTagName("entry");
+			final NodeList nList = doc.getElementsByTagName(language);
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				final Node nNode = nList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {

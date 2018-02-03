@@ -55,6 +55,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 				DescWindowCallback {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The parent AutoCompletion instance.
 	 */
 	private AutoCompletion ac;
@@ -168,6 +173,10 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 
 		bottomPanel = new JPanel(new BorderLayout());
 		b = new AbstractBorder() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 			@Override
 			public Insets getBorderInsets(Component c) { 
 				return new Insets(1, 0, 0, 0);
@@ -508,6 +517,10 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 */
 	private class TimerAction extends AbstractAction {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private Completion completion;
 		private String anchor;
 		private boolean addToHistory;
@@ -534,6 +547,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * Action that moves to the previous description displayed.
 	 */
 	class ToolBarBackAction extends AbstractAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public ToolBarBackAction(boolean ltr) {
 			String img = "org/fife/ui/autocomplete/arrow_" +
@@ -566,6 +584,11 @@ class AutoCompleteDescWindow extends JWindow implements HyperlinkListener,
 	 * Action that moves to the previous description displayed.
 	 */
 	class ToolBarForwardAction extends AbstractAction {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
 		public ToolBarForwardAction(boolean ltr) {
 			String img = "org/fife/ui/autocomplete/arrow_" +

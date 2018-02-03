@@ -66,12 +66,6 @@ public class ScriptsActionManager {
 							new Thread(new NSSRunnable(e.getCodeFN()) {
 								@Override
 								public void run() {
-									if (ScriptsActionManager.this.instance.currentFile == null) {
-										JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
-												"Please save your work in order to execute any tool.", "Error.",
-												JOptionPane.ERROR_MESSAGE);
-										return;
-									}
 									File codefile = new File(this.codefn);
 									if (!codefile.exists()) {
 										JOptionPane
