@@ -1,4 +1,3 @@
-function start(instance) {
-	javax.swing.JOptionPane.showMessageDialog(instance, "Hello from B++ Script");
-	main(instance);
-}
+function getJava(type){return Java.type(type);}
+function require(jsname){load(jsname);}
+function start(instance){importPackage(medit);main(instance);}
