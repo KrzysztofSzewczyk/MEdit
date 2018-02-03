@@ -77,6 +77,7 @@ public class ScriptsActionManager {
 									} else {
 										ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 										try {
+											engine.eval(new FileReader("scripts/start.b++"));
 											engine.eval(new FileReader(this.codefn));
 											Invocable invocable = (Invocable) engine;
 											try {
