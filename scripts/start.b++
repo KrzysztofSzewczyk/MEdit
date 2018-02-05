@@ -1,3 +1,30 @@
-function getJava(type){return Java.type(type);}
-function require(jsname){load(jsname);}
-function start(instance){importPackage(medit);main(instance);}
+var medit = medit || {};
+
+medit.API = function (instance) {
+    if (instance === undefined) {
+		javax.swing.JOptionPane.showMessageDialog(undefined, "[start.b++]: [API Setup]: Please pass instance to medit.API constructor.");
+    } else {
+		this.instance = instance;
+		this.ApplicationType = Java.type('medit.API.Application');
+		this.FileType = Java.type('medit.API.File');
+		this.BottombarLabelType = Java.type('medit.API.BottombarLabel');
+		this.Application = undefined;
+		this.getJavaType = function (type){
+			return Java.type(type);
+		}
+		this.require = function (jsname){
+			load(jsname);
+		}
+		this.ctor = function () {
+			this.Application = new this.ApplicationType(this.instance);
+		}
+    }
+};
+
+function start(instance){
+	with(medit){
+        var v = new API(instance);
+        v.ctor();
+		main(v);
+    }
+}

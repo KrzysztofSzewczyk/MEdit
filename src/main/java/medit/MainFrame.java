@@ -59,6 +59,16 @@ public class MainFrame extends JFrame {
 	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
+	
+	public final JMenu mnFile = new JMenu("File");
+	public final JMenu mnEdit = new JMenu("Edit");
+	public final JMenu mnLanguage = new JMenu("Language");
+	public final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
+	public final JMenu mnThemes = new JMenu("Themes");
+	public final JMenu mnTools = new JMenu("Tools");
+	public final JMenu mnScripts = new JMenu("Scripts");
+	public final JMenu mnAbout = new JMenu("About");
+	public final JMenu mnTextOperations = new JMenu("Text Operations");
 
 	/**
 	 * Create the frame.
@@ -89,25 +99,15 @@ public class MainFrame extends JFrame {
 		/**
 		 * Menus setup
 		 */
-		final JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
-		final JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
-		final JMenu mnLanguage = new JMenu("Language");
 		menuBar.add(mnLanguage);
-		final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
 		menuBar.add(mnSyntaxHighlighting);
-		final JMenu mnThemes = new JMenu("Themes");
 		menuBar.add(mnThemes);
-		final JMenu mnTools = new JMenu("Tools");
 		menuBar.add(mnTools);
-		final JMenu mnScripts = new JMenu("Scripts");
 		menuBar.add(mnScripts);
-		final JMenu mnAbout = new JMenu("About");
 		menuBar.add(mnAbout);
-		final JMenu mnTextOperations = new JMenu("Text Operations");
 		menuBar.add(mnTextOperations);
-
 		/**
 		 * Menu action managers setup.
 		 */

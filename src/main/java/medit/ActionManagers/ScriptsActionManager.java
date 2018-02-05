@@ -59,6 +59,32 @@ public class ScriptsActionManager {
 			final List<NSSEntry> tools = tsldr.loadAll("scripts.xml");
 			if (tools != null)
 				for (final NSSEntry e : tools) {
+					new Thread(new NSSRunnable(e.getCodeFN()) {
+						@Override
+						public void run() {
+							ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+							try {
+								engine.eval(new FileReader("scripts/start.b++"));
+								engine.eval(new FileReader(this.codefn));
+								Invocable invocable = (Invocable) engine;
+								try {
+									invocable.invokeFunction("onLoad", instance);
+								} catch (NoSuchMethodException e) {
+									JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
+											"Script does not contain start function.", "Error.",
+											JOptionPane.ERROR_MESSAGE);
+									return;
+								}
+							} catch (FileNotFoundException | ScriptException e) {
+								final Crash dialog = new Crash(e);
+								dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+								dialog.setVisible(true);
+								return;
+							}
+						}
+						
+					});
+					
 					final JMenuItem item = new JMenuItem(e.getName());
 					item.addActionListener(new MenuActionListener(e.getCodeFN(), e.getName()) {
 						@Override

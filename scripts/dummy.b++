@@ -1,3 +1,7 @@
-function main(instance) {
-	javax.swing.JOptionPane.showMessageDialog(instance, "Hello from B++ Script");
+function onLoad(instance) {
+	
+}
+
+function main(APIObject) {
+	javax.swing.JOptionPane.showMessageDialog(APIObject.instance, "Hello from B++ Script");
 }
