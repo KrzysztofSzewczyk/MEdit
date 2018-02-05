@@ -97,6 +97,7 @@ public class MainFrame extends JFrame {
 			"Starting editor",
 			"Done loading."
 	};
+	private final JPanel panel = new JPanel();
 
 	/**
 	 * Create the frame.
@@ -213,24 +214,6 @@ public class MainFrame extends JFrame {
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
 		LoadValue++;
-		/**
-		 * Toolbar setup.
-		 */
-		final JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		this.contentPane.add(toolBar, BorderLayout.NORTH);
-
-		fam.New(toolBar);
-		fam.Open(toolBar);
-		fam.Save(toolBar);
-		fam.Exit(toolBar);
-
-		eam.Cut(toolBar);
-		eam.Copy(toolBar);
-		eam.Paste(toolBar);
-		eam.Delete(toolBar);
-		eam.Undo(toolBar);
-		eam.Redo(toolBar);
 		LoadValue++;
 
 		/**
@@ -267,6 +250,27 @@ public class MainFrame extends JFrame {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
 			theme.apply(this.textPane);
+			
+			contentPane.add(panel, BorderLayout.NORTH);
+			panel.setLayout(new BorderLayout(0, 0));
+			/**
+			 * Toolbar setup.
+			 */
+			final JToolBar toolBar = new JToolBar();
+			panel.add(toolBar, BorderLayout.WEST);
+			toolBar.setFloatable(false);
+			
+					fam.New(toolBar);
+					fam.Open(toolBar);
+					fam.Save(toolBar);
+					fam.Exit(toolBar);
+					
+							eam.Cut(toolBar);
+							eam.Copy(toolBar);
+							eam.Paste(toolBar);
+							eam.Delete(toolBar);
+							eam.Undo(toolBar);
+							eam.Redo(toolBar);
 		} catch (final IOException ioe) { // Never happens
 			final Crash dialog = new Crash(ioe);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

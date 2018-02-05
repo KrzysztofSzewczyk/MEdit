@@ -2,18 +2,16 @@ package medit;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.ImageIcon;
-import javax.swing.JProgressBar;
-import javax.swing.UIManager;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 
 public class SplashScreen extends JFrame {
 
@@ -22,7 +20,7 @@ public class SplashScreen extends JFrame {
 	public SplashScreen instance;
 	public JLabel lblLogo = new JLabel("");
 	public JProgressBar progressBar = new JProgressBar();
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -30,6 +28,8 @@ public class SplashScreen extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					//System.setProperty("sun.java2d.ddscale", "true");
+			        //UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					SplashScreen frame = new SplashScreen();
 					frame.setVisible(true);
