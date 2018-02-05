@@ -1,12 +1,14 @@
 ### Which area of MEdit are we dealing with? (Scripts, tools, editor in general, functionality, look):
 
-Please mark options that are correct in your case:
+[//]: # (Please comment options that are correct in your case:)
 
-- [ ] I'm encountering a bug
+[//]: # (- [ ] I'm encountering a bug)
 
-- [ ] I'm proposing enchancement
+[//]: # (- [ ] I'm proposing enchancement)
 
-- [ ] I want something other
+[//]: # (- [ ] I want something other)
+
+[//]: # (Please remove h3, if it doesn't match with your selection)
 
 ### In case of selecting first answer:
 #### Steps to reproduce:
