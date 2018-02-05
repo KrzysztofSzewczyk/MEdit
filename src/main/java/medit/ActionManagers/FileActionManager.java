@@ -115,7 +115,7 @@ public class FileActionManager {
 						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 					}
-					final MainFrame frame = new MainFrame();
+					final MainFrame frame = new MainFrame(null);
 					frame.setVisible(true);
 					MainFrame.instances++;
 				}).start();
@@ -145,7 +145,7 @@ public class FileActionManager {
 						dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 						dialog.setVisible(true);
 					}
-					final MainFrame frame = new MainFrame();
+					final MainFrame frame = new MainFrame(null);
 					frame.setVisible(true);
 					MainFrame.instances++;
 				}).start();

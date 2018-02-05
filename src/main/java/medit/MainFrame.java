@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -69,12 +71,53 @@ public class MainFrame extends JFrame {
 	public final JMenu mnScripts = new JMenu("Scripts");
 	public final JMenu mnAbout = new JMenu("About");
 	public final JMenu mnTextOperations = new JMenu("Text Operations");
+	
+	private int LoadValue = 1;
+	private String[] sLoadValues = {
+			"Loading classes",
+			"Menubar setup",
+			"Menu items setup",
+			"Window AM setup",
+			"File AM setup",
+			"Text OP AM setup",
+			"About AM setup",
+			"Code Completion AM setup",
+			"Language AM setup",
+			"Themes AM setup",
+			"Timer task AM setup",
+			"Bottombar setup",
+			"Tool AM setup",
+			"Script AM setup",
+			"Language AM setup",
+			"Toolbar setup",
+			"Editor look setup",
+			"Editor functionality setup",
+			"Gutter setup",
+			"Default theme setup",
+			"Starting editor",
+			"Done loading."
+	};
 
 	/**
 	 * Create the frame.
+	 * @param instance2 
 	 */
-	public MainFrame() {
+	public MainFrame(SplashScreen splashScreen) {
 
+		/**
+		 * SplashScreen state updater.
+		 */
+		
+		final Timer gctimer = new Timer();
+		gctimer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(splashScreen==null) return;
+				splashScreen.progressBar.setValue(LoadValue);
+				splashScreen.progressBar.setString("Current Task (Done): " + sLoadValues [LoadValue] + " (" + LoadValue + "/" + sLoadValues.length + ")");
+			}
+		}, 0, 1);
+		
 		/**
 		 * Frame setup
 		 */
@@ -89,13 +132,13 @@ public class MainFrame extends JFrame {
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.setContentPane(this.contentPane);
 		this.contentPane.setLayout(new BorderLayout(0, 0));
-
+		LoadValue++;
 		/**
 		 * Menu bar Setup
 		 */
 		final JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
-
+		LoadValue++;
 		/**
 		 * Menus setup
 		 */
@@ -108,13 +151,14 @@ public class MainFrame extends JFrame {
 		menuBar.add(mnScripts);
 		menuBar.add(mnAbout);
 		menuBar.add(mnTextOperations);
+		LoadValue++;
 		/**
 		 * Menu action managers setup.
 		 */
 
 		final WindowActionManager wam = new WindowActionManager(this);
 		wam.Closing();
-
+		LoadValue++;
 		final FileActionManager fam = new FileActionManager(this);
 		fam.New(mnFile);
 		fam.Open(mnFile);
@@ -127,7 +171,7 @@ public class MainFrame extends JFrame {
 		fam.RemoveFromDisk(mnFile);
 		fam.Separator(mnFile);
 		fam.Exit(mnFile);
-
+		LoadValue++;
 		final EditActionManager eam = new EditActionManager(this);
 		eam.Cut(mnEdit);
 		eam.Copy(mnEdit);
@@ -138,41 +182,37 @@ public class MainFrame extends JFrame {
 		eam.Redo(mnEdit);
 		eam.Separator(mnEdit);
 		eam.Search(mnEdit);
-
+		LoadValue++;
 		final TextOPActionManager topam = new TextOPActionManager(this);
 		topam.SetupTextOP(mnTextOperations);
-
+		LoadValue++;
 		final AboutActionManager aam = new AboutActionManager();
 		aam.About(mnAbout);
-
 		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
 		ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NONE);
-		
+		LoadValue++;
 		final LanguageActionManager lam = new LanguageActionManager(this);
 		lam.SetUp(mnSyntaxHighlighting, ccam);
-
+		LoadValue++;
 		final ThemesActionManager tam = new ThemesActionManager(this);
 		tam.RegisterThemes(mnThemes);
-
+		LoadValue++;
 		final TimerTaskActionManager ttam = new TimerTaskActionManager(this);
 		ttam.SetUpTimers();
-
+		LoadValue++;
 		final BottombarActionManager bbam = new BottombarActionManager(this);
 		bbam.SetUpBottombar();
-
+		LoadValue++;
 		final ToolActionManager toolam = new ToolActionManager(this);
 		toolam.SetupTools(mnTools);
-
+		LoadValue++;
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
 		sam.SetupScripts(mnScripts);
-
-		/**
-		 * Language submenu setup
-		 */
+		LoadValue++;
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
-
+		LoadValue++;
 		/**
 		 * Toolbar setup.
 		 */
@@ -191,6 +231,7 @@ public class MainFrame extends JFrame {
 		eam.Delete(toolBar);
 		eam.Undo(toolBar);
 		eam.Redo(toolBar);
+		LoadValue++;
 
 		/**
 		 * Editor setup
@@ -200,7 +241,8 @@ public class MainFrame extends JFrame {
 
 		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		scrollPane.setViewportView(this.textPane);
-
+		LoadValue++;
+		
 		this.textPane.clearParsers();
 		this.textPane.setParserDelay(1);
 		this.textPane.setAnimateBracketMatching(true);
@@ -214,8 +256,13 @@ public class MainFrame extends JFrame {
 		this.textPane.setHyperlinksEnabled(true);
 		this.textPane.setPaintMatchedBracketPair(true);
 		this.textPane.setPaintTabLines(true);
+		LoadValue++;
+		
 		scrollPane.setIconRowHeaderEnabled(true);
 		scrollPane.setLineNumbersEnabled(true);
+		scrollPane.setFoldIndicatorEnabled(true);
+		LoadValue++;
+		
 		try {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
@@ -225,9 +272,10 @@ public class MainFrame extends JFrame {
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
-		scrollPane.setLineNumbersEnabled(true);
-		scrollPane.setFoldIndicatorEnabled(true);
-
+		LoadValue++;
+		
+		setVisible(true);
+		gctimer.cancel();
 	}
 
 }
