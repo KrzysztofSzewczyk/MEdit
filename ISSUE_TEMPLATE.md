@@ -3,7 +3,9 @@
 Please mark options that are correct in your case:
 
 [ ] I'm encountering a bug
+
 [ ] I'm proposing enchancement
+
 [ ] I want something other
 
 ### In case of selecting first answer:
