@@ -45,32 +45,118 @@ import org.fife.ui.rtextarea.SearchContext;
  */
 public class AbstractSearchDialog extends EscapableDialog implements ActionListener {
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * Listens for properties changing in the search context.
+	 */
+	private class SearchContextListener implements PropertyChangeListener {
 
-	protected SearchContext context;
-	private SearchContextListener contextListener;
+		@Override
+		public void propertyChange(final PropertyChangeEvent e) {
+			AbstractSearchDialog.this.handleSearchContextPropertyChanged(e);
+		}
 
-	// Conditions check boxes and the panel they go in.
-	// This should be added in the actual layout of the search dialog.
-	protected JCheckBox caseCheckBox;
-	protected JCheckBox wholeWordCheckBox;
-	protected JCheckBox regexCheckBox;
-	protected JPanel searchConditionsPanel;
+	}
 
 	/**
 	 * The image to use beside a text component when content assist is available.
 	 */
 	private static Image contentAssistImage;
+	private static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.search.Search");
+
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Returns the image to display beside text components when content assist is
+	 * available.
+	 *
+	 * @return The image to use.
+	 */
+	public static Image getContentAssistImage() {
+		if (AbstractSearchDialog.contentAssistImage == null) {
+			final URL url = AbstractSearchDialog.class.getResource("lightbulb.png");
+			try {
+				AbstractSearchDialog.contentAssistImage = ImageIO.read(url);
+			} catch (final IOException ioe) { // Never happens
+				ioe.printStackTrace();
+			}
+		}
+		return AbstractSearchDialog.contentAssistImage;
+	}
+
+	public static String getString(final String key) {
+		return AbstractSearchDialog.msg.getString(key);
+	}
+
+	/**
+	 * This method allows us to check if the current JRE is 1.4 or 1.5. This is used
+	 * to workaround some Java bugs, for example, pre 1.6, JComboBoxes would
+	 * "swallow" enter key presses in them when their content changed. This causes
+	 * the user to have to press Enter twice when entering text to search for in a
+	 * "Find" dialog, so instead we detect if a JRE is old enough to have this
+	 * behavior and, if so, programmitcally press the Find button.
+	 *
+	 * @return Whether this is a 1.4 or 1.5 JRE.
+	 */
+	protected static boolean isPreJava6JRE() {
+		// We only support 1.4+, so no need to check 1.3, etc.
+		final String version = System.getProperty("java.specification.version");
+		return version.startsWith("1.5") || version.startsWith("1.4");
+	}
+
+	/**
+	 * Returns whether the characters on either side of
+	 * <code>substr(searchIn,startPos,startPos+searchStringLength)</code> are
+	 * whitespace. While this isn't the best definition of "whole word", it's the
+	 * one we're going to use for now.
+	 *
+	 * @param searchIn
+	 *            The text to search in.
+	 * @param offset
+	 *            The offset of the possible word.
+	 * @param len
+	 *            The length of the possible word.
+	 * @return Whether the specified range represents a "whole word".
+	 */
+	public static final boolean isWholeWord(final CharSequence searchIn, final int offset, final int len) {
+
+		boolean wsBefore, wsAfter;
+
+		try {
+			wsBefore = Character.isWhitespace(searchIn.charAt(offset - 1));
+		} catch (final IndexOutOfBoundsException e) {
+			wsBefore = true;
+		}
+		try {
+			wsAfter = Character.isWhitespace(searchIn.charAt(offset + len));
+		} catch (final IndexOutOfBoundsException e) {
+			wsAfter = true;
+		}
+
+		return wsBefore && wsAfter;
+
+	}
+
+	// Miscellaneous other stuff.
+	protected JButton cancelButton;
+
+	// Conditions check boxes and the panel they go in.
+	// This should be added in the actual layout of the search dialog.
+	protected JCheckBox caseCheckBox;
+
+	protected SearchContext context;
+
+	private SearchContextListener contextListener;
 
 	/**
 	 * The combo box where the user enters the text for which to search.
 	 */
 	protected SearchComboBox findTextCombo;
 
-	// Miscellaneous other stuff.
-	protected JButton cancelButton;
+	protected JCheckBox regexCheckBox;
 
-	private static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.search.Search");
+	protected JPanel searchConditionsPanel;
+
+	protected JCheckBox wholeWordCheckBox;
 
 	/**
 	 * Constructor. Does initializing for parts common to all search dialogs.
@@ -78,9 +164,9 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @param owner
 	 *            The dialog that owns this search dialog.
 	 */
-	public AbstractSearchDialog(Dialog owner) {
+	public AbstractSearchDialog(final Dialog owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
@@ -89,46 +175,45 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @param owner
 	 *            The window that owns this search dialog.
 	 */
-	public AbstractSearchDialog(Frame owner) {
+	public AbstractSearchDialog(final Frame owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
 	 * Listens for actions in this search dialog.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 
-		String command = e.getActionCommand();
+		final String command = e.getActionCommand();
 
 		// They check/uncheck the "Match Case" checkbox on the Find dialog.
 		if (command.equals("FlipMatchCase")) {
-			boolean matchCase = caseCheckBox.isSelected();
-			context.setMatchCase(matchCase);
+			final boolean matchCase = this.caseCheckBox.isSelected();
+			this.context.setMatchCase(matchCase);
 		}
 
 		// They check/uncheck the "Whole word" checkbox on the Find dialog.
 		else if (command.equals("FlipWholeWord")) {
-			boolean wholeWord = wholeWordCheckBox.isSelected();
-			context.setWholeWord(wholeWord);
+			final boolean wholeWord = this.wholeWordCheckBox.isSelected();
+			this.context.setWholeWord(wholeWord);
 		}
 
 		// They check/uncheck the "Regular expression" checkbox.
 		else if (command.equals("FlipRegEx")) {
-			boolean useRegEx = regexCheckBox.isSelected();
-			context.setRegularExpression(useRegEx);
+			final boolean useRegEx = this.regexCheckBox.isSelected();
+			this.context.setRegularExpression(useRegEx);
 		}
 
 		// If they press the "Cancel" button.
-		else if (command.equals("Cancel")) {
-			setVisible(false);
-		}
+		else if (command.equals("Cancel"))
+			this.setVisible(false);
 
 	}
 
-	private JCheckBox createCheckBox(ResourceBundle msg, String keyRoot) {
-		JCheckBox cb = new JCheckBox(msg.getString(keyRoot));
+	private JCheckBox createCheckBox(final ResourceBundle msg, final String keyRoot) {
+		final JCheckBox cb = new JCheckBox(msg.getString(keyRoot));
 		cb.setMnemonic((int) msg.getString(keyRoot + "Mnemonic").charAt(0));
 		cb.setActionCommand("Flip" + keyRoot);
 		cb.addActionListener(this);
@@ -171,9 +256,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 		// The entire dialog will hide, instead of the completion popup.
 		// Further, bringing the Find dialog back up, the completion popup
 		// will still be visible.
-		if (findTextCombo.hideAutoCompletePopups()) {
+		if (this.findTextCombo.hideAutoCompletePopups())
 			return;
-		}
 		super.escapePressed();
 	}
 
@@ -181,13 +265,13 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * Makes the "Find text" field active.
 	 */
 	protected void focusFindTextField() {
-		JTextComponent textField = UIUtil.getTextComponent(findTextCombo);
+		final JTextComponent textField = UIUtil.getTextComponent(this.findTextCombo);
 		textField.requestFocusInWindow();
 		textField.selectAll();
 	}
 
 	protected ResourceBundle getBundle() {
-		return msg;
+		return AbstractSearchDialog.msg;
 	}
 
 	/**
@@ -197,25 +281,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @see #setCancelButtonText
 	 */
 	public final String getCancelButtonText() {
-		return cancelButton.getText();
-	}
-
-	/**
-	 * Returns the image to display beside text components when content assist is
-	 * available.
-	 *
-	 * @return The image to use.
-	 */
-	public static Image getContentAssistImage() {
-		if (contentAssistImage == null) {
-			URL url = AbstractSearchDialog.class.getResource("lightbulb.png");
-			try {
-				contentAssistImage = ImageIO.read(url);
-			} catch (IOException ioe) { // Never happens
-				ioe.printStackTrace();
-			}
-		}
-		return contentAssistImage;
+		return this.cancelButton.getText();
 	}
 
 	/**
@@ -225,7 +291,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @see #setMatchCaseCheckboxText
 	 */
 	public final String getMatchCaseCheckboxText() {
-		return caseCheckBox.getText();
+		return this.caseCheckBox.getText();
 	}
 
 	/**
@@ -235,7 +301,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @see #setRegularExpressionCheckboxText
 	 */
 	public final String getRegularExpressionCheckboxText() {
-		return regexCheckBox.getText();
+		return this.regexCheckBox.getText();
 	}
 
 	/**
@@ -245,7 +311,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @see #setSearchContext(SearchContext)
 	 */
 	public SearchContext getSearchContext() {
-		return context;
+		return this.context;
 	}
 
 	/**
@@ -254,11 +320,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @return The text the user wants to search for.
 	 */
 	public String getSearchString() {
-		return findTextCombo.getSelectedString();
-	}
-
-	public static String getString(String key) {
-		return msg.getString(key);
+		return this.findTextCombo.getSelectedString();
 	}
 
 	/**
@@ -268,7 +330,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @see #setWholeWordCheckboxText
 	 */
 	public final String getWholeWordCheckboxText() {
-		return wholeWordCheckBox.getText();
+		return this.wholeWordCheckBox.getText();
 	}
 
 	/**
@@ -277,10 +339,10 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * behavior, but should call the super implementation.
 	 */
 	protected void handleRegExCheckBoxClicked() {
-		handleToggleButtons();
+		this.handleToggleButtons();
 		// "Content assist" support
-		boolean b = regexCheckBox.isSelected();
-		findTextCombo.setAutoCompleteEnabled(b);
+		final boolean b = this.regexCheckBox.isSelected();
+		this.findTextCombo.setAutoCompleteEnabled(b);
 	}
 
 	/**
@@ -290,17 +352,17 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @param e
 	 *            The property change event fired.
 	 */
-	protected void handleSearchContextPropertyChanged(PropertyChangeEvent e) {
+	protected void handleSearchContextPropertyChanged(final PropertyChangeEvent e) {
 
 		// A property changed on the context itself.
-		String prop = e.getPropertyName();
+		final String prop = e.getPropertyName();
 
 		if (SearchContext.PROPERTY_MATCH_CASE.equals(prop)) {
-			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-			caseCheckBox.setSelected(newValue);
+			final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+			this.caseCheckBox.setSelected(newValue);
 		} else if (SearchContext.PROPERTY_MATCH_WHOLE_WORD.equals(prop)) {
-			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-			wholeWordCheckBox.setSelected(newValue);
+			final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+			this.wholeWordCheckBox.setSelected(newValue);
 		}
 		// else if (SearchContext.PROPERTY_SEARCH_FORWARD.equals(prop)) {
 		// boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
@@ -311,16 +373,15 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 		// ...
 		// }
 		else if (SearchContext.PROPERTY_USE_REGEX.equals(prop)) {
-			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-			regexCheckBox.setSelected(newValue);
-			handleRegExCheckBoxClicked();
+			final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+			this.regexCheckBox.setSelected(newValue);
+			this.handleRegExCheckBoxClicked();
 		} else if (SearchContext.PROPERTY_SEARCH_FOR.equals(prop)) {
-			String newValue = (String) e.getNewValue();
-			String oldValue = getSearchString();
+			final String newValue = (String) e.getNewValue();
+			final String oldValue = this.getSearchString();
 			// Prevents IllegalStateExceptions
-			if (!newValue.equals(oldValue)) {
-				setSearchString(newValue);
-			}
+			if (!newValue.equals(oldValue))
+				this.setSearchString(newValue);
 		}
 
 	}
@@ -336,18 +397,16 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	protected FindReplaceButtonsEnableResult handleToggleButtons() {
 
 		// String text = getSearchString();
-		JTextComponent tc = UIUtil.getTextComponent(findTextCombo);
-		String text = tc.getText();
-		if (text.length() == 0) {
+		final JTextComponent tc = UIUtil.getTextComponent(this.findTextCombo);
+		final String text = tc.getText();
+		if (text.length() == 0)
 			return new FindReplaceButtonsEnableResult(false, null);
-		}
-		if (regexCheckBox.isSelected()) {
+		if (this.regexCheckBox.isSelected())
 			try {
 				Pattern.compile(text);
-			} catch (PatternSyntaxException pse) {
+			} catch (final PatternSyntaxException pse) {
 				return new FindReplaceButtonsEnableResult(false, pse.getMessage());
 			}
-		}
 		return new FindReplaceButtonsEnableResult(true, null);
 	}
 
@@ -355,105 +414,54 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 
 		// The user should set a shared instance between all subclass
 		// instances, but to be safe we set individual ones.
-		contextListener = new SearchContextListener();
-		setSearchContext(createDefaultSearchContext());
+		this.contextListener = new SearchContextListener();
+		this.setSearchContext(this.createDefaultSearchContext());
 
 		// Make a panel containing the option check boxes.
-		searchConditionsPanel = new JPanel();
-		searchConditionsPanel.setLayout(new BoxLayout(searchConditionsPanel, BoxLayout.Y_AXIS));
-		caseCheckBox = createCheckBox(msg, "MatchCase");
-		searchConditionsPanel.add(caseCheckBox);
-		wholeWordCheckBox = createCheckBox(msg, "WholeWord");
-		searchConditionsPanel.add(wholeWordCheckBox);
-		regexCheckBox = createCheckBox(msg, "RegEx");
-		searchConditionsPanel.add(regexCheckBox);
+		this.searchConditionsPanel = new JPanel();
+		this.searchConditionsPanel.setLayout(new BoxLayout(this.searchConditionsPanel, BoxLayout.Y_AXIS));
+		this.caseCheckBox = this.createCheckBox(AbstractSearchDialog.msg, "MatchCase");
+		this.searchConditionsPanel.add(this.caseCheckBox);
+		this.wholeWordCheckBox = this.createCheckBox(AbstractSearchDialog.msg, "WholeWord");
+		this.searchConditionsPanel.add(this.wholeWordCheckBox);
+		this.regexCheckBox = this.createCheckBox(AbstractSearchDialog.msg, "RegEx");
+		this.searchConditionsPanel.add(this.regexCheckBox);
 
 		// Initialize any text fields.
-		findTextCombo = new SearchComboBox(null, false);
+		this.findTextCombo = new SearchComboBox(null, false);
 
 		// Initialize other stuff.
-		cancelButton = new JButton(getString("Cancel"));
+		this.cancelButton = new JButton(AbstractSearchDialog.getString("Cancel"));
 		// cancelButton.setMnemonic((int)getString("CancelMnemonic").charAt(0));
-		cancelButton.setActionCommand("Cancel");
-		cancelButton.addActionListener(this);
+		this.cancelButton.setActionCommand("Cancel");
+		this.cancelButton.addActionListener(this);
 
 	}
 
-	protected boolean matchesSearchFor(String text) {
-		if (text == null || text.length() == 0) {
+	protected boolean matchesSearchFor(final String text) {
+		if (text == null || text.length() == 0)
 			return false;
-		}
-		String searchFor = findTextCombo.getSelectedString();
+		final String searchFor = this.findTextCombo.getSelectedString();
 		if (searchFor != null && searchFor.length() > 0) {
-			boolean matchCase = caseCheckBox.isSelected();
-			if (regexCheckBox.isSelected()) {
+			final boolean matchCase = this.caseCheckBox.isSelected();
+			if (this.regexCheckBox.isSelected()) {
 				int flags = Pattern.MULTILINE; // '^' and '$' are done per line.
 				flags = RSyntaxUtilities.getPatternFlags(matchCase, flags);
 				Pattern pattern = null;
 				try {
 					pattern = Pattern.compile(searchFor, flags);
-				} catch (PatternSyntaxException pse) {
+				} catch (final PatternSyntaxException pse) {
 					pse.printStackTrace(); // Never happens
 					return false;
 				}
 				return pattern.matcher(text).matches();
 			} else {
-				if (matchCase) {
+				if (matchCase)
 					return searchFor.equals(text);
-				}
 				return searchFor.equalsIgnoreCase(text);
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * This method allows us to check if the current JRE is 1.4 or 1.5. This is used
-	 * to workaround some Java bugs, for example, pre 1.6, JComboBoxes would
-	 * "swallow" enter key presses in them when their content changed. This causes
-	 * the user to have to press Enter twice when entering text to search for in a
-	 * "Find" dialog, so instead we detect if a JRE is old enough to have this
-	 * behavior and, if so, programmitcally press the Find button.
-	 *
-	 * @return Whether this is a 1.4 or 1.5 JRE.
-	 */
-	protected static boolean isPreJava6JRE() {
-		// We only support 1.4+, so no need to check 1.3, etc.
-		String version = System.getProperty("java.specification.version");
-		return version.startsWith("1.5") || version.startsWith("1.4");
-	}
-
-	/**
-	 * Returns whether the characters on either side of
-	 * <code>substr(searchIn,startPos,startPos+searchStringLength)</code> are
-	 * whitespace. While this isn't the best definition of "whole word", it's the
-	 * one we're going to use for now.
-	 *
-	 * @param searchIn
-	 *            The text to search in.
-	 * @param offset
-	 *            The offset of the possible word.
-	 * @param len
-	 *            The length of the possible word.
-	 * @return Whether the specified range represents a "whole word".
-	 */
-	public static final boolean isWholeWord(CharSequence searchIn, int offset, int len) {
-
-		boolean wsBefore, wsAfter;
-
-		try {
-			wsBefore = Character.isWhitespace(searchIn.charAt(offset - 1));
-		} catch (IndexOutOfBoundsException e) {
-			wsBefore = true;
-		}
-		try {
-			wsAfter = Character.isWhitespace(searchIn.charAt(offset + len));
-		} catch (IndexOutOfBoundsException e) {
-			wsAfter = true;
-		}
-
-		return wsBefore && wsAfter;
-
 	}
 
 	/**
@@ -462,12 +470,11 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * practically be never).
 	 */
 	protected void refreshUIFromContext() {
-		if (this.caseCheckBox == null) {
+		if (this.caseCheckBox == null)
 			return; // First time through, UI not realized yet
-		}
-		this.caseCheckBox.setSelected(context.getMatchCase());
-		this.regexCheckBox.setSelected(context.isRegularExpression());
-		this.wholeWordCheckBox.setSelected(context.getWholeWord());
+		this.caseCheckBox.setSelected(this.context.getMatchCase());
+		this.regexCheckBox.setSelected(this.context.isRegularExpression());
+		this.wholeWordCheckBox.setSelected(this.context.getWholeWord());
 	}
 
 	/**
@@ -476,7 +483,7 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	@Override
 	public void requestFocus() {
 		super.requestFocus();
-		focusFindTextField();
+		this.focusFindTextField();
 	}
 
 	/**
@@ -486,8 +493,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 *            The text for the Cancel button.
 	 * @see #getCancelButtonText
 	 */
-	public final void setCancelButtonText(String text) {
-		cancelButton.setText(text);
+	public final void setCancelButtonText(final String text) {
+		this.cancelButton.setText(text);
 	}
 
 	/**
@@ -497,8 +504,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 *            The text for the "Match Case" check box.
 	 * @see #getMatchCaseCheckboxText
 	 */
-	public final void setMatchCaseCheckboxText(String text) {
-		caseCheckBox.setText(text);
+	public final void setMatchCaseCheckboxText(final String text) {
+		this.caseCheckBox.setText(text);
 	}
 
 	/**
@@ -508,8 +515,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 *            The text for the "Regular Expression" check box.
 	 * @see #getRegularExpressionCheckboxText
 	 */
-	public final void setRegularExpressionCheckboxText(String text) {
-		regexCheckBox.setText(text);
+	public final void setRegularExpressionCheckboxText(final String text) {
+		this.regexCheckBox.setText(text);
 	}
 
 	/**
@@ -521,13 +528,12 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 *            The new search context. This cannot be <code>null</code>.
 	 * @see #getSearchContext()
 	 */
-	public void setSearchContext(SearchContext context) {
-		if (this.context != null) {
-			this.context.removePropertyChangeListener(contextListener);
-		}
+	public void setSearchContext(final SearchContext context) {
+		if (this.context != null)
+			this.context.removePropertyChangeListener(this.contextListener);
 		this.context = context;
-		this.context.addPropertyChangeListener(contextListener);
-		refreshUIFromContext();
+		this.context.addPropertyChangeListener(this.contextListener);
+		this.refreshUIFromContext();
 	}
 
 	/**
@@ -536,8 +542,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 * @param newSearchString
 	 *            The <code>tring</code> to put into the search field.
 	 */
-	public void setSearchString(String newSearchString) {
-		findTextCombo.addItem(newSearchString);
+	public void setSearchString(final String newSearchString) {
+		this.findTextCombo.addItem(newSearchString);
 	}
 
 	/**
@@ -547,20 +553,8 @@ public class AbstractSearchDialog extends EscapableDialog implements ActionListe
 	 *            The text for the "Whole Word" check box.
 	 * @see #getWholeWordCheckboxText
 	 */
-	public final void setWholeWordCheckboxText(String text) {
-		wholeWordCheckBox.setText(text);
-	}
-
-	/**
-	 * Listens for properties changing in the search context.
-	 */
-	private class SearchContextListener implements PropertyChangeListener {
-
-		@Override
-		public void propertyChange(PropertyChangeEvent e) {
-			handleSearchContextPropertyChanged(e);
-		}
-
+	public final void setWholeWordCheckboxText(final String text) {
+		this.wholeWordCheckBox.setText(text);
 	}
 
 }

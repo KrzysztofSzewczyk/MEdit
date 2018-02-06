@@ -3,7 +3,7 @@
  *
  * SizeGrip.java - A size grip component that sits at the bottom of the window,
  * allowing the user to easily resize that window.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -40,15 +41,75 @@ import javax.swing.event.MouseInputAdapter;
 class SizeGrip extends JPanel {
 
 	/**
+	 * Listens for mouse events on this panel and resizes the parent window
+	 * appropriately.
+	 */
+	/*
+	 * NOTE: We use SwingUtilities.convertPointToScreen() instead of just using the
+	 * locations relative to the corner component because the latter proved buggy -
+	 * stretch the window too wide and some kind of arithmetic error started
+	 * happening somewhere - our window would grow way too large.
+	 */
+	private class MouseHandler extends MouseInputAdapter {
+
+		private Point origPos;
+
+		@Override
+		public void mouseDragged(final MouseEvent e) {
+			final Point newPos = e.getPoint();
+			SwingUtilities.convertPointToScreen(newPos, SizeGrip.this);
+			final int xDelta = newPos.x - this.origPos.x;
+			final int yDelta = newPos.y - this.origPos.y;
+			final Window wind = SwingUtilities.getWindowAncestor(SizeGrip.this);
+			if (wind != null) { // Should always be true
+				if (SizeGrip.this.getComponentOrientation().isLeftToRight()) {
+					int w = wind.getWidth();
+					if (newPos.x >= wind.getX())
+						w += xDelta;
+					int h = wind.getHeight();
+					if (newPos.y >= wind.getY())
+						h += yDelta;
+					wind.setSize(w, h);
+				} else { // RTL
+					final int newW = Math.max(1, wind.getWidth() - xDelta);
+					final int newH = Math.max(1, wind.getHeight() + yDelta);
+					wind.setBounds(newPos.x, wind.getY(), newW, newH);
+				}
+				// invalidate()/validate() needed pre-1.6.
+				wind.invalidate();
+				wind.validate();
+			}
+			this.origPos.setLocation(newPos);
+		}
+
+		@Override
+		public void mousePressed(final MouseEvent e) {
+			this.origPos = e.getPoint();
+			SwingUtilities.convertPointToScreen(this.origPos, SizeGrip.this);
+		}
+
+		@Override
+		public void mouseReleased(final MouseEvent e) {
+			this.origPos = null;
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The size grip to use if we're on OS X.
 	 */
 	private Image osxSizeGrip;
 
 	public SizeGrip() {
-		MouseHandler adapter = new MouseHandler();
-		addMouseListener(adapter);
-		addMouseMotionListener(adapter);
-		setPreferredSize(new Dimension(16, 16));
+		final MouseHandler adapter = new MouseHandler();
+		this.addMouseListener(adapter);
+		this.addMouseMotionListener(adapter);
+		this.setPreferredSize(new Dimension(16, 16));
 	}
 
 	/**
@@ -59,8 +120,8 @@ class SizeGrip extends JPanel {
 	 *            The new orientation.
 	 */
 	@Override
-	public void applyComponentOrientation(ComponentOrientation o) {
-		possiblyFixCursor(o.isLeftToRight());
+	public void applyComponentOrientation(final ComponentOrientation o) {
+		this.possiblyFixCursor(o.isLeftToRight());
 		super.applyComponentOrientation(o);
 	}
 
@@ -70,27 +131,26 @@ class SizeGrip extends JPanel {
 	 * @return The OS X size grip.
 	 */
 	private Image createOSXSizeGrip() {
-		ClassLoader cl = getClass().getClassLoader();
+		final ClassLoader cl = this.getClass().getClassLoader();
 		URL url = cl.getResource("org/fife/ui/autocomplete/osx_sizegrip.png");
 		if (url == null) {
 			// We're not running in a jar - we may be debugging in Eclipse,
 			// for example
-			File f = new File("../AutoComplete/src/org/fife/ui/autocomplete/osx_sizegrip.png");
-			if (f.isFile()) {
+			final File f = new File("../AutoComplete/src/org/fife/ui/autocomplete/osx_sizegrip.png");
+			if (f.isFile())
 				try {
 					url = f.toURI().toURL();
-				} catch (MalformedURLException mue) { // Never happens
+				} catch (final MalformedURLException mue) { // Never happens
 					mue.printStackTrace();
 					return null;
 				}
-			} else {
+			else
 				return null; // Can't find resource or image file
-			}
 		}
 		Image image = null;
 		try {
 			image = ImageIO.read(url);
-		} catch (IOException ioe) { // Never happens
+		} catch (final IOException ioe) { // Never happens
 			ioe.printStackTrace();
 		}
 		return image;
@@ -103,24 +163,24 @@ class SizeGrip extends JPanel {
 	 *            The graphics context.
 	 */
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(final Graphics g) {
 
 		super.paintComponent(g);
 
-		Dimension dim = getSize();
+		final Dimension dim = this.getSize();
 
-		if (osxSizeGrip != null) {
-			g.drawImage(osxSizeGrip, dim.width - 16, dim.height - 16, null);
+		if (this.osxSizeGrip != null) {
+			g.drawImage(this.osxSizeGrip, dim.width - 16, dim.height - 16, null);
 			return;
 		}
 
-		Color c1 = UIManager.getColor("Label.disabledShadow");
-		Color c2 = UIManager.getColor("Label.disabledForeground");
-		ComponentOrientation orientation = getComponentOrientation();
+		final Color c1 = UIManager.getColor("Label.disabledShadow");
+		final Color c2 = UIManager.getColor("Label.disabledForeground");
+		final ComponentOrientation orientation = this.getComponentOrientation();
 
 		if (orientation.isLeftToRight()) {
-			int width = dim.width -= 3;
-			int height = dim.height -= 3;
+			final int width = dim.width -= 3;
+			final int height = dim.height -= 3;
 			g.setColor(c1);
 			g.fillRect(width - 9, height - 1, 3, 3);
 			g.fillRect(width - 5, height - 1, 3, 3);
@@ -136,7 +196,7 @@ class SizeGrip extends JPanel {
 			g.fillRect(width - 1, height - 5, 2, 2);
 			g.fillRect(width - 1, height - 9, 2, 2);
 		} else {
-			int height = dim.height -= 3;
+			final int height = dim.height -= 3;
 			g.setColor(c1);
 			g.fillRect(10, height - 1, 3, 3);
 			g.fillRect(6, height - 1, 3, 3);
@@ -162,14 +222,12 @@ class SizeGrip extends JPanel {
 	 * @param ltr
 	 *            Whether the current component orientation is LTR.
 	 */
-	protected void possiblyFixCursor(boolean ltr) {
+	protected void possiblyFixCursor(final boolean ltr) {
 		int cursor = Cursor.NE_RESIZE_CURSOR;
-		if (ltr) {
+		if (ltr)
 			cursor = Cursor.NW_RESIZE_CURSOR;
-		}
-		if (cursor != getCursor().getType()) {
-			setCursor(Cursor.getPredefinedCursor(cursor));
-		}
+		if (cursor != this.getCursor().getType())
+			this.setCursor(Cursor.getPredefinedCursor(cursor));
 	}
 
 	@Override
@@ -178,69 +236,10 @@ class SizeGrip extends JPanel {
 		// TODO: Key off of Aqua LaF, not just OS X, as this size grip looks
 		// bad on other LaFs on Mac such as Nimbus.
 		if (System.getProperty("os.name").contains("OS X")) {
-			if (osxSizeGrip == null) {
-				osxSizeGrip = createOSXSizeGrip();
-			}
-		} else { // Clear memory in case of runtime LaF change.
-			osxSizeGrip = null;
-		}
-
-	}
-
-	/**
-	 * Listens for mouse events on this panel and resizes the parent window
-	 * appropriately.
-	 */
-	/*
-	 * NOTE: We use SwingUtilities.convertPointToScreen() instead of just using the
-	 * locations relative to the corner component because the latter proved buggy -
-	 * stretch the window too wide and some kind of arithmetic error started
-	 * happening somewhere - our window would grow way too large.
-	 */
-	private class MouseHandler extends MouseInputAdapter {
-
-		private Point origPos;
-
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			Point newPos = e.getPoint();
-			SwingUtilities.convertPointToScreen(newPos, SizeGrip.this);
-			int xDelta = newPos.x - origPos.x;
-			int yDelta = newPos.y - origPos.y;
-			Window wind = SwingUtilities.getWindowAncestor(SizeGrip.this);
-			if (wind != null) { // Should always be true
-				if (getComponentOrientation().isLeftToRight()) {
-					int w = wind.getWidth();
-					if (newPos.x >= wind.getX()) {
-						w += xDelta;
-					}
-					int h = wind.getHeight();
-					if (newPos.y >= wind.getY()) {
-						h += yDelta;
-					}
-					wind.setSize(w, h);
-				} else { // RTL
-					int newW = Math.max(1, wind.getWidth() - xDelta);
-					int newH = Math.max(1, wind.getHeight() + yDelta);
-					wind.setBounds(newPos.x, wind.getY(), newW, newH);
-				}
-				// invalidate()/validate() needed pre-1.6.
-				wind.invalidate();
-				wind.validate();
-			}
-			origPos.setLocation(newPos);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-			origPos = e.getPoint();
-			SwingUtilities.convertPointToScreen(origPos, SizeGrip.this);
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			origPos = null;
-		}
+			if (this.osxSizeGrip == null)
+				this.osxSizeGrip = this.createOSXSizeGrip();
+		} else
+			this.osxSizeGrip = null;
 
 	}
 

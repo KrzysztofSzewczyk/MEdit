@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -16,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * This dialog is the on that pops up after executing tool. It contains
  * information about tool execution status and it's output.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -56,7 +58,12 @@ public class CommandOutputDialog extends JDialog {
 			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				final JButton okButton = new JButton("OK");
-				okButton.addActionListener(e -> CommandOutputDialog.this.dispose());
+				okButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						CommandOutputDialog.this.dispose();
+					}
+				});
 				okButton.setActionCommand("OK");
 				buttonPane.add(okButton);
 				this.getRootPane().setDefaultButton(okButton);

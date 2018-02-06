@@ -419,11 +419,14 @@ class ClipboardHistoryPopup extends JWindow {
 		super.setVisible(visible);
 		this.updateTextAreaCaret(visible);
 		if (visible)
-			SwingUtilities.invokeLater(() -> {
-				ClipboardHistoryPopup.this.requestFocus();
-				if (ClipboardHistoryPopup.this.list.getModel().getSize() > 0)
-					ClipboardHistoryPopup.this.list.setSelectedIndex(0);
-				ClipboardHistoryPopup.this.list.requestFocusInWindow();
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					ClipboardHistoryPopup.this.requestFocus();
+					if (ClipboardHistoryPopup.this.list.getModel().getSize() > 0)
+						ClipboardHistoryPopup.this.list.setSelectedIndex(0);
+					ClipboardHistoryPopup.this.list.requestFocusInWindow();
+				}
 			});
 	}
 

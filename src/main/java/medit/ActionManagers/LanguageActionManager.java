@@ -144,14 +144,14 @@ public class LanguageActionManager {
 
 		mntmNo.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NONE);
 			}
 		});
 		mntmAssembler.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_ASSEMBLER_X86);
@@ -159,7 +159,7 @@ public class LanguageActionManager {
 		});
 		mntmActionscript.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_ACTIONSCRIPT);
@@ -167,21 +167,21 @@ public class LanguageActionManager {
 		});
 		mntmBbcode.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BBCODE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_BBCODE);
 			}
 		});
 		mntmBpp.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_BPP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_BPP);
 			}
 		});
 		mntmClojure.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_CLOJURE);
@@ -189,14 +189,14 @@ public class LanguageActionManager {
 		});
 		mntmC_2.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSHARP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_CSHARP);
 			}
 		});
 		mntmC_1.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS);
@@ -204,35 +204,35 @@ public class LanguageActionManager {
 		});
 		mntmCSS.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_CSS);
 			}
 		});
 		mntmC.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_C);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_C);
 			}
 		});
 		mntmD.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_D);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_D);
 			}
 		});
 		mntmDtd.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DTD);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_DTD);
 			}
 		});
 		mntmDocker.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_DOCKERFILE);
@@ -240,21 +240,21 @@ public class LanguageActionManager {
 		});
 		mntmDelphi.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DELPHI);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_DELPHI);
 			}
 		});
 		mntmDart.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_DART);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_DART);
 			}
 		});
 		mntmFortan.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_FORTRAN);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_FORTRAN);
@@ -262,14 +262,14 @@ public class LanguageActionManager {
 		});
 		mntmGroovy.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_GROOVY);
 			}
 		});
 		mntmHtaccess.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_HTACCESS);
@@ -277,35 +277,35 @@ public class LanguageActionManager {
 		});
 		mntmHtml.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HTML);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_HTML);
 			}
 		});
 		mntmHosts.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_HOSTS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_HOSTS);
 			}
 		});
 		mntmIni.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_INI);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_INI);
 			}
 		});
 		mntmJsp.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JSP);
 			}
 		});
 		mntmJshintrc.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
@@ -313,21 +313,21 @@ public class LanguageActionManager {
 		});
 		mntmJson.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JSON);
 			}
 		});
 		mntmJava.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JAVA);
 			}
 		});
 		mntmJavascript.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT);
@@ -335,42 +335,42 @@ public class LanguageActionManager {
 		});
 		mntmLua.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LUA);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_LUA);
 			}
 		});
 		mntmLisp.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LISP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_LISP);
 			}
 		});
 		mntmLess.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LESS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_LESS);
 			}
 		});
 		mntmLatex.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_LATEX);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_LATEX);
 			}
 		});
 		mntmMxml.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MXML);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_MXML);
 			}
 		});
 		mntmMakeFile.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_MAKEFILE);
@@ -378,14 +378,14 @@ public class LanguageActionManager {
 		});
 		mntmNsis.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NSIS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NSIS);
 			}
 		});
 		mntmPropertiesFile.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_PROPERTIES_FILE);
@@ -393,63 +393,63 @@ public class LanguageActionManager {
 		});
 		mntmPHP.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PHP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_PHP);
 			}
 		});
 		mntmPython.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PYTHON);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_PYTHON);
 			}
 		});
 		mntmPerl.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PERL);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_PERL);
 			}
 		});
 		mntmRuby.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_RUBY);
 			}
 		});
 		mntmSas.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SAS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_SAS);
 			}
 		});
 		mntmSacala.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SCALA);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_SCALA);
 			}
 		});
 		mntmSql.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_SQL);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_SQL);
 			}
 		});
 		mntmTcl.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TCL);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_TCL);
 			}
 		});
 		mntmTypescript.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT);
@@ -457,7 +457,7 @@ public class LanguageActionManager {
 		});
 		mntmUnixShell.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_UNIX_SHELL);
@@ -465,7 +465,7 @@ public class LanguageActionManager {
 		});
 		mntmVisualBasic.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_VISUAL_BASIC);
@@ -473,7 +473,7 @@ public class LanguageActionManager {
 		});
 		mntmWindowsBatch.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane
 						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_WINDOWS_BATCH);
@@ -481,14 +481,14 @@ public class LanguageActionManager {
 		});
 		mntmXml.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_XML);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_XML);
 			}
 		});
 		mntmYaml.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_YAML);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_YAML);
 			}

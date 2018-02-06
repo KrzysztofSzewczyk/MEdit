@@ -31,6 +31,27 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  */
 public class Util {
 
+	private static Object desktop;
+
+	private static boolean desktopCreationAttempted;
+
+	/**
+	 * Used for the color of hyperlinks when a LookAndFeel uses light text against a
+	 * dark background.
+	 */
+	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
+
+	private static final Object LOCK_DESKTOP_CREATION = new Object();
+
+	/**
+	 * If this system property is <code>true</code>, then even the "main" two
+	 * auto-complete windows will allow window decorations via
+	 * {@link PopupWindowDecorator}. If this property is undefined or
+	 * <code>false</code>, they won't honor such decorations. This is due to certain
+	 * performance issues with translucent windows (used for drop shadows), even as
+	 * of Java 7u2.
+	 */
+	public static final String PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS = "org.fife.ui.autocomplete.allowDecoratedAutoCompleteWindows";
 	/**
 	 * If a system property is defined with this name and set, ignoring case, to
 	 * <code>true</code>, this library will not attempt to use Substance renderers.
@@ -43,29 +64,20 @@ public class Util {
 	 * renderers if something goes horribly wrong.
 	 */
 	public static final String PROPERTY_DONT_USE_SUBSTANCE_RENDERERS = "org.fife.ui.autocomplete.DontUseSubstanceRenderers";
-
-	/**
-	 * If this system property is <code>true</code>, then even the "main" two
-	 * auto-complete windows will allow window decorations via
-	 * {@link PopupWindowDecorator}. If this property is undefined or
-	 * <code>false</code>, they won't honor such decorations. This is due to certain
-	 * performance issues with translucent windows (used for drop shadows), even as
-	 * of Java 7u2.
-	 */
-	public static final String PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS = "org.fife.ui.autocomplete.allowDecoratedAutoCompleteWindows";
-
-	/**
-	 * Used for the color of hyperlinks when a LookAndFeel uses light text against a
-	 * dark background.
-	 */
-	private static final Color LIGHT_HYPERLINK_FG = new Color(0xd8ffff);
-
 	private static final Pattern TAG_PATTERN = Pattern.compile("<[^>]*>");
-
 	private static final boolean useSubstanceRenderers;
-	private static boolean desktopCreationAttempted;
-	private static Object desktop;
-	private static final Object LOCK_DESKTOP_CREATION = new Object();
+
+	static {
+
+		boolean use = true;
+		try {
+			use = !Boolean.getBoolean(Util.PROPERTY_DONT_USE_SUBSTANCE_RENDERERS);
+		} catch (final AccessControlException ace) { // We're in an applet.
+			use = true;
+		}
+		useSubstanceRenderers = use;
+
+	}
 
 	/**
 	 * Attempts to open a web browser to the specified URI.
@@ -76,23 +88,22 @@ public class Util {
 	 * @return Whether the operation was successful. This will be <code>false</code>
 	 *         on JRE's older than 1.6.
 	 */
-	public static boolean browse(URI uri) {
+	public static boolean browse(final URI uri) {
 
 		boolean success = false;
 
 		if (uri != null) {
-			Object desktop = getDesktop();
-			if (desktop != null) {
+			final Object desktop = Util.getDesktop();
+			if (desktop != null)
 				try {
-					Method m = desktop.getClass().getDeclaredMethod("browse", new Class[] { URI.class });
+					final Method m = desktop.getClass().getDeclaredMethod("browse", new Class[] { URI.class });
 					m.invoke(desktop, new Object[] { uri });
 					success = true;
-				} catch (RuntimeException re) {
+				} catch (final RuntimeException re) {
 					throw re; // Keep FindBugs happy
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// Ignore, just return "false" below.
 				}
-			}
 		}
 
 		return success;
@@ -108,25 +119,25 @@ public class Util {
 	 */
 	private static Object getDesktop() {
 
-		synchronized (LOCK_DESKTOP_CREATION) {
+		synchronized (Util.LOCK_DESKTOP_CREATION) {
 
-			if (!desktopCreationAttempted) {
+			if (!Util.desktopCreationAttempted) {
 
-				desktopCreationAttempted = true;
+				Util.desktopCreationAttempted = true;
 
 				try {
-					Class<?> desktopClazz = Class.forName("java.awt.Desktop");
+					final Class<?> desktopClazz = Class.forName("java.awt.Desktop");
 					Method m = desktopClazz.getDeclaredMethod("isDesktopSupported");
 
-					boolean supported = ((Boolean) m.invoke(null)).booleanValue();
+					final boolean supported = ((Boolean) m.invoke(null)).booleanValue();
 					if (supported) {
 						m = desktopClazz.getDeclaredMethod("getDesktop");
-						desktop = m.invoke(null);
+						Util.desktop = m.invoke(null);
 					}
 
-				} catch (RuntimeException re) {
+				} catch (final RuntimeException re) {
 					throw re; // Keep FindBugs happy
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// Ignore; keeps desktop as null.
 				}
 
@@ -134,7 +145,7 @@ public class Util {
 
 		}
 
-		return desktop;
+		return Util.desktop;
 
 	}
 
@@ -146,30 +157,26 @@ public class Util {
 	 * @return The string representation, in the form "<code>#rrggbb</code>", or
 	 *         <code>null</code> if <code>c</code> is <code>null</code>.
 	 */
-	public static String getHexString(Color c) {
+	public static String getHexString(final Color c) {
 
-		if (c == null) {
+		if (c == null)
 			return null;
-		}
 
 		// Don't assume 0xff alpha
 		// return "#" + Integer.toHexString(c.getRGB()&0xffffff).substring(2);
 
-		StringBuilder sb = new StringBuilder("#");
-		int r = c.getRed();
-		if (r < 16) {
+		final StringBuilder sb = new StringBuilder("#");
+		final int r = c.getRed();
+		if (r < 16)
 			sb.append('0');
-		}
 		sb.append(Integer.toHexString(r));
-		int g = c.getGreen();
-		if (g < 16) {
+		final int g = c.getGreen();
+		if (g < 16)
 			sb.append('0');
-		}
 		sb.append(Integer.toHexString(g));
-		int b = c.getBlue();
-		if (b < 16) {
+		final int b = c.getBlue();
+		if (b < 16)
 			sb.append('0');
-		}
 		sb.append(Integer.toHexString(b));
 
 		return sb.toString();
@@ -189,11 +196,10 @@ public class Util {
 		// This property is defined by all standard LaFs, even Nimbus (!),
 		// but you never know what crazy LaFs there are...
 		Color fg = UIManager.getColor("Label.foreground");
-		if (fg == null) {
+		if (fg == null)
 			fg = new JLabel().getForeground();
-		}
 
-		return isLightForeground(fg) ? LIGHT_HYPERLINK_FG : Color.blue;
+		return Util.isLightForeground(fg) ? Util.LIGHT_HYPERLINK_FG : Color.blue;
 
 	}
 
@@ -208,15 +214,14 @@ public class Util {
 	 *            The y-coordinate, in screen coordinates.
 	 * @return The bounds of the monitor that contains the specified point.
 	 */
-	public static Rectangle getScreenBoundsForPoint(int x, int y) {
-		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
-		GraphicsDevice[] devices = env.getScreenDevices();
-		for (int i = 0; i < devices.length; i++) {
-			GraphicsConfiguration config = devices[i].getDefaultConfiguration();
-			Rectangle gcBounds = config.getBounds();
-			if (gcBounds.contains(x, y)) {
+	public static Rectangle getScreenBoundsForPoint(final int x, final int y) {
+		final GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		final GraphicsDevice[] devices = env.getScreenDevices();
+		for (final GraphicsDevice device : devices) {
+			final GraphicsConfiguration config = device.getDefaultConfiguration();
+			final Rectangle gcBounds = config.getBounds();
+			if (gcBounds.contains(x, y))
 				return gcBounds;
-			}
 		}
 		// If point is outside all monitors, default to default monitor (?)
 		return env.getMaximumWindowBounds();
@@ -233,8 +238,8 @@ public class Util {
 	 */
 	public static boolean getShouldAllowDecoratingMainAutoCompleteWindows() {
 		try {
-			return Boolean.getBoolean(PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS);
-		} catch (AccessControlException ace) { // We're in an applet.
+			return Boolean.getBoolean(Util.PROPERTY_ALLOW_DECORATED_AUTOCOMPLETE_WINDOWS);
+		} catch (final AccessControlException ace) { // We're in an applet.
 			return false;
 		}
 	}
@@ -248,7 +253,7 @@ public class Util {
 	 * @return Whether to use Substance renderers if Substance is installed.
 	 */
 	public static boolean getUseSubstanceRenderers() {
-		return useSubstanceRenderers;
+		return Util.useSubstanceRenderers;
 	}
 
 	/**
@@ -260,7 +265,7 @@ public class Util {
 	 *            The foreground color.
 	 * @return Whether it is a "light" foreground color.
 	 */
-	public static final boolean isLightForeground(Color fg) {
+	public static final boolean isLightForeground(final Color fg) {
 		return fg.getRed() > 0xa0 && fg.getGreen() > 0xa0 && fg.getBlue() > 0xa0;
 	}
 
@@ -274,11 +279,10 @@ public class Util {
 	 *            The prefix to check for. This cannot be {@code null}.
 	 * @return Whether {@code str} starts with {@code prefix}, ignoring case.
 	 */
-	public static boolean startsWithIgnoreCase(String str, String prefix) {
-		int prefixLength = prefix.length();
-		if (str.length() >= prefixLength) {
+	public static boolean startsWithIgnoreCase(final String str, final String prefix) {
+		final int prefixLength = prefix.length();
+		if (str.length() >= prefixLength)
 			return str.regionMatches(true, 0, prefix, 0, prefixLength);
-		}
 		return false;
 	}
 
@@ -290,24 +294,11 @@ public class Util {
 	 *            The string.
 	 * @return The string, with any HTML stripped.
 	 */
-	public static String stripHtml(String text) {
-		if (text == null || !text.startsWith("<html>")) {
+	public static String stripHtml(final String text) {
+		if (text == null || !text.startsWith("<html>"))
 			return text;
-		}
 		// TODO: Micro-optimize me, might be called in renderers and loops
-		return TAG_PATTERN.matcher(text).replaceAll("");
-	}
-
-	static {
-
-		boolean use = true;
-		try {
-			use = !Boolean.getBoolean(PROPERTY_DONT_USE_SUBSTANCE_RENDERERS);
-		} catch (AccessControlException ace) { // We're in an applet.
-			use = true;
-		}
-		useSubstanceRenderers = use;
-
+		return Util.TAG_PATTERN.matcher(text).replaceAll("");
 	}
 
 }

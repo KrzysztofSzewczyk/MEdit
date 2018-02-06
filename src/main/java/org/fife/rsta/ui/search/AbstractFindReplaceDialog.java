@@ -14,6 +14,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
+
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.BoxLayout;
@@ -45,27 +46,32 @@ import org.fife.ui.rtextarea.SearchContext;
 public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Property fired when the user toggles the search direction radio buttons.
 	 */
 	public static final String SEARCH_DOWNWARD_PROPERTY = "SearchDialog.SearchDownward";
 
-	// The radio buttons for changing the search direction.
-	protected JRadioButton upButton;
-	protected JRadioButton downButton;
 	protected JPanel dirPanel;
 	private String dirPanelTitle;
+	protected JRadioButton downButton;
 	protected JLabel findFieldLabel;
 	protected JButton findNextButton;
+	/**
+	 * Folks listening for events in this dialog.
+	 */
+	private EventListenerList listenerList;
 
 	/**
 	 * The "mark all" check box.
 	 */
 	protected JCheckBox markAllCheckBox;
 
-	/**
-	 * Folks listening for events in this dialog.
-	 */
-	private EventListenerList listenerList;
+	// The radio buttons for changing the search direction.
+	protected JRadioButton upButton;
 
 	/**
 	 * Constructor.
@@ -73,9 +79,9 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @param owner
 	 *            The dialog that owns this search dialog.
 	 */
-	public AbstractFindReplaceDialog(Dialog owner) {
+	public AbstractFindReplaceDialog(final Dialog owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
@@ -86,9 +92,9 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @param owner
 	 *            The window that owns this search dialog.
 	 */
-	public AbstractFindReplaceDialog(Frame owner) {
+	public AbstractFindReplaceDialog(final Frame owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
@@ -98,37 +104,30 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The event that occurred.
 	 */
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 
-		String command = e.getActionCommand();
+		final String command = e.getActionCommand();
 
-		if ("UpRadioButtonClicked".equals(command)) {
-			context.setSearchForward(false);
-		}
-
-		else if ("DownRadioButtonClicked".equals(command)) {
-			context.setSearchForward(true);
-		}
-
+		if ("UpRadioButtonClicked".equals(command))
+			this.context.setSearchForward(false);
+		else if ("DownRadioButtonClicked".equals(command))
+			this.context.setSearchForward(true);
 		else if ("MarkAll".equals(command)) {
-			boolean checked = markAllCheckBox.isSelected();
-			context.setMarkAll(checked);
+			final boolean checked = this.markAllCheckBox.isSelected();
+			this.context.setMarkAll(checked);
 		}
 
 		else if (SearchEvent.Type.FIND.name().equals(command)) {
 
 			// Add the item to the combo box's list, if it isn't already there.
-			JTextComponent tc = UIUtil.getTextComponent(findTextCombo);
-			findTextCombo.addItem(tc.getText());
-			context.setSearchFor(getSearchString());
+			final JTextComponent tc = UIUtil.getTextComponent(this.findTextCombo);
+			this.findTextCombo.addItem(tc.getText());
+			this.context.setSearchFor(this.getSearchString());
 
-			fireSearchEvent(e); // Let parent application know
+			this.fireSearchEvent(e); // Let parent application know
 
-		}
-
-		else {
+		} else
 			super.actionPerformed(e);
-		}
 
 	}
 
@@ -142,35 +141,34 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The listener to add.
 	 * @see #removeSearchListener(SearchListener)
 	 */
-	public void addSearchListener(SearchListener l) {
-		listenerList.add(SearchListener.class, l);
+	public void addSearchListener(final SearchListener l) {
+		this.listenerList.add(SearchListener.class, l);
 	}
 
 	/**
 	 * Notifies all listeners that have registered interest for notification on this
 	 * event type. The event instance is lazily created using the <code>event</code>
 	 * parameter.
-	 * 
+	 *
 	 * @param event
 	 *            The <code>ActionEvent</code> object coming from a child component.
 	 */
-	protected void fireSearchEvent(ActionEvent event) {
+	protected void fireSearchEvent(final ActionEvent event) {
 		// Guaranteed to return a non-null array
-		Object[] listeners = listenerList.getListenerList();
+		final Object[] listeners = this.listenerList.getListenerList();
 		SearchEvent e = null;
 		// Process the listeners last to first, notifying
 		// those that are interested in this event
-		for (int i = listeners.length - 2; i >= 0; i -= 2) {
+		for (int i = listeners.length - 2; i >= 0; i -= 2)
 			if (listeners[i] == SearchListener.class) {
 				// Lazily create the event:
 				if (e == null) {
-					String command = event.getActionCommand();
-					SearchEvent.Type type = SearchEvent.Type.valueOf(command);
-					e = new SearchEvent(this, type, context);
+					final String command = event.getActionCommand();
+					final SearchEvent.Type type = SearchEvent.Type.valueOf(command);
+					e = new SearchEvent(this, type, this.context);
 				}
 				((SearchListener) listeners[i + 1]).searchEvent(e);
 			}
-		}
 	}
 
 	/**
@@ -180,7 +178,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @see #setDownRadioButtonText
 	 */
 	public final String getDownRadioButtonText() {
-		return downButton.getText();
+		return this.downButton.getText();
 	}
 
 	/**
@@ -190,7 +188,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @see #setFindButtonText
 	 */
 	public final String getFindButtonText() {
-		return findNextButton.getText();
+		return this.findNextButton.getText();
 	}
 
 	/**
@@ -200,7 +198,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @see #setFindWhatLabelText
 	 */
 	public final String getFindWhatLabelText() {
-		return findFieldLabel.getText();
+		return this.findFieldLabel.getText();
 	}
 
 	/**
@@ -210,7 +208,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @see #setSearchButtonsBorderText
 	 */
 	public final String getSearchButtonsBorderText() {
-		return dirPanelTitle;
+		return this.dirPanelTitle;
 	}
 
 	/**
@@ -220,7 +218,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 * @see #setUpRadioButtonText
 	 */
 	public final String getUpRadioButtonText() {
-		return upButton.getText();
+		return this.upButton.getText();
 	}
 
 	/**
@@ -231,42 +229,39 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The property change event fired.
 	 */
 	@Override
-	protected void handleSearchContextPropertyChanged(PropertyChangeEvent e) {
+	protected void handleSearchContextPropertyChanged(final PropertyChangeEvent e) {
 
-		String prop = e.getPropertyName();
+		final String prop = e.getPropertyName();
 
 		if (SearchContext.PROPERTY_SEARCH_FORWARD.equals(prop)) {
-			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-			JRadioButton button = newValue ? downButton : upButton;
+			final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+			final JRadioButton button = newValue ? this.downButton : this.upButton;
 			button.setSelected(true);
 		}
 
 		else if (SearchContext.PROPERTY_MARK_ALL.equals(prop)) {
-			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-			markAllCheckBox.setSelected(newValue);
-		}
-
-		else {
+			final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+			this.markAllCheckBox.setSelected(newValue);
+		} else
 			super.handleSearchContextPropertyChanged(e);
-		}
 
 	}
 
 	@Override
 	protected FindReplaceButtonsEnableResult handleToggleButtons() {
 
-		FindReplaceButtonsEnableResult er = super.handleToggleButtons();
-		boolean enable = er.getEnable();
+		final FindReplaceButtonsEnableResult er = super.handleToggleButtons();
+		final boolean enable = er.getEnable();
 
-		findNextButton.setEnabled(enable);
+		this.findNextButton.setEnabled(enable);
 
 		// setBackground doesn't show up with XP Look and Feel!
 		// findTextComboBox.setBackground(enable ?
 		// UIManager.getColor("ComboBox.background") : Color.PINK);
-		JTextComponent tc = UIUtil.getTextComponent(findTextCombo);
+		final JTextComponent tc = UIUtil.getTextComponent(this.findTextCombo);
 		tc.setForeground(enable ? UIManager.getColor("TextField.foreground") : UIUtil.getErrorTextForeground());
 
-		String tooltip = SearchUtil.getToolTip(er);
+		final String tooltip = SearchUtil.getToolTip(er);
 		tc.setToolTipText(tooltip); // Always set, even if null
 
 		return er;
@@ -275,57 +270,57 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 
 	private void init() {
 
-		listenerList = new EventListenerList();
+		this.listenerList = new EventListenerList();
 
 		// Make a panel containing the "search up/down" radio buttons.
-		dirPanel = new JPanel();
-		dirPanel.setLayout(new BoxLayout(dirPanel, BoxLayout.LINE_AXIS));
-		setSearchButtonsBorderText(getString("Direction"));
-		ButtonGroup bg = new ButtonGroup();
-		upButton = new JRadioButton(getString("Up"), false);
-		upButton.setMnemonic((int) getString("UpMnemonic").charAt(0));
-		downButton = new JRadioButton(getString("Down"), true);
-		downButton.setMnemonic((int) getString("DownMnemonic").charAt(0));
-		upButton.setActionCommand("UpRadioButtonClicked");
-		upButton.addActionListener(this);
-		downButton.setActionCommand("DownRadioButtonClicked");
-		downButton.addActionListener(this);
-		bg.add(upButton);
-		bg.add(downButton);
-		dirPanel.add(upButton);
-		dirPanel.add(downButton);
+		this.dirPanel = new JPanel();
+		this.dirPanel.setLayout(new BoxLayout(this.dirPanel, BoxLayout.LINE_AXIS));
+		this.setSearchButtonsBorderText(AbstractSearchDialog.getString("Direction"));
+		final ButtonGroup bg = new ButtonGroup();
+		this.upButton = new JRadioButton(AbstractSearchDialog.getString("Up"), false);
+		this.upButton.setMnemonic((int) AbstractSearchDialog.getString("UpMnemonic").charAt(0));
+		this.downButton = new JRadioButton(AbstractSearchDialog.getString("Down"), true);
+		this.downButton.setMnemonic((int) AbstractSearchDialog.getString("DownMnemonic").charAt(0));
+		this.upButton.setActionCommand("UpRadioButtonClicked");
+		this.upButton.addActionListener(this);
+		this.downButton.setActionCommand("DownRadioButtonClicked");
+		this.downButton.addActionListener(this);
+		bg.add(this.upButton);
+		bg.add(this.downButton);
+		this.dirPanel.add(this.upButton);
+		this.dirPanel.add(this.downButton);
 
 		// Initialize the "mark all" button.
-		markAllCheckBox = new JCheckBox(getString("MarkAll"));
-		markAllCheckBox.setMnemonic((int) getString("MarkAllMnemonic").charAt(0));
-		markAllCheckBox.setActionCommand("MarkAll");
-		markAllCheckBox.addActionListener(this);
+		this.markAllCheckBox = new JCheckBox(AbstractSearchDialog.getString("MarkAll"));
+		this.markAllCheckBox.setMnemonic((int) AbstractSearchDialog.getString("MarkAllMnemonic").charAt(0));
+		this.markAllCheckBox.setActionCommand("MarkAll");
+		this.markAllCheckBox.addActionListener(this);
 
 		// Rearrange the search conditions panel.
-		searchConditionsPanel.removeAll();
-		searchConditionsPanel.setLayout(new BorderLayout());
+		this.searchConditionsPanel.removeAll();
+		this.searchConditionsPanel.setLayout(new BorderLayout());
 		JPanel temp = new JPanel();
 		temp.setLayout(new BoxLayout(temp, BoxLayout.PAGE_AXIS));
-		temp.add(caseCheckBox);
-		temp.add(wholeWordCheckBox);
-		searchConditionsPanel.add(temp, BorderLayout.LINE_START);
+		temp.add(this.caseCheckBox);
+		temp.add(this.wholeWordCheckBox);
+		this.searchConditionsPanel.add(temp, BorderLayout.LINE_START);
 		temp = new JPanel();
 		temp.setLayout(new BoxLayout(temp, BoxLayout.PAGE_AXIS));
-		temp.add(regexCheckBox);
-		temp.add(markAllCheckBox);
-		searchConditionsPanel.add(temp, BorderLayout.LINE_END);
+		temp.add(this.regexCheckBox);
+		temp.add(this.markAllCheckBox);
+		this.searchConditionsPanel.add(temp, BorderLayout.LINE_END);
 
 		// Create the "Find what" label.
-		findFieldLabel = UIUtil.newLabel(getBundle(), "FindWhat", findTextCombo);
+		this.findFieldLabel = UIUtil.newLabel(this.getBundle(), "FindWhat", this.findTextCombo);
 
 		// Create a "Find Next" button.
-		findNextButton = UIUtil.newButton(getBundle(), "Find");
-		findNextButton.setActionCommand(SearchEvent.Type.FIND.name());
-		findNextButton.addActionListener(this);
-		findNextButton.setDefaultCapable(true);
-		findNextButton.setEnabled(false); // Initially, nothing to look for.
+		this.findNextButton = UIUtil.newButton(this.getBundle(), "Find");
+		this.findNextButton.setActionCommand(SearchEvent.Type.FIND.name());
+		this.findNextButton.addActionListener(this);
+		this.findNextButton.setDefaultCapable(true);
+		this.findNextButton.setEnabled(false); // Initially, nothing to look for.
 
-		installKeyboardActions();
+		this.installKeyboardActions();
 
 	}
 
@@ -334,16 +329,21 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 */
 	private void installKeyboardActions() {
 
-		JRootPane rootPane = getRootPane();
-		InputMap im = rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		ActionMap am = rootPane.getActionMap();
+		final JRootPane rootPane = this.getRootPane();
+		final InputMap im = rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap am = rootPane.getActionMap();
 
-		int modifier = getToolkit().getMenuShortcutKeyMask();
-		KeyStroke ctrlF = KeyStroke.getKeyStroke(KeyEvent.VK_F, modifier);
+		final int modifier = this.getToolkit().getMenuShortcutKeyMask();
+		final KeyStroke ctrlF = KeyStroke.getKeyStroke(KeyEvent.VK_F, modifier);
 		im.put(ctrlF, "focusSearchForField");
 		am.put("focusSearchForField", new AbstractAction() {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				AbstractFindReplaceDialog.this.requestFocus();
 			}
 		});
@@ -354,14 +354,13 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 */
 	@Override
 	protected void refreshUIFromContext() {
-		if (this.markAllCheckBox == null) {
+		if (this.markAllCheckBox == null)
 			return; // First time through, UI not realized yet
-		}
 		super.refreshUIFromContext();
-		markAllCheckBox.setSelected(context.getMarkAll());
-		boolean searchForward = context.getSearchForward();
-		upButton.setSelected(!searchForward);
-		downButton.setSelected(searchForward);
+		this.markAllCheckBox.setSelected(this.context.getMarkAll());
+		final boolean searchForward = this.context.getSearchForward();
+		this.upButton.setSelected(!searchForward);
+		this.downButton.setSelected(searchForward);
 	}
 
 	/**
@@ -371,8 +370,8 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The listener to remove
 	 * @see #addSearchListener(SearchListener)
 	 */
-	public void removeSearchListener(SearchListener l) {
-		listenerList.remove(SearchListener.class, l);
+	public void removeSearchListener(final SearchListener l) {
+		this.listenerList.remove(SearchListener.class, l);
 	}
 
 	/**
@@ -382,8 +381,8 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The new text label for the "Down" radio button.
 	 * @see #getDownRadioButtonText
 	 */
-	public void setDownRadioButtonText(String text) {
-		downButton.setText(text);
+	public void setDownRadioButtonText(final String text) {
+		this.downButton.setText(text);
 	}
 
 	/**
@@ -393,8 +392,8 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The text for the Find button.
 	 * @see #getFindButtonText
 	 */
-	public final void setFindButtonText(String text) {
-		findNextButton.setText(text);
+	public final void setFindButtonText(final String text) {
+		this.findNextButton.setText(text);
 	}
 
 	/**
@@ -404,8 +403,8 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The text for the "Find what" text field's label.
 	 * @see #getFindWhatLabelText
 	 */
-	public void setFindWhatLabelText(String text) {
-		findFieldLabel.setText(text);
+	public void setFindWhatLabelText(final String text) {
+		this.findFieldLabel.setText(text);
 	}
 
 	/**
@@ -415,9 +414,9 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The text for the search radio buttons' border.
 	 * @see #getSearchButtonsBorderText
 	 */
-	public final void setSearchButtonsBorderText(String text) {
-		dirPanelTitle = text;
-		dirPanel.setBorder(createTitledBorder(dirPanelTitle));
+	public final void setSearchButtonsBorderText(final String text) {
+		this.dirPanelTitle = text;
+		this.dirPanel.setBorder(this.createTitledBorder(this.dirPanelTitle));
 	}
 
 	/**
@@ -427,8 +426,8 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 *            The new text label for the "Up" radio button.
 	 * @see #getUpRadioButtonText
 	 */
-	public void setUpRadioButtonText(String text) {
-		upButton.setText(text);
+	public void setUpRadioButtonText(final String text) {
+		this.upButton.setText(text);
 	}
 
 }

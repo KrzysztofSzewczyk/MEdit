@@ -7,9 +7,6 @@ import java.io.IOException;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.WindowConstants;
 
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -19,7 +16,7 @@ import medit.MainFrame;
 
 /**
  * This class is creating menu items for each of themes available in MEdit.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -35,7 +32,7 @@ public class ThemesActionManager {
 
 	/**
 	 * Constructor passing MainFrame instance.
-	 * 
+	 *
 	 * @param instance
 	 */
 
@@ -45,7 +42,7 @@ public class ThemesActionManager {
 
 	/**
 	 * Function registering themes for 'parent' JMenu.
-	 * 
+	 *
 	 * @param parent
 	 */
 

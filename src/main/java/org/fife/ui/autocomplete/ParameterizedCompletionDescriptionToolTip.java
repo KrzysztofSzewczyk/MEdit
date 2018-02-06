@@ -3,7 +3,7 @@
  *
  * ParameterizedCompletionDescriptionToolTip.java - A "tool tip" displaying
  * information on the function or method currently being entered.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -12,6 +12,7 @@ package org.fife.ui.autocomplete;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.Window;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -31,19 +32,19 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxUtilities;
 class ParameterizedCompletionDescriptionToolTip {
 
 	/**
-	 * The actual tool tip.
-	 */
-	private JWindow tooltip;
-
-	/**
 	 * The label that holds the description.
 	 */
-	private JLabel descLabel;
+	private final JLabel descLabel;
 
 	/**
 	 * The completion being described.
 	 */
-	private ParameterizedCompletion pc;
+	private final ParameterizedCompletion pc;
+
+	/**
+	 * The actual tool tip.
+	 */
+	private final JWindow tooltip;
 
 	/**
 	 * Constructor.
@@ -55,37 +56,36 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @param pc
 	 *            The completion being described.
 	 */
-	public ParameterizedCompletionDescriptionToolTip(Window owner, ParameterizedCompletionContext context,
-			AutoCompletion ac, ParameterizedCompletion pc) {
+	public ParameterizedCompletionDescriptionToolTip(final Window owner, final ParameterizedCompletionContext context,
+			final AutoCompletion ac, final ParameterizedCompletion pc) {
 
-		tooltip = new JWindow(owner);
+		this.tooltip = new JWindow(owner);
 
 		this.pc = pc;
 
-		descLabel = new JLabel();
-		descLabel.setBorder(BorderFactory.createCompoundBorder(TipUtil.getToolTipBorder(),
+		this.descLabel = new JLabel();
+		this.descLabel.setBorder(BorderFactory.createCompoundBorder(TipUtil.getToolTipBorder(),
 				BorderFactory.createEmptyBorder(2, 5, 2, 5)));
-		descLabel.setOpaque(true);
-		descLabel.setBackground(TipUtil.getToolTipBackground());
+		this.descLabel.setOpaque(true);
+		this.descLabel.setBackground(TipUtil.getToolTipBackground());
 		// It appears that if a JLabel is set as a content pane directly, when
 		// using the JDK's opacity API's, it won't paint its background, even
 		// if label.setOpaque(true) is called. You have to have a container
 		// underneath it for it to paint its background. Thus, we embed our
 		// label in a parent JPanel to handle this case.
 		// tooltip.setContentPane(descLabel);
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(descLabel);
-		tooltip.setContentPane(panel);
+		final JPanel panel = new JPanel(new BorderLayout());
+		panel.add(this.descLabel);
+		this.tooltip.setContentPane(panel);
 
 		// Give apps a chance to decorate us with drop shadows, etc.
-		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator != null) {
-			decorator.decorate(tooltip);
-		}
+		final PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator != null)
+			decorator.decorate(this.tooltip);
 
-		updateText(0);
+		this.updateText(0);
 
-		tooltip.setFocusableWindowState(false);
+		this.tooltip.setFocusableWindowState(false);
 
 	}
 
@@ -96,7 +96,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @see #setVisible(boolean)
 	 */
 	public boolean isVisible() {
-		return tooltip.isVisible();
+		return this.tooltip.isVisible();
 	}
 
 	/**
@@ -105,32 +105,30 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * @param r
 	 *            The visual position of the caret (in screen coordinates).
 	 */
-	public void setLocationRelativeTo(Rectangle r) {
+	public void setLocationRelativeTo(final Rectangle r) {
 
 		// Multi-monitor support - make sure the completion window (and
 		// description window, if applicable) both fit in the same window in
 		// a multi-monitor environment. To do this, we decide which monitor
 		// the rectangle "r" is in, and use that one (just pick top-left corner
 		// as the defining point).
-		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
+		final Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
 		// Dimension screenSize = tooltip.getToolkit().getScreenSize();
 
 		// Try putting our stuff "above" the caret first.
-		int y = r.y - 5 - tooltip.getHeight();
-		if (y < 0) {
+		int y = r.y - 5 - this.tooltip.getHeight();
+		if (y < 0)
 			y = r.y + r.height + 5;
-		}
 
 		// Get x-coordinate of completions. Try to align left edge with the
 		// caret first.
 		int x = r.x;
-		if (x < screenBounds.x) {
+		if (x < screenBounds.x)
 			x = screenBounds.x;
-		} else if (x + tooltip.getWidth() > screenBounds.x + screenBounds.width) { // completions don't fit
-			x = screenBounds.x + screenBounds.width - tooltip.getWidth();
-		}
+		else if (x + this.tooltip.getWidth() > screenBounds.x + screenBounds.width)
+			x = screenBounds.x + screenBounds.width - this.tooltip.getWidth();
 
-		tooltip.setLocation(x, y);
+		this.tooltip.setLocation(x, y);
 
 	}
 
@@ -141,8 +139,8 @@ class ParameterizedCompletionDescriptionToolTip {
 	 *            Whether this tool tip should be visible.
 	 * @see #isVisible()
 	 */
-	public void setVisible(boolean visible) {
-		tooltip.setVisible(visible);
+	public void setVisible(final boolean visible) {
+		this.tooltip.setVisible(visible);
 	}
 
 	/**
@@ -153,42 +151,39 @@ class ParameterizedCompletionDescriptionToolTip {
 	 *            The index of the selected parameter.
 	 * @return Whether the text needed to be updated.
 	 */
-	public boolean updateText(int selectedParam) {
+	public boolean updateText(final int selectedParam) {
 
-		StringBuilder sb = new StringBuilder("<html>");
-		int paramCount = pc.getParamCount();
+		final StringBuilder sb = new StringBuilder("<html>");
+		final int paramCount = this.pc.getParamCount();
 		for (int i = 0; i < paramCount; i++) {
 
-			if (i == selectedParam) {
+			if (i == selectedParam)
 				sb.append("<b>");
-			}
 
 			// Some parameter types may have chars in them unfriendly to HTML
 			// (such as type parameters in Java). We need to take care to
 			// escape these.
-			String temp = pc.getParam(i).toString();
+			final String temp = this.pc.getParam(i).toString();
 			sb.append(RSyntaxUtilities.escapeForHtml(temp, "<br>", false));
 
-			if (i == selectedParam) {
+			if (i == selectedParam)
 				sb.append("</b>");
-			}
-			if (i < paramCount - 1) {
-				sb.append(pc.getProvider().getParameterListSeparator());
-			}
+			if (i < paramCount - 1)
+				sb.append(this.pc.getProvider().getParameterListSeparator());
 
 		}
 
 		if (selectedParam >= 0 && selectedParam < paramCount) {
-			ParameterizedCompletion.Parameter param = pc.getParam(selectedParam);
-			String desc = param.getDescription();
+			final ParameterizedCompletion.Parameter param = this.pc.getParam(selectedParam);
+			final String desc = param.getDescription();
 			if (desc != null) {
 				sb.append("<br>");
 				sb.append(desc);
 			}
 		}
 
-		descLabel.setText(sb.toString());
-		tooltip.pack();
+		this.descLabel.setText(sb.toString());
+		this.tooltip.pack();
 
 		return true;
 
@@ -198,7 +193,7 @@ class ParameterizedCompletionDescriptionToolTip {
 	 * Updates the <tt>LookAndFeel</tt> of this window and the description window.
 	 */
 	public void updateUI() {
-		SwingUtilities.updateComponentTreeUI(tooltip);
+		SwingUtilities.updateComponentTreeUI(this.tooltip);
 	}
 
 }

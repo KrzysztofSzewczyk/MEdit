@@ -28,7 +28,7 @@ import medit.NSS.NSSRunnable;
 
 /**
  * This class is allowing user to script MEdit using own scripts written in B++.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -41,7 +41,7 @@ public class ScriptsActionManager {
 
 	/**
 	 * Constructor that is assigning its parameter to internal instance variable.
-	 * 
+	 *
 	 * @param instance
 	 */
 	public ScriptsActionManager(final MainFrame instance) {
@@ -50,7 +50,7 @@ public class ScriptsActionManager {
 
 	/**
 	 * Setup scripts menu. This function is pretty self-documenting.
-	 * 
+	 *
 	 * @param mnTools
 	 */
 	public void SetupScripts(final JMenu mnTools) {
@@ -62,14 +62,14 @@ public class ScriptsActionManager {
 					new Thread(new NSSRunnable(e.getCodeFN()) {
 						@Override
 						public void run() {
-							ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+							final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 							try {
 								engine.eval(new FileReader("scripts/start.b++"));
 								engine.eval(new FileReader(this.codefn));
-								Invocable invocable = (Invocable) engine;
+								final Invocable invocable = (Invocable) engine;
 								try {
-									invocable.invokeFunction("onLoad", instance);
-								} catch (NoSuchMethodException e) {
+									invocable.invokeFunction("onLoad", ScriptsActionManager.this.instance);
+								} catch (final NoSuchMethodException e) {
 									JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
 											"Script does not contain start function.", "Error.",
 											JOptionPane.ERROR_MESSAGE);
@@ -92,7 +92,7 @@ public class ScriptsActionManager {
 							new Thread(new NSSRunnable(e.getCodeFN()) {
 								@Override
 								public void run() {
-									File codefile = new File(this.codefn);
+									final File codefile = new File(this.codefn);
 									if (!codefile.exists()) {
 										JOptionPane
 												.showMessageDialog(ScriptsActionManager.this.instance,
@@ -101,14 +101,15 @@ public class ScriptsActionManager {
 														"Error.", JOptionPane.ERROR_MESSAGE);
 										return;
 									} else {
-										ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+										final ScriptEngine engine = new ScriptEngineManager()
+												.getEngineByName("nashorn");
 										try {
 											engine.eval(new FileReader("scripts/start.b++"));
 											engine.eval(new FileReader(this.codefn));
-											Invocable invocable = (Invocable) engine;
+											final Invocable invocable = (Invocable) engine;
 											try {
-												invocable.invokeFunction("start", instance);
-											} catch (NoSuchMethodException e) {
+												invocable.invokeFunction("start", ScriptsActionManager.this.instance);
+											} catch (final NoSuchMethodException e) {
 												JOptionPane.showMessageDialog(ScriptsActionManager.this.instance,
 														"Script does not contain start function.", "Error.",
 														JOptionPane.ERROR_MESSAGE);

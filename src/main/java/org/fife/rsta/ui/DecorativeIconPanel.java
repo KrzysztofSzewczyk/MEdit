@@ -11,6 +11,7 @@ package org.fife.rsta.ui;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
+
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -30,32 +31,42 @@ import org.fife.ui.autocomplete.EmptyIcon;
  */
 public class DecorativeIconPanel extends JPanel {
 
+	protected static final EmptyIcon EMPTY_ICON = new EmptyIcon(DecorativeIconPanel.WIDTH);
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The width of this icon panel, to help align the components we're listening to
 	 * with other combo boxes or text fields without a DecorativeIconPanel.
 	 */
 	public static final int WIDTH = 8;
-
 	private JLabel iconLabel;
 	private boolean showIcon;
-	private String tip;
 
-	protected static final EmptyIcon EMPTY_ICON = new EmptyIcon(WIDTH);
+	private String tip;
 
 	/**
 	 * Constructor.
 	 */
 	public DecorativeIconPanel() {
-		setLayout(new BorderLayout());
-		iconLabel = new JLabel(EMPTY_ICON) {
+		this.setLayout(new BorderLayout());
+		this.iconLabel = new JLabel(DecorativeIconPanel.EMPTY_ICON) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public String getToolTipText(MouseEvent e) {
-				return showIcon ? tip : null;
+			public String getToolTipText(final MouseEvent e) {
+				return DecorativeIconPanel.this.showIcon ? DecorativeIconPanel.this.tip : null;
 			}
 		};
-		iconLabel.setVerticalAlignment(SwingConstants.TOP);
-		ToolTipManager.sharedInstance().registerComponent(iconLabel);
-		add(iconLabel, BorderLayout.NORTH);
+		this.iconLabel.setVerticalAlignment(SwingConstants.TOP);
+		ToolTipManager.sharedInstance().registerComponent(this.iconLabel);
+		this.add(this.iconLabel, BorderLayout.NORTH);
 	}
 
 	/**
@@ -65,7 +76,7 @@ public class DecorativeIconPanel extends JPanel {
 	 * @see #setIcon(Icon)
 	 */
 	public Icon getIcon() {
-		return iconLabel.getIcon();
+		return this.iconLabel.getIcon();
 	}
 
 	/**
@@ -75,7 +86,7 @@ public class DecorativeIconPanel extends JPanel {
 	 * @see #setShowIcon(boolean)
 	 */
 	public boolean getShowIcon() {
-		return showIcon;
+		return this.showIcon;
 	}
 
 	/**
@@ -87,7 +98,7 @@ public class DecorativeIconPanel extends JPanel {
 	 */
 	@Override
 	public String getToolTipText() {
-		return tip;
+		return this.tip;
 	}
 
 	/**
@@ -99,10 +110,9 @@ public class DecorativeIconPanel extends JPanel {
 	 * @see #setShowIcon(boolean)
 	 */
 	@Override
-	protected void paintChildren(Graphics g) {
-		if (showIcon) {
+	protected void paintChildren(final Graphics g) {
+		if (this.showIcon)
 			super.paintChildren(g);
-		}
 	}
 
 	/**
@@ -113,10 +123,9 @@ public class DecorativeIconPanel extends JPanel {
 	 * @see #getIcon()
 	 */
 	public void setIcon(Icon icon) {
-		if (icon == null) {
-			icon = EMPTY_ICON;
-		}
-		iconLabel.setIcon(icon);
+		if (icon == null)
+			icon = DecorativeIconPanel.EMPTY_ICON;
+		this.iconLabel.setIcon(icon);
 	}
 
 	/**
@@ -126,10 +135,10 @@ public class DecorativeIconPanel extends JPanel {
 	 *            Whether to show the icon.
 	 * @see #getShowIcon()
 	 */
-	public void setShowIcon(boolean show) {
-		if (show != showIcon) {
-			showIcon = show;
-			repaint();
+	public void setShowIcon(final boolean show) {
+		if (show != this.showIcon) {
+			this.showIcon = show;
+			this.repaint();
 		}
 	}
 
@@ -142,7 +151,7 @@ public class DecorativeIconPanel extends JPanel {
 	 * @see #getToolTipText()
 	 */
 	@Override
-	public void setToolTipText(String tip) {
+	public void setToolTipText(final String tip) {
 		this.tip = tip;
 	}
 

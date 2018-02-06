@@ -42,7 +42,7 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 * Creates a new combo box model with a maximum element count of <code>8</code>.
 	 */
 	public RComboBoxModel() {
-		setMaxNumElements(8);
+		this.setMaxNumElements(8);
 	}
 
 	/**
@@ -51,9 +51,9 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 * @param items
 	 *            The initial items to use to populate the combo box.
 	 */
-	public RComboBoxModel(Object[] items) {
+	public RComboBoxModel(final Object[] items) {
 		super(items);
-		setMaxNumElements(8);
+		this.setMaxNumElements(8);
 	}
 
 	/**
@@ -62,9 +62,9 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 * @param v
 	 *            The initial items to use to populate the combo box.
 	 */
-	public RComboBoxModel(Vector<?> v) {
+	public RComboBoxModel(final Vector<?> v) {
 		super(v);
-		setMaxNumElements(8);
+		this.setMaxNumElements(8);
 	}
 
 	/**
@@ -75,16 +75,16 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 *            The object to add.
 	 */
 	@Override
-	public void addElement(Object anObject) {
-		insertElementAt(anObject, 0);
+	public void addElement(final Object anObject) {
+		this.insertElementAt(anObject, 0);
 	}
 
 	/**
 	 * Ensures the number if items remembered by this combo box is valid.
 	 */
 	private void ensureValidItemCount() {
-		while (getSize() > maxNumElements)
-			removeElementAt(getSize() - 1);
+		while (this.getSize() > this.maxNumElements)
+			this.removeElementAt(this.getSize() - 1);
 	}
 
 	/**
@@ -93,7 +93,7 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 * @return The maximum number of items this combo box can hold.
 	 */
 	public int getMaxNumElements() {
-		return maxNumElements;
+		return this.maxNumElements;
 	}
 
 	/**
@@ -107,18 +107,16 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 *            Location to add the object.
 	 */
 	@Override
-	public void insertElementAt(Object anObject, int index) {
+	public void insertElementAt(final Object anObject, final int index) {
 
-		int oldPos = getIndexOf(anObject);
-		if (oldPos == index) { // Already at the desired location.
+		final int oldPos = this.getIndexOf(anObject);
+		if (oldPos == index)
 			return;
-		}
-		if (oldPos > -1) { // Remove it first if it's somewhere else.
-			removeElement(anObject);
-		}
+		if (oldPos > -1)
+			this.removeElement(anObject);
 
 		super.insertElementAt(anObject, index);
-		ensureValidItemCount();
+		this.ensureValidItemCount();
 
 	}
 
@@ -130,9 +128,9 @@ public class RComboBoxModel extends DefaultComboBoxModel {
 	 *            <code>numElements &lt;= 0</code>, then the capacity of this combo
 	 *            box is set to <code>4</code>.
 	 */
-	public void setMaxNumElements(int numElements) {
-		maxNumElements = numElements <= 0 ? 4 : numElements;
-		ensureValidItemCount();
+	public void setMaxNumElements(final int numElements) {
+		this.maxNumElements = numElements <= 0 ? 4 : numElements;
+		this.ensureValidItemCount();
 	}
 
 }

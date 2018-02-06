@@ -118,9 +118,12 @@ class TipWindow extends JWindow implements ActionListener {
 		if (ft.getImageBase() != null)
 			((HTMLDocument) this.textArea.getDocument()).setBase(ft.getImageBase());
 		this.textArea.addMouseListener(this.tipListener);
-		this.textArea.addHyperlinkListener(e -> {
-			if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
-				TipWindow.this.ft.possiblyDisposeOfTipWindow();
+		this.textArea.addHyperlinkListener(new HyperlinkListener() {
+			@Override
+			public void hyperlinkUpdate(HyperlinkEvent e) {
+				if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED)
+					TipWindow.this.ft.possiblyDisposeOfTipWindow();
+			}
 		});
 		cp.add(this.textArea);
 

@@ -20,7 +20,7 @@ import medit.Crash;
 
 /**
  * This class is loading scripts for new script system.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -31,7 +31,7 @@ public class NSSLoader {
 
 	/**
 	 * This function is loading every scripts from selected file.
-	 * 
+	 *
 	 * @param string
 	 * @return
 	 * @throws ParserConfigurationException

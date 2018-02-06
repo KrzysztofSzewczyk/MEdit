@@ -5,7 +5,7 @@ import javax.swing.JLabel;
 /**
  * This is BottombarLabel class, that is kind of API interface for MainFrame
  * bottombar label.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -14,20 +14,20 @@ public class BottombarLabel {
 
 	JLabel bbLabel;
 
-	public BottombarLabel(JLabel instance) {
-		bbLabel = instance;
+	public BottombarLabel(final JLabel instance) {
+		this.bbLabel = instance;
 	}
 
 	public String GetText() {
-		return bbLabel.getText();
-	}
-
-	public void Show() {
-		bbLabel.setVisible(true);
+		return this.bbLabel.getText();
 	}
 
 	public void Hide() {
-		bbLabel.setVisible(false);
+		this.bbLabel.setVisible(false);
+	}
+
+	public void Show() {
+		this.bbLabel.setVisible(true);
 	}
 
 }

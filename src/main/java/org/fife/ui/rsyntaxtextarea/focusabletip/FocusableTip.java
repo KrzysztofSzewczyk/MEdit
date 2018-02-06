@@ -228,52 +228,55 @@ public class FocusableTip {
 		// doesn't return its proper preferred size until after it is displayed.
 		// See http://forums.sun.com/thread.jspa?forumID=57&threadID=574810
 		// for a discussion.
-		SwingUtilities.invokeLater(() -> {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
 
-			// If a new FocusableTip is requested while another one is
-			// *focused* and visible, the focused tip (i.e. "tipWindow")
-			// will be disposed of. If this Runnable is run after the
-			// dispose(), tipWindow will be null. All of this is done on
-			// the EDT so no synchronization should be necessary.
-			if (FocusableTip.this.tipWindow == null)
-				return;
+				// If a new FocusableTip is requested while another one is
+				// *focused* and visible, the focused tip (i.e. "tipWindow")
+				// will be disposed of. If this Runnable is run after the
+				// dispose(), tipWindow will be null. All of this is done on
+				// the EDT so no synchronization should be necessary.
+				if (FocusableTip.this.tipWindow == null)
+					return;
 
-			FocusableTip.this.tipWindow.fixSize();
-			final ComponentOrientation o = FocusableTip.this.textArea.getComponentOrientation();
+				FocusableTip.this.tipWindow.fixSize();
+				final ComponentOrientation o = FocusableTip.this.textArea.getComponentOrientation();
 
-			final Point p = e.getPoint();
-			SwingUtilities.convertPointToScreen(p, FocusableTip.this.textArea);
+				final Point p = e.getPoint();
+				SwingUtilities.convertPointToScreen(p, FocusableTip.this.textArea);
 
-			// Ensure tool tip is in the window bounds.
-			// Multi-monitor support - make sure the completion window (and
-			// description window, if applicable) both fit in the same
-			// window in a multi-monitor environment. To do this, we decide
-			// which monitor the rectangle "p" is in, and use that one.
-			final Rectangle sb = TipUtil.getScreenBoundsForPoint(p.x, p.y);
-			// Dimension ss = tipWindow.getToolkit().getScreenSize();
+				// Ensure tool tip is in the window bounds.
+				// Multi-monitor support - make sure the completion window (and
+				// description window, if applicable) both fit in the same
+				// window in a multi-monitor environment. To do this, we decide
+				// which monitor the rectangle "p" is in, and use that one.
+				final Rectangle sb = TipUtil.getScreenBoundsForPoint(p.x, p.y);
+				// Dimension ss = tipWindow.getToolkit().getScreenSize();
 
-			// Try putting our stuff "below" the mouse first.
-			int y = p.y + FocusableTip.Y_MARGIN;
-			if (y + FocusableTip.this.tipWindow.getHeight() >= sb.y + sb.height)
-				y = p.y - FocusableTip.Y_MARGIN - FocusableTip.this.tipWindow.getHeight();
+				// Try putting our stuff "below" the mouse first.
+				int y = p.y + FocusableTip.Y_MARGIN;
+				if (y + FocusableTip.this.tipWindow.getHeight() >= sb.y + sb.height)
+					y = p.y - FocusableTip.Y_MARGIN - FocusableTip.this.tipWindow.getHeight();
 
-			// Get x-coordinate of completions. Try to align left edge
-			// with the mouse first (with a slight margin).
-			int x = p.x - FocusableTip.X_MARGIN; // ltr
-			if (!o.isLeftToRight())
-				x = p.x - FocusableTip.this.tipWindow.getWidth() + FocusableTip.X_MARGIN;
-			if (x < sb.x)
-				x = sb.x;
-			else if (x + FocusableTip.this.tipWindow.getWidth() > sb.x + sb.width)
-				x = sb.x + sb.width - FocusableTip.this.tipWindow.getWidth();
+				// Get x-coordinate of completions. Try to align left edge
+				// with the mouse first (with a slight margin).
+				int x = p.x - FocusableTip.X_MARGIN; // ltr
+				if (!o.isLeftToRight())
+					x = p.x - FocusableTip.this.tipWindow.getWidth() + FocusableTip.X_MARGIN;
+				if (x < sb.x)
+					x = sb.x;
+				else if (x + FocusableTip.this.tipWindow.getWidth() > sb.x + sb.width)
+					x = sb.x + sb.width - FocusableTip.this.tipWindow.getWidth();
 
-			FocusableTip.this.tipWindow.setLocation(x, y);
-			FocusableTip.this.tipWindow.setVisible(true);
+				FocusableTip.this.tipWindow.setLocation(x, y);
+				FocusableTip.this.tipWindow.setVisible(true);
 
-			FocusableTip.this.computeTipVisibleBounds(); // Do after tip is visible
-			FocusableTip.this.textAreaListener.install(FocusableTip.this.textArea);
-			FocusableTip.this.lastText = text;
+				FocusableTip.this.computeTipVisibleBounds(); // Do after tip is visible
+				FocusableTip.this.textAreaListener.install(FocusableTip.this.textArea);
+				FocusableTip.this.lastText = text;
 
+			}
 		});
 
 	}

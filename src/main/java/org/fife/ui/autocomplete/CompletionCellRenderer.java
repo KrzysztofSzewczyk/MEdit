@@ -3,7 +3,7 @@
  *
  * CompletionCellRenderer.java - Cell renderer that can render the standard
  * completion types like Eclipse or NetBeans does.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -30,7 +30,7 @@ import javax.swing.text.View;
  * A cell renderer that adds some pizazz when rendering the standard
  * {@link Completion} types, like Eclipse and NetBeans do. Specifically, this
  * renderer handles:
- * 
+ *
  * <ul>
  * <li>{@link FunctionCompletion}s</li>
  * <li>{@link VariableCompletion}s</li>
@@ -51,10 +51,77 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private static Color altBG;
 
 	/**
+	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
+	 * words.
+	 */
+	private static final String PREFIX = "<html><nobr>";
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private static final String SUBSTANCE_RENDERER_CLASS_NAME = "org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer";
+
+	/**
+	 * Returns the background color to use on alternating lines.
+	 *
+	 * @return The alternate background color. If this is <code>null</code>,
+	 *         alternating colors are not used.
+	 * @see #setAlternateBackground(Color)
+	 */
+	public static Color getAlternateBackground() {
+		return CompletionCellRenderer.altBG;
+	}
+
+	/**
+	 * Sets the background color to use on alternating lines.
+	 *
+	 * @param altBG
+	 *            The new alternate background color. If this is <code>null</code>,
+	 *            alternating lines will not use different background colors.
+	 * @see #getAlternateBackground()
+	 */
+	public static void setAlternateBackground(final Color altBG) {
+		CompletionCellRenderer.altBG = altBG;
+	}
+
+	/**
+	 * An optional delegate renderer (primarily for Substance).
+	 */
+	private DefaultListCellRenderer delegate;
+
+	/**
+	 * An icon to use when no appropriate icon is found.
+	 */
+	private Icon emptyIcon;
+
+	/**
 	 * The font to use when rendering items, or <code>null</code> if the list's
 	 * default font should be used.
 	 */
 	private Font font;
+
+	/**
+	 * Used in rendering calculations.
+	 */
+	private Rectangle paintTextR;
+
+	/**
+	 * The color to use for function arguments.
+	 */
+	private String paramColor;
+
+	/**
+	 * During rendering, this is the "real" background color of the item being
+	 * rendered (i.e., what its background color is if it isn't selected).
+	 */
+	private Color realBG;
+
+	/**
+	 * During rendering, whether the item being rendered is selected.
+	 */
+	private boolean selected;
 
 	/**
 	 * Whether to display the types of fields and return types of functions in the
@@ -68,49 +135,10 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	private String typeColor;
 
 	/**
-	 * During rendering, whether the item being rendered is selected.
-	 */
-	private boolean selected;
-
-	/**
-	 * During rendering, this is the "real" background color of the item being
-	 * rendered (i.e., what its background color is if it isn't selected).
-	 */
-	private Color realBG;
-
-	/**
-	 * The color to use for function arguments.
-	 */
-	private String paramColor;
-
-	/**
-	 * An icon to use when no appropriate icon is found.
-	 */
-	private Icon emptyIcon;
-
-	/**
-	 * Used in rendering calculations.
-	 */
-	private Rectangle paintTextR;
-
-	/**
-	 * An optional delegate renderer (primarily for Substance).
-	 */
-	private DefaultListCellRenderer delegate;
-
-	private static final String SUBSTANCE_RENDERER_CLASS_NAME = "org.pushingpixels.substance.api.renderers.SubstanceDefaultListCellRenderer";
-
-	/**
-	 * Keeps the HTML descriptions from "wrapping" in the list, which cuts off
-	 * words.
-	 */
-	private static final String PREFIX = "<html><nobr>";
-
-	/**
 	 * Constructor.
 	 */
 	public CompletionCellRenderer() {
-		init();
+		this.init();
 	}
 
 	/**
@@ -124,9 +152,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            The delegate renderer.
 	 * @see #delegateToSubstanceRenderer()
 	 */
-	public CompletionCellRenderer(DefaultListCellRenderer delegate) {
-		setDelegateRenderer(delegate);
-		init();
+	public CompletionCellRenderer(final DefaultListCellRenderer delegate) {
+		this.setDelegateRenderer(delegate);
+		this.init();
 	}
 
 	/**
@@ -147,7 +175,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @return The parameter color to use.
 	 */
 	private String createParamColor() {
-		return Util.isLightForeground(getForeground()) ? Util.getHexString(Util.getHyperlinkForeground()) : "#aa0077";
+		return Util.isLightForeground(this.getForeground()) ? Util.getHexString(Util.getHyperlinkForeground())
+				: "#aa0077";
 	}
 
 	/**
@@ -170,20 +199,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setDelegateRenderer(DefaultListCellRenderer)
 	 */
 	public void delegateToSubstanceRenderer() throws Exception {
-		Class<?> clazz = Class.forName(SUBSTANCE_RENDERER_CLASS_NAME);
-		DefaultListCellRenderer delegate = (DefaultListCellRenderer) clazz.newInstance();
-		setDelegateRenderer(delegate);
-	}
-
-	/**
-	 * Returns the background color to use on alternating lines.
-	 *
-	 * @return The alternate background color. If this is <code>null</code>,
-	 *         alternating colors are not used.
-	 * @see #setAlternateBackground(Color)
-	 */
-	public static Color getAlternateBackground() {
-		return altBG;
+		final Class<?> clazz = Class.forName(CompletionCellRenderer.SUBSTANCE_RENDERER_CLASS_NAME);
+		final DefaultListCellRenderer delegate = (DefaultListCellRenderer) clazz.newInstance();
+		this.setDelegateRenderer(delegate);
 	}
 
 	/**
@@ -193,7 +211,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setDelegateRenderer(DefaultListCellRenderer)
 	 */
 	public DefaultListCellRenderer getDelegateRenderer() {
-		return delegate;
+		return this.delegate;
 	}
 
 	/**
@@ -204,7 +222,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setDisplayFont(Font)
 	 */
 	public Font getDisplayFont() {
-		return font;
+		return this.font;
 	}
 
 	/**
@@ -215,10 +233,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #createEmptyIcon()
 	 */
 	protected Icon getEmptyIcon() {
-		if (emptyIcon == null) {
-			emptyIcon = createEmptyIcon();
-		}
-		return emptyIcon;
+		if (this.emptyIcon == null)
+			this.emptyIcon = this.createEmptyIcon();
+		return this.emptyIcon;
 	}
 
 	/**
@@ -229,13 +246,13 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            loadable by the current ClassLoader.
 	 * @return The icon.
 	 */
-	protected Icon getIcon(String resource) {
-		URL url = getClass().getResource(resource);
+	protected Icon getIcon(final String resource) {
+		URL url = this.getClass().getResource(resource);
 		if (url == null) {
-			File file = new File(resource);
+			final File file = new File(resource);
 			try {
 				url = file.toURI().toURL();
-			} catch (MalformedURLException mue) {
+			} catch (final MalformedURLException mue) {
 				mue.printStackTrace(); // Never happens
 			}
 		}
@@ -257,47 +274,45 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            Whether the item has focus.
 	 */
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean selected,
-			boolean hasFocus) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean selected, final boolean hasFocus) {
 
 		super.getListCellRendererComponent(list, value, index, selected, hasFocus);
-		if (font != null) {
-			setFont(font); // Overrides super's setFont(list.getFont()).
-		}
+		if (this.font != null)
+			this.setFont(this.font); // Overrides super's setFont(list.getFont()).
 		this.selected = selected;
-		this.realBG = altBG != null && (index & 1) == 1 ? altBG : list.getBackground();
+		this.realBG = CompletionCellRenderer.altBG != null && (index & 1) == 1 ? CompletionCellRenderer.altBG
+				: list.getBackground();
 
-		Completion c = (Completion) value;
-		setIcon(c.getIcon());
+		final Completion c = (Completion) value;
+		this.setIcon(c.getIcon());
 
 		if (c instanceof FunctionCompletion) {
-			FunctionCompletion fc = (FunctionCompletion) value;
-			prepareForFunctionCompletion(list, fc, index, selected, hasFocus);
+			final FunctionCompletion fc = (FunctionCompletion) value;
+			this.prepareForFunctionCompletion(list, fc, index, selected, hasFocus);
 		} else if (c instanceof VariableCompletion) {
-			VariableCompletion vc = (VariableCompletion) value;
-			prepareForVariableCompletion(list, vc, index, selected, hasFocus);
+			final VariableCompletion vc = (VariableCompletion) value;
+			this.prepareForVariableCompletion(list, vc, index, selected, hasFocus);
 		} else if (c instanceof TemplateCompletion) {
-			TemplateCompletion tc = (TemplateCompletion) value;
-			prepareForTemplateCompletion(list, tc, index, selected, hasFocus);
+			final TemplateCompletion tc = (TemplateCompletion) value;
+			this.prepareForTemplateCompletion(list, tc, index, selected, hasFocus);
 		} else if (c instanceof MarkupTagCompletion) {
-			MarkupTagCompletion mtc = (MarkupTagCompletion) value;
-			prepareForMarkupTagCompletion(list, mtc, index, selected, hasFocus);
-		} else {
-			prepareForOtherCompletion(list, c, index, selected, hasFocus);
-		}
+			final MarkupTagCompletion mtc = (MarkupTagCompletion) value;
+			this.prepareForMarkupTagCompletion(list, mtc, index, selected, hasFocus);
+		} else
+			this.prepareForOtherCompletion(list, c, index, selected, hasFocus);
 
 		// A delegate renderer might do its own alternate row striping
 		// (Substance does).
-		if (delegate != null) {
-			delegate.getListCellRendererComponent(list, getText(), index, selected, hasFocus);
-			delegate.setFont(getFont());
-			delegate.setIcon(getIcon());
-			return delegate;
+		if (this.delegate != null) {
+			this.delegate.getListCellRendererComponent(list, this.getText(), index, selected, hasFocus);
+			this.delegate.setFont(this.getFont());
+			this.delegate.setIcon(this.getIcon());
+			return this.delegate;
 		}
 
-		if (!selected && (index & 1) == 1 && altBG != null) {
-			setBackground(altBG);
-		}
+		if (!selected && (index & 1) == 1 && CompletionCellRenderer.altBG != null)
+			this.setBackground(CompletionCellRenderer.altBG);
 
 		return this;
 
@@ -311,54 +326,52 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setShowTypes(boolean)
 	 */
 	public boolean getShowTypes() {
-		return showTypes;
+		return this.showTypes;
 	}
 
 	private void init() {
 		// setDisplayFont(new Font("Monospaced", Font.PLAIN, 12));
-		setShowTypes(true);
-		typeColor = createTypeColor();
-		paramColor = createParamColor();
-		paintTextR = new Rectangle();
+		this.setShowTypes(true);
+		this.typeColor = this.createTypeColor();
+		this.paramColor = this.createParamColor();
+		this.paintTextR = new Rectangle();
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void paintComponent(final Graphics g) {
 
 		// super.paintComponent(g);
 
-		g.setColor(realBG);
+		g.setColor(this.realBG);
 		int iconW = 0;
-		if (getIcon() != null) {
-			iconW = getIcon().getIconWidth();
-		}
-		if (selected && iconW > 0) { // The icon area is never in the "selection"
-			g.fillRect(0, 0, iconW, getHeight());
-			g.setColor(getBackground());
-			g.fillRect(iconW, 0, getWidth() - iconW, getHeight());
+		if (this.getIcon() != null)
+			iconW = this.getIcon().getIconWidth();
+		if (this.selected && iconW > 0) { // The icon area is never in the "selection"
+			g.fillRect(0, 0, iconW, this.getHeight());
+			g.setColor(this.getBackground());
+			g.fillRect(iconW, 0, this.getWidth() - iconW, this.getHeight());
 		} else {
-			g.setColor(getBackground());
-			g.fillRect(0, 0, getWidth(), getHeight());
+			g.setColor(this.getBackground());
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		}
-		if (getIcon() != null) {
-			getIcon().paintIcon(this, g, 0, 0);
-		}
+		if (this.getIcon() != null)
+			this.getIcon().paintIcon(this, g, 0, 0);
 
-		String text = getText();
+		final String text = this.getText();
 		if (text != null) {
-			paintTextR.setBounds(iconW, 0, getWidth() - iconW, getHeight());
-			paintTextR.x += 3; // Force a slight margin
-			int space = paintTextR.height - g.getFontMetrics().getHeight();
-			View v = (View) getClientProperty(BasicHTML.propertyKey);
+			this.paintTextR.setBounds(iconW, 0, this.getWidth() - iconW, this.getHeight());
+			this.paintTextR.x += 3; // Force a slight margin
+			final int space = this.paintTextR.height - g.getFontMetrics().getHeight();
+			final View v = (View) this.getClientProperty(BasicHTML.propertyKey);
 			if (v != null) {
 				// HTML rendering doesn't auto-center vertically, for some
 				// reason
-				paintTextR.y += space / 2;
-				paintTextR.height -= space;
-				v.paint(g, paintTextR);
+				this.paintTextR.y += space / 2;
+				this.paintTextR.height -= space;
+				v.paint(g, this.paintTextR);
 			} else {
-				int textX = paintTextR.x;
-				int textY = paintTextR.y;// + g.getFontMetrics().getAscent();
+				final int textX = this.paintTextR.x;
+				final int textY = this.paintTextR.y;// + g.getFontMetrics().getAscent();
 				// System.out.println(g.getFontMetrics().getAscent());
 				g.drawString(text, textX, textY);
 			}
@@ -380,59 +393,50 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param hasFocus
 	 *            Whether the item has focus.
 	 */
-	protected void prepareForFunctionCompletion(JList list, FunctionCompletion fc, int index, boolean selected,
-			boolean hasFocus) {
+	protected void prepareForFunctionCompletion(final JList list, final FunctionCompletion fc, final int index,
+			final boolean selected, final boolean hasFocus) {
 
-		StringBuilder sb = new StringBuilder(PREFIX);
+		final StringBuilder sb = new StringBuilder(CompletionCellRenderer.PREFIX);
 		sb.append(fc.getName());
 
-		char paramListStart = fc.getProvider().getParameterListStart();
-		if (paramListStart != 0) { // 0 => no start char
+		final char paramListStart = fc.getProvider().getParameterListStart();
+		if (paramListStart != 0)
 			sb.append(paramListStart);
-		}
 
-		int paramCount = fc.getParamCount();
+		final int paramCount = fc.getParamCount();
 		for (int i = 0; i < paramCount; i++) {
-			FunctionCompletion.Parameter param = fc.getParam(i);
-			String type = param.getType();
-			String name = param.getName();
+			final FunctionCompletion.Parameter param = fc.getParam(i);
+			final String type = param.getType();
+			final String name = param.getName();
 			if (type != null) {
-				if (!selected) {
-					sb.append("<font color='").append(paramColor).append("'>");
-				}
+				if (!selected)
+					sb.append("<font color='").append(this.paramColor).append("'>");
 				sb.append(type);
-				if (!selected) {
+				if (!selected)
 					sb.append("</font>");
-				}
-				if (name != null) {
+				if (name != null)
 					sb.append(' ');
-				}
 			}
-			if (name != null) {
+			if (name != null)
 				sb.append(name);
-			}
-			if (i < paramCount - 1) {
+			if (i < paramCount - 1)
 				sb.append(fc.getProvider().getParameterListSeparator());
-			}
 		}
 
-		char paramListEnd = fc.getProvider().getParameterListEnd();
-		if (paramListEnd != 0) { // 0 => No parameter list end char
+		final char paramListEnd = fc.getProvider().getParameterListEnd();
+		if (paramListEnd != 0)
 			sb.append(paramListEnd);
-		}
 
-		if (getShowTypes() && fc.getType() != null) {
+		if (this.getShowTypes() && fc.getType() != null) {
 			sb.append(" : ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
+			if (!selected)
+				sb.append("<font color='").append(this.typeColor).append("'>");
 			sb.append(fc.getType());
-			if (!selected) {
+			if (!selected)
 				sb.append("</font>");
-			}
 		}
 
-		setText(sb.toString());
+		this.setText(sb.toString());
 
 	}
 
@@ -450,13 +454,13 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param hasFocus
 	 *            Whether the item has focus.
 	 */
-	protected void prepareForMarkupTagCompletion(JList list, MarkupTagCompletion mc, int index, boolean selected,
-			boolean hasFocus) {
+	protected void prepareForMarkupTagCompletion(final JList list, final MarkupTagCompletion mc, final int index,
+			final boolean selected, final boolean hasFocus) {
 
-		StringBuilder sb = new StringBuilder(PREFIX);
+		final StringBuilder sb = new StringBuilder(CompletionCellRenderer.PREFIX);
 		sb.append(mc.getName());
 
-		setText(sb.toString());
+		this.setText(sb.toString());
 
 	}
 
@@ -475,26 +479,25 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param hasFocus
 	 *            Whether the item has focus.
 	 */
-	protected void prepareForOtherCompletion(JList list, Completion c, int index, boolean selected, boolean hasFocus) {
+	protected void prepareForOtherCompletion(final JList list, final Completion c, final int index,
+			final boolean selected, final boolean hasFocus) {
 
-		StringBuilder sb = new StringBuilder(PREFIX);
+		final StringBuilder sb = new StringBuilder(CompletionCellRenderer.PREFIX);
 		sb.append(c.getInputText());
 
 		if (c instanceof BasicCompletion) {
-			String definition = ((BasicCompletion) c).getShortDescription();
+			final String definition = ((BasicCompletion) c).getShortDescription();
 			if (definition != null) {
 				sb.append(" - ");
-				if (!selected) {
-					sb.append("<font color='").append(typeColor).append("'>");
-				}
+				if (!selected)
+					sb.append("<font color='").append(this.typeColor).append("'>");
 				sb.append(definition);
-				if (!selected) {
+				if (!selected)
 					sb.append("</font>");
-				}
 			}
 		}
 
-		setText(sb.toString());
+		this.setText(sb.toString());
 
 	}
 
@@ -512,25 +515,23 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param hasFocus
 	 *            Whether the item has focus.
 	 */
-	protected void prepareForTemplateCompletion(JList list, TemplateCompletion tc, int index, boolean selected,
-			boolean hasFocus) {
+	protected void prepareForTemplateCompletion(final JList list, final TemplateCompletion tc, final int index,
+			final boolean selected, final boolean hasFocus) {
 
-		StringBuilder sb = new StringBuilder(PREFIX);
+		final StringBuilder sb = new StringBuilder(CompletionCellRenderer.PREFIX);
 		sb.append(tc.getInputText());
 
-		String definition = tc.getShortDescription();
+		final String definition = tc.getShortDescription();
 		if (definition != null) {
 			sb.append(" - ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
+			if (!selected)
+				sb.append("<font color='").append(this.typeColor).append("'>");
 			sb.append(definition);
-			if (!selected) {
+			if (!selected)
 				sb.append("</font>");
-			}
 		}
 
-		setText(sb.toString());
+		this.setText(sb.toString());
 
 	}
 
@@ -548,51 +549,37 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @param hasFocus
 	 *            Whether the item has focus.
 	 */
-	protected void prepareForVariableCompletion(JList list, VariableCompletion vc, int index, boolean selected,
-			boolean hasFocus) {
+	protected void prepareForVariableCompletion(final JList list, final VariableCompletion vc, final int index,
+			final boolean selected, final boolean hasFocus) {
 
-		StringBuilder sb = new StringBuilder(PREFIX);
+		final StringBuilder sb = new StringBuilder(CompletionCellRenderer.PREFIX);
 		sb.append(vc.getName());
 
-		if (getShowTypes() && vc.getType() != null) {
+		if (this.getShowTypes() && vc.getType() != null) {
 			sb.append(" : ");
-			if (!selected) {
-				sb.append("<font color='").append(typeColor).append("'>");
-			}
+			if (!selected)
+				sb.append("<font color='").append(this.typeColor).append("'>");
 			sb.append(vc.getType());
-			if (!selected) {
+			if (!selected)
 				sb.append("</font>");
-			}
 		}
 
-		setText(sb.toString());
+		this.setText(sb.toString());
 
-	}
-
-	/**
-	 * Sets the background color to use on alternating lines.
-	 *
-	 * @param altBG
-	 *            The new alternate background color. If this is <code>null</code>,
-	 *            alternating lines will not use different background colors.
-	 * @see #getAlternateBackground()
-	 */
-	public static void setAlternateBackground(Color altBG) {
-		CompletionCellRenderer.altBG = altBG;
 	}
 
 	/**
 	 * Sets the delegate renderer. Most users will never use this method; it is
 	 * primarily a hook for Substance and other Look and Feels whose renderers look
 	 * drastically different from the standard <code>DefaultListCellRenderer</code>.
-	 * 
+	 *
 	 * @param delegate
 	 *            The new delegate renderer. If this is <code>null</code>, the
 	 *            default rendering of this component is used.
 	 * @see #getDelegateRenderer()
 	 * @see #delegateToSubstanceRenderer()
 	 */
-	public void setDelegateRenderer(DefaultListCellRenderer delegate) {
+	public void setDelegateRenderer(final DefaultListCellRenderer delegate) {
 		this.delegate = delegate;
 	}
 
@@ -604,7 +591,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            list font is used.
 	 * @see #getDisplayFont()
 	 */
-	public void setDisplayFont(Font font) {
+	public void setDisplayFont(final Font font) {
 		this.font = font;
 	}
 
@@ -616,8 +603,8 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            The completion to check.
 	 * @see #setIconWithDefault(Completion, Icon)
 	 */
-	protected void setIconWithDefault(Completion completion) {
-		setIconWithDefault(completion, getEmptyIcon());
+	protected void setIconWithDefault(final Completion completion) {
+		this.setIconWithDefault(completion, this.getEmptyIcon());
 	}
 
 	/**
@@ -631,9 +618,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            icon.
 	 * @see #setIconWithDefault(Completion)
 	 */
-	protected void setIconWithDefault(Completion completion, Icon defaultIcon) {
-		Icon icon = completion.getIcon();
-		setIcon(icon != null ? icon : (defaultIcon != null ? defaultIcon : emptyIcon));
+	protected void setIconWithDefault(final Completion completion, final Icon defaultIcon) {
+		final Icon icon = completion.getIcon();
+		this.setIcon(icon != null ? icon : defaultIcon != null ? defaultIcon : this.emptyIcon);
 	}
 
 	/**
@@ -643,10 +630,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            The color to use. This is ignored if <code>null</code>.
 	 * @see #setTypeColor(Color)
 	 */
-	public void setParamColor(Color color) {
-		if (color != null) {
-			paramColor = Util.getHexString(color);
-		}
+	public void setParamColor(final Color color) {
+		if (color != null)
+			this.paramColor = Util.getHexString(color);
 	}
 
 	/**
@@ -657,7 +643,7 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 *            Whether to show the types.
 	 * @see #getShowTypes()
 	 */
-	public void setShowTypes(boolean show) {
+	public void setShowTypes(final boolean show) {
 		this.showTypes = show;
 	}
 
@@ -671,10 +657,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	 * @see #setShowTypes(boolean)
 	 * @see #setParamColor(Color)
 	 */
-	public void setTypeColor(Color color) {
-		if (color != null) {
-			typeColor = Util.getHexString(color);
-		}
+	public void setTypeColor(final Color color) {
+		if (color != null)
+			this.typeColor = Util.getHexString(color);
 	}
 
 	/**
@@ -683,10 +668,9 @@ public class CompletionCellRenderer extends DefaultListCellRenderer {
 	@Override
 	public void updateUI() {
 		super.updateUI();
-		if (delegate != null) {
-			SwingUtilities.updateComponentTreeUI(delegate);
-		}
-		paramColor = createParamColor();
+		if (this.delegate != null)
+			SwingUtilities.updateComponentTreeUI(this.delegate);
+		this.paramColor = this.createParamColor();
 	}
 
 }

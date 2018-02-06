@@ -9,6 +9,7 @@
 package org.fife.rsta.ui;
 
 import java.awt.Dimension;
+
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
@@ -30,17 +31,7 @@ public class MaxWidthComboBox extends JComboBox {
 	/**
 	 * The width of this combo box will never be greater than this value.
 	 */
-	private int maxWidth;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param maxWidth
-	 *            The maximum width for this combo box.
-	 */
-	public MaxWidthComboBox(int maxWidth) {
-		this.maxWidth = maxWidth;
-	}
+	private final int maxWidth;
 
 	/**
 	 * Constructor.
@@ -50,8 +41,18 @@ public class MaxWidthComboBox extends JComboBox {
 	 * @param maxWidth
 	 *            The maximum width for this combo box.
 	 */
-	public MaxWidthComboBox(ComboBoxModel model, int maxWidth) {
+	public MaxWidthComboBox(final ComboBoxModel model, final int maxWidth) {
 		super(model);
+		this.maxWidth = maxWidth;
+	}
+
+	/**
+	 * Constructor.
+	 *
+	 * @param maxWidth
+	 *            The maximum width for this combo box.
+	 */
+	public MaxWidthComboBox(final int maxWidth) {
 		this.maxWidth = maxWidth;
 	}
 
@@ -63,8 +64,8 @@ public class MaxWidthComboBox extends JComboBox {
 	 */
 	@Override
 	public Dimension getMaximumSize() {
-		Dimension size = super.getMaximumSize();
-		size.width = Math.min(size.width, maxWidth);
+		final Dimension size = super.getMaximumSize();
+		size.width = Math.min(size.width, this.maxWidth);
 		return size;
 	}
 
@@ -76,8 +77,8 @@ public class MaxWidthComboBox extends JComboBox {
 	 */
 	@Override
 	public Dimension getMinimumSize() {
-		Dimension size = super.getMinimumSize();
-		size.width = Math.min(size.width, maxWidth);
+		final Dimension size = super.getMinimumSize();
+		size.width = Math.min(size.width, this.maxWidth);
 		return size;
 	}
 
@@ -89,8 +90,8 @@ public class MaxWidthComboBox extends JComboBox {
 	 */
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension size = super.getPreferredSize();
-		size.width = Math.min(size.width, maxWidth);
+		final Dimension size = super.getPreferredSize();
+		size.width = Math.min(size.width, this.maxWidth);
 		return size;
 	}
 

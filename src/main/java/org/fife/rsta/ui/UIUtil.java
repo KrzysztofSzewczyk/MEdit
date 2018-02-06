@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,20 +37,14 @@ import javax.swing.text.JTextComponent;
  */
 public class UIUtil {
 
-	private static boolean desktopCreationAttempted;
 	private static Object desktop;
-	private static final Object LOCK_DESKTOP_CREATION = new Object();
-
+	private static boolean desktopCreationAttempted;
 	/**
 	 * A very common border that can be shared across many components.
 	 */
 	private static final Border EMPTY_5_BORDER = BorderFactory.createEmptyBorder(5, 5, 5, 5);
 
-	/**
-	 * Private constructor so we cannot instantiate this class.
-	 */
-	private UIUtil() {
-	}
+	private static final Object LOCK_DESKTOP_CREATION = new Object();
 
 	/**
 	 * Attempts to open a web browser to the specified URI.
@@ -61,13 +56,12 @@ public class UIUtil {
 	 *         on JRE's older than 1.6.
 	 * @see #browse(URI)
 	 */
-	public static boolean browse(String uri) {
-		if (uri == null) {
+	public static boolean browse(final String uri) {
+		if (uri == null)
 			return false;
-		}
 		try {
-			return browse(new URI(uri));
-		} catch (URISyntaxException e) {
+			return UIUtil.browse(new URI(uri));
+		} catch (final URISyntaxException e) {
 			return false;
 		}
 	}
@@ -82,23 +76,22 @@ public class UIUtil {
 	 *         on JRE's older than 1.6.
 	 * @see #browse(String)
 	 */
-	public static boolean browse(URI uri) {
+	public static boolean browse(final URI uri) {
 
 		boolean success = false;
 
 		if (uri != null) {
-			Object desktop = getDesktop();
-			if (desktop != null) {
+			final Object desktop = UIUtil.getDesktop();
+			if (desktop != null)
 				try {
-					Method m = desktop.getClass().getDeclaredMethod("browse", new Class[] { URI.class });
+					final Method m = desktop.getClass().getDeclaredMethod("browse", new Class[] { URI.class });
 					m.invoke(desktop, new Object[] { uri });
 					success = true;
-				} catch (RuntimeException re) {
+				} catch (final RuntimeException re) {
 					throw re; // Keep FindBugs happy
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// Ignore, just return "false" below.
 				}
-			}
 		}
 
 		return success;
@@ -112,10 +105,10 @@ public class UIUtil {
 	 * @param combo
 	 *            The combo box.
 	 */
-	public static void fixComboOrientation(JComboBox combo) {
-		ListCellRenderer r = combo.getRenderer();
+	public static void fixComboOrientation(final JComboBox combo) {
+		final ListCellRenderer r = combo.getRenderer();
 		if (r instanceof Component) {
-			ComponentOrientation o = ComponentOrientation.getOrientation(Locale.getDefault());
+			final ComponentOrientation o = ComponentOrientation.getOrientation(Locale.getDefault());
 			((Component) r).setComponentOrientation(o);
 		}
 	}
@@ -130,9 +123,10 @@ public class UIUtil {
 	 * @return The spring constraints for the specified component contained in
 	 *         <code>parent</code>.
 	 */
-	private static final SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
-		SpringLayout layout = (SpringLayout) parent.getLayout();
-		Component c = parent.getComponent(row * cols + col);
+	private static final SpringLayout.Constraints getConstraintsForCell(final int row, final int col,
+			final Container parent, final int cols) {
+		final SpringLayout layout = (SpringLayout) parent.getLayout();
+		final Component c = parent.getComponent(row * cols + col);
 		return layout.getConstraints(c);
 	}
 
@@ -145,25 +139,25 @@ public class UIUtil {
 	 */
 	private static Object getDesktop() {
 
-		synchronized (LOCK_DESKTOP_CREATION) {
+		synchronized (UIUtil.LOCK_DESKTOP_CREATION) {
 
-			if (!desktopCreationAttempted) {
+			if (!UIUtil.desktopCreationAttempted) {
 
-				desktopCreationAttempted = true;
+				UIUtil.desktopCreationAttempted = true;
 
 				try {
-					Class<?> desktopClazz = Class.forName("java.awt.Desktop");
+					final Class<?> desktopClazz = Class.forName("java.awt.Desktop");
 					Method m = desktopClazz.getDeclaredMethod("isDesktopSupported");
 
-					boolean supported = ((Boolean) m.invoke(null)).booleanValue();
+					final boolean supported = ((Boolean) m.invoke(null)).booleanValue();
 					if (supported) {
 						m = desktopClazz.getDeclaredMethod("getDesktop");
-						desktop = m.invoke(null);
+						UIUtil.desktop = m.invoke(null);
 					}
 
-				} catch (RuntimeException re) {
+				} catch (final RuntimeException re) {
 					throw re; // Keep FindBugs happy
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					// Ignore; keeps desktop as null.
 				}
 
@@ -171,7 +165,7 @@ public class UIUtil {
 
 		}
 
-		return desktop;
+		return UIUtil.desktop;
 
 	}
 
@@ -182,7 +176,7 @@ public class UIUtil {
 	 * @return The border.
 	 */
 	public static Border getEmpty5Border() {
-		return EMPTY_5_BORDER;
+		return UIUtil.EMPTY_5_BORDER;
 	}
 
 	/**
@@ -193,30 +187,28 @@ public class UIUtil {
 	 * @return The color to use.
 	 */
 	public static final Color getErrorTextForeground() {
-		Color defaultFG = UIManager.getColor("TextField.foreground");
-		if (defaultFG.getRed() >= 160 && defaultFG.getGreen() >= 160 && defaultFG.getBlue() >= 160) {
+		final Color defaultFG = UIManager.getColor("TextField.foreground");
+		if (defaultFG.getRed() >= 160 && defaultFG.getGreen() >= 160 && defaultFG.getBlue() >= 160)
 			return new Color(255, 160, 160);
-		}
 		return Color.red;
 	}
 
 	/**
 	 * Returns the mnemonic specified by the given key in a resource bundle.
-	 * 
+	 *
 	 * @param msg
 	 *            The resource bundle.
 	 * @param key
 	 *            The key for the mnemonic.
 	 * @return The mnemonic, or <code>0</code> if not found.
 	 */
-	public static final int getMnemonic(ResourceBundle msg, String key) {
+	public static final int getMnemonic(final ResourceBundle msg, final String key) {
 		int mnemonic = 0;
 		try {
-			Object value = msg.getObject(key);
-			if (value instanceof String) {
+			final Object value = msg.getObject(key);
+			if (value instanceof String)
 				mnemonic = ((String) value).charAt(0);
-			}
-		} catch (MissingResourceException mre) {
+		} catch (final MissingResourceException mre) {
 			// Swallow. TODO: When we drop 1.4/1.5 support, use containsKey().
 		}
 		return mnemonic;
@@ -229,7 +221,7 @@ public class UIUtil {
 	 *            The combo box.
 	 * @return The text component.
 	 */
-	public static final JTextComponent getTextComponent(JComboBox combo) {
+	public static final JTextComponent getTextComponent(final JComboBox combo) {
 		return (JTextComponent) combo.getEditor().getEditorComponent();
 	}
 
@@ -258,13 +250,13 @@ public class UIUtil {
 	 * @param yPad
 	 *            The y-padding between cells.
 	 */
-	public static final void makeSpringCompactGrid(Container parent, int rows, int cols, int initialX, int initialY,
-			int xPad, int yPad) {
+	public static final void makeSpringCompactGrid(final Container parent, final int rows, final int cols,
+			final int initialX, final int initialY, final int xPad, final int yPad) {
 
 		SpringLayout layout;
 		try {
 			layout = (SpringLayout) parent.getLayout();
-		} catch (ClassCastException cce) {
+		} catch (final ClassCastException cce) {
 			System.err.println("The first argument to makeCompactGrid " + "must use SpringLayout.");
 			return;
 		}
@@ -273,11 +265,10 @@ public class UIUtil {
 		Spring x = Spring.constant(initialX);
 		for (int c = 0; c < cols; c++) {
 			Spring width = Spring.constant(0);
+			for (int r = 0; r < rows; r++)
+				width = Spring.max(width, UIUtil.getConstraintsForCell(r, c, parent, cols).getWidth());
 			for (int r = 0; r < rows; r++) {
-				width = Spring.max(width, getConstraintsForCell(r, c, parent, cols).getWidth());
-			}
-			for (int r = 0; r < rows; r++) {
-				SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
+				final SpringLayout.Constraints constraints = UIUtil.getConstraintsForCell(r, c, parent, cols);
 				constraints.setX(x);
 				constraints.setWidth(width);
 			}
@@ -288,11 +279,10 @@ public class UIUtil {
 		Spring y = Spring.constant(initialY);
 		for (int r = 0; r < rows; r++) {
 			Spring height = Spring.constant(0);
+			for (int c = 0; c < cols; c++)
+				height = Spring.max(height, UIUtil.getConstraintsForCell(r, c, parent, cols).getHeight());
 			for (int c = 0; c < cols; c++) {
-				height = Spring.max(height, getConstraintsForCell(r, c, parent, cols).getHeight());
-			}
-			for (int c = 0; c < cols; c++) {
-				SpringLayout.Constraints constraints = getConstraintsForCell(r, c, parent, cols);
+				final SpringLayout.Constraints constraints = UIUtil.getConstraintsForCell(r, c, parent, cols);
 				constraints.setY(y);
 				constraints.setHeight(height);
 			}
@@ -300,7 +290,7 @@ public class UIUtil {
 		}
 
 		// Set the parent's size.
-		SpringLayout.Constraints pCons = layout.getConstraints(parent);
+		final SpringLayout.Constraints pCons = layout.getConstraints(parent);
 		pCons.setConstraint(SpringLayout.SOUTH, y);
 		pCons.setConstraint(SpringLayout.EAST, x);
 
@@ -317,9 +307,9 @@ public class UIUtil {
 	 *            The key into the bundle containing the string text value.
 	 * @return The button.
 	 */
-	public static final JButton newButton(ResourceBundle bundle, String key) {
-		JButton b = new JButton(bundle.getString(key));
-		b.setMnemonic(getMnemonic(bundle, key + ".Mnemonic"));
+	public static final JButton newButton(final ResourceBundle bundle, final String key) {
+		final JButton b = new JButton(bundle.getString(key));
+		b.setMnemonic(UIUtil.getMnemonic(bundle, key + ".Mnemonic"));
 		return b;
 	}
 
@@ -336,14 +326,19 @@ public class UIUtil {
 	 *            The component the label is labeling.
 	 * @return The <code>JLabel</code>.
 	 */
-	public static final JLabel newLabel(ResourceBundle msg, String key, Component labelFor) {
-		JLabel label = new JLabel(msg.getString(key));
-		String mnemonicKey = key + ".Mnemonic";
-		label.setDisplayedMnemonic(getMnemonic(msg, mnemonicKey));
-		if (labelFor != null) {
+	public static final JLabel newLabel(final ResourceBundle msg, final String key, final Component labelFor) {
+		final JLabel label = new JLabel(msg.getString(key));
+		final String mnemonicKey = key + ".Mnemonic";
+		label.setDisplayedMnemonic(UIUtil.getMnemonic(msg, mnemonicKey));
+		if (labelFor != null)
 			label.setLabelFor(labelFor);
-		}
 		return label;
+	}
+
+	/**
+	 * Private constructor so we cannot instantiate this class.
+	 */
+	private UIUtil() {
 	}
 
 }

@@ -27,7 +27,11 @@ import org.fife.rsta.ui.UIUtil;
 // subclasses, such as a FindInFilesDialog.
 public class SearchComboBox extends RegexAwareComboBox {
 
-	private FindToolBar toolBar;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final FindToolBar toolBar;
 
 	/**
 	 * Constructor.
@@ -39,11 +43,11 @@ public class SearchComboBox extends RegexAwareComboBox {
 	 *            Whether this combo box is for "replace" text (as opposed to "find"
 	 *            text).
 	 */
-	public SearchComboBox(FindToolBar toolBar, boolean replace) {
+	public SearchComboBox(final FindToolBar toolBar, final boolean replace) {
 		super(replace);
 		this.toolBar = toolBar;
 		UIUtil.fixComboOrientation(this);
-		updateTextFieldKeyMap();
+		this.updateTextFieldKeyMap();
 	}
 
 	/**
@@ -54,40 +58,27 @@ public class SearchComboBox extends RegexAwareComboBox {
 	 *            The item to add.
 	 */
 	@Override
-	public void addItem(Object item) {
+	public void addItem(final Object item) {
 
 		// If they just searched for an item that's already in the list
 		// other than the first, move it to the first position.
-		int curIndex = getIndexOf(item);
-		if (curIndex == -1) {
+		final int curIndex = this.getIndexOf(item);
+		if (curIndex == -1)
 			super.addItem(item);
-		} else if (curIndex > 0) {
-			removeItem(item);
-			insertItemAt(item, 0);
+		else if (curIndex > 0) {
+			this.removeItem(item);
+			this.insertItemAt(item, 0);
 		}
 
 		// Always leave with the new item selected
-		setSelectedIndex(0);
+		this.setSelectedIndex(0);
 	}
 
-	private int getIndexOf(Object item) {
-		for (int i = 0; i < dataModel.getSize(); i++) {
-			if (dataModel.getElementAt(i).equals(item)) {
+	private int getIndexOf(final Object item) {
+		for (int i = 0; i < this.dataModel.getSize(); i++)
+			if (this.dataModel.getElementAt(i).equals(item))
 				return i;
-			}
-		}
 		return -1;
-	}
-
-	/**
-	 * Returns the text in the text field of the combo box.
-	 *
-	 * @return The text entered into this combo box.
-	 */
-	public String getSelectedString() {
-		JTextComponent comp = UIUtil.getTextComponent(this);
-		return comp.getText();
-		// return (String)getSelectedItem();
 	}
 
 	/**
@@ -101,48 +92,53 @@ public class SearchComboBox extends RegexAwareComboBox {
 
 		// First, ensure that the item in the editor component is indeed in the
 		// combo box.
-		int selectedIndex = getSelectedIndex();
-		if (selectedIndex == -1) {
-			addItem(getSelectedString());
-		}
-
-		// If they just searched for an item that's already in the list other
-		// than the first, move it to the first position.
+		final int selectedIndex = this.getSelectedIndex();
+		if (selectedIndex == -1)
+			this.addItem(this.getSelectedString());
 		else if (selectedIndex > 0) {
-			Object item = getSelectedItem();
-			removeItem(item);
-			insertItemAt(item, 0);
-			setSelectedIndex(0);
+			final Object item = this.getSelectedItem();
+			this.removeItem(item);
+			this.insertItemAt(item, 0);
+			this.setSelectedIndex(0);
 		}
 
-		int itemCount = getItemCount();
-		Vector<String> vector = new Vector<String>(itemCount);
-		for (int i = 0; i < itemCount; i++) {
-			vector.add((String) getItemAt(i));
-		}
+		final int itemCount = this.getItemCount();
+		final Vector<String> vector = new Vector<>(itemCount);
+		for (int i = 0; i < itemCount; i++)
+			vector.add((String) this.getItemAt(i));
 
 		return vector;
 
 	}
 
 	/**
+	 * Returns the text in the text field of the combo box.
+	 *
+	 * @return The text entered into this combo box.
+	 */
+	public String getSelectedString() {
+		final JTextComponent comp = UIUtil.getTextComponent(this);
+		return comp.getText();
+		// return (String)getSelectedItem();
+	}
+
+	/**
 	 * Updates the input map of the text field inside of this search combo.
 	 */
 	private void updateTextFieldKeyMap() {
-		JTextComponent comp = UIUtil.getTextComponent(this);
+		final JTextComponent comp = UIUtil.getTextComponent(this);
 		// Swing maps Ctrl+H to "delete previous", when applications
 		// typically map it to "display 'Replace' UI."
-		InputMap im = comp.getInputMap();
+		final InputMap im = comp.getInputMap();
 		im.put(KeyStroke.getKeyStroke("ctrl H"), "none");
 	}
 
 	@Override
 	public void updateUI() {
 		super.updateUI();
-		if (toolBar != null) {
-			toolBar.searchComboUpdateUICallback(this);
-		}
-		updateTextFieldKeyMap();
+		if (this.toolBar != null)
+			this.toolBar.searchComboUpdateUICallback(this);
+		this.updateTextFieldKeyMap();
 	}
 
 }

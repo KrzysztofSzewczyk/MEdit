@@ -3,7 +3,7 @@
  *
  * CompletionProvider.java - Provides autocompletion values based on the
  * text currently in a text component.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -65,7 +65,7 @@ public interface CompletionProvider {
 	 * Returns the completions that have been entered at the specified visual
 	 * location. This can be used for tool tips when the user hovers the mouse over
 	 * completed text.
-	 * 
+	 *
 	 * @param comp
 	 *            The text component.
 	 * @param p
@@ -98,7 +98,7 @@ public interface CompletionProvider {
 	 * Returns a list of parameterized completions that have been entered at the
 	 * current caret position of a text component (and thus can have their
 	 * completion choices displayed).
-	 * 
+	 *
 	 * @param tc
 	 *            The text component.
 	 * @return The list of {@link ParameterizedCompletion}s. If no completions are

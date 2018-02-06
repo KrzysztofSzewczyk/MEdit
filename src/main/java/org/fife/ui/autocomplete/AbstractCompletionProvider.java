@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * AbstractCompletionProvider.java - Base class for completion providers.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -28,10 +28,25 @@ import javax.swing.text.JTextComponent;
 public abstract class AbstractCompletionProvider extends CompletionProviderBase {
 
 	/**
-	 * The completions this provider is aware of. Subclasses should ensure that this
-	 * list is sorted alphabetically (case-insensitively).
+	 * A comparator that compares the input text of a {@link Completion} against a
+	 * String lexicographically, ignoring case.
 	 */
-	protected List<Completion> completions;
+	@SuppressWarnings("rawtypes")
+	public static class CaseInsensitiveComparator implements Comparator, Serializable {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 8184690981211418885L;
+
+		@Override
+		public int compare(final Object o1, final Object o2) {
+			final String s1 = o1 instanceof String ? (String) o1 : ((Completion) o1).getInputText();
+			final String s2 = o2 instanceof String ? (String) o2 : ((Completion) o2).getInputText();
+			return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
+		}
+
+	}
 
 	/**
 	 * Compares a {@link Completion} against a String.
@@ -39,12 +54,18 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	protected CaseInsensitiveComparator comparator;
 
 	/**
+	 * The completions this provider is aware of. Subclasses should ensure that this
+	 * list is sorted alphabetically (case-insensitively).
+	 */
+	protected List<Completion> completions;
+
+	/**
 	 * Constructor.
 	 */
 	public AbstractCompletionProvider() {
-		comparator = new CaseInsensitiveComparator();
-		clearParameterizedCompletionParams();
-		completions = new ArrayList<Completion>();
+		this.comparator = new CaseInsensitiveComparator();
+		this.clearParameterizedCompletionParams();
+		this.completions = new ArrayList<>();
 	}
 
 	/**
@@ -61,9 +82,9 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
 	 */
-	public void addCompletion(Completion c) {
-		checkProviderAndAdd(c);
-		Collections.sort(completions);
+	public void addCompletion(final Completion c) {
+		this.checkProviderAndAdd(c);
+		Collections.sort(this.completions);
 	}
 
 	/**
@@ -78,11 +99,10 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 * @see #removeCompletion(Completion)
 	 * @see #clear()
 	 */
-	public void addCompletions(List<Completion> completions) {
+	public void addCompletions(final List<Completion> completions) {
 		// this.completions.addAll(completions);
-		for (Completion c : completions) {
-			checkProviderAndAdd(c);
-		}
+		for (final Completion c : completions)
+			this.checkProviderAndAdd(c);
 		Collections.sort(this.completions);
 	}
 
@@ -93,19 +113,17 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 *            The words.
 	 * @see BasicCompletion
 	 */
-	protected void addWordCompletions(String[] words) {
-		int count = words == null ? 0 : words.length;
-		for (int i = 0; i < count; i++) {
-			completions.add(new BasicCompletion(this, words[i]));
-		}
-		Collections.sort(completions);
+	protected void addWordCompletions(final String[] words) {
+		final int count = words == null ? 0 : words.length;
+		for (int i = 0; i < count; i++)
+			this.completions.add(new BasicCompletion(this, words[i]));
+		Collections.sort(this.completions);
 	}
 
-	protected void checkProviderAndAdd(Completion c) {
-		if (c.getProvider() != this) {
+	protected void checkProviderAndAdd(final Completion c) {
+		if (c.getProvider() != this)
 			throw new IllegalArgumentException("Invalid CompletionProvider");
-		}
-		completions.add(c);
+		this.completions.add(c);
 	}
 
 	/**
@@ -117,7 +135,7 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 * @see #removeCompletion(Completion)
 	 */
 	public void clear() {
-		completions.clear();
+		this.completions.clear();
 	}
 
 	/**
@@ -130,24 +148,22 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 *         matching <tt>Completion</tt>s.
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Completion> getCompletionByInputText(String inputText) {
+	public List<Completion> getCompletionByInputText(final String inputText) {
 
 		// Find any entry that matches this input text (there may be > 1).
-		int end = Collections.binarySearch(completions, inputText, comparator);
-		if (end < 0) {
+		int end = Collections.binarySearch(this.completions, inputText, this.comparator);
+		if (end < 0)
 			return null;
-		}
 
 		// There might be multiple entries with the same input text.
 		int start = end;
-		while (start > 0 && comparator.compare(completions.get(start - 1), inputText) == 0) {
+		while (start > 0 && this.comparator.compare(this.completions.get(start - 1), inputText) == 0)
 			start--;
-		}
-		int count = completions.size();
-		while (++end < count && comparator.compare(completions.get(end), inputText) == 0)
+		final int count = this.completions.size();
+		while (++end < count && this.comparator.compare(this.completions.get(end), inputText) == 0)
 			;
 
-		return completions.subList(start, end); // (inclusive, exclusive)
+		return this.completions.subList(start, end); // (inclusive, exclusive)
 
 	}
 
@@ -156,36 +172,35 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	protected List<Completion> getCompletionsImpl(JTextComponent comp) {
+	protected List<Completion> getCompletionsImpl(final JTextComponent comp) {
 
-		List<Completion> retVal = new ArrayList<Completion>();
-		String text = getAlreadyEnteredText(comp);
+		final List<Completion> retVal = new ArrayList<>();
+		final String text = this.getAlreadyEnteredText(comp);
 
 		if (text != null) {
 
-			int index = Collections.binarySearch(completions, text, comparator);
-			if (index < 0) { // No exact match
+			int index = Collections.binarySearch(this.completions, text, this.comparator);
+			if (index < 0)
 				index = -index - 1;
-			} else {
+			else {
 				// If there are several overloads for the function being
 				// completed, Collections.binarySearch() will return the index
 				// of one of those overloads, but we must return all of them,
 				// so search backward until we find the first one.
 				int pos = index - 1;
-				while (pos > 0 && comparator.compare(completions.get(pos), text) == 0) {
-					retVal.add(completions.get(pos));
+				while (pos > 0 && this.comparator.compare(this.completions.get(pos), text) == 0) {
+					retVal.add(this.completions.get(pos));
 					pos--;
 				}
 			}
 
-			while (index < completions.size()) {
-				Completion c = completions.get(index);
+			while (index < this.completions.size()) {
+				final Completion c = this.completions.get(index);
 				if (Util.startsWithIgnoreCase(c.getInputText(), text)) {
 					retVal.add(c);
 					index++;
-				} else {
+				} else
 					break;
-				}
 			}
 
 		}
@@ -206,35 +221,13 @@ public abstract class AbstractCompletionProvider extends CompletionProviderBase 
 	 * @see #addCompletion(Completion)
 	 * @see #addCompletions(List)
 	 */
-	public boolean removeCompletion(Completion c) {
+	public boolean removeCompletion(final Completion c) {
 		// Don't just call completions.remove(c) as it'll be a linear search.
-		int index = Collections.binarySearch(completions, c);
-		if (index < 0) {
+		final int index = Collections.binarySearch(this.completions, c);
+		if (index < 0)
 			return false;
-		}
-		completions.remove(index);
+		this.completions.remove(index);
 		return true;
-	}
-
-	/**
-	 * A comparator that compares the input text of a {@link Completion} against a
-	 * String lexicographically, ignoring case.
-	 */
-	@SuppressWarnings("rawtypes")
-	public static class CaseInsensitiveComparator implements Comparator, Serializable {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 8184690981211418885L;
-
-		@Override
-		public int compare(Object o1, Object o2) {
-			String s1 = o1 instanceof String ? (String) o1 : ((Completion) o1).getInputText();
-			String s2 = o2 instanceof String ? (String) o2 : ((Completion) o2).getInputText();
-			return String.CASE_INSENSITIVE_ORDER.compare(s1, s2);
-		}
-
 	}
 
 }

@@ -8,7 +8,7 @@ import medit.MainFrame;
 /**
  * This function is watching on amount of MainFrame instances and exiting
  * program, if there are no instances left.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -23,7 +23,7 @@ public class WindowActionManager {
 	/**
 	 * Constructor assigning passed MainFrame instance to internal MainFrame
 	 * instance.
-	 * 
+	 *
 	 * @param instance
 	 */
 

@@ -1283,7 +1283,12 @@ public class RSyntaxTextArea extends RTextArea implements SyntaxConstants {
 			// causes BadLocationExceptions when an entire folded region is
 			// deleted (see GitHub issue #22:
 			// https://github.com/bobbylight/RSyntaxTextArea/issues/22)
-			SwingUtilities.invokeLater(() -> RSyntaxTextArea.this.possiblyUpdateCurrentLineHighlightLocation());
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					RSyntaxTextArea.this.possiblyUpdateCurrentLineHighlightLocation();
+				}
+			});
 		else
 			this.possiblyUpdateCurrentLineHighlightLocation();
 		this.revalidate();

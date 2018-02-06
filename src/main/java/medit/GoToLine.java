@@ -19,7 +19,7 @@ import javax.swing.border.EmptyBorder;
  * This is GoToLine dialog, which we know from many text editors out there, that
  * is jumping to selected line in textPane, which we reference using internal
  * MainFrame instance.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -76,7 +76,7 @@ public class GoToLine extends JDialog {
 							/**
 							 * This function is calculating position that we need to set in textPane, to
 							 * locate cursor at selected line.
-							 * 
+							 *
 							 * @param newlineno
 							 * @return
 							 */

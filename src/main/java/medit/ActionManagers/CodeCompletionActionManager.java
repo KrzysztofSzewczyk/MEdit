@@ -23,18 +23,12 @@ import medit.MainFrame;
 
 /**
  * This very important class is setting up code completion for MEdit
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
 
 public class CodeCompletionActionManager {
-
-	/**
-	 * This field is storing old autocompletion to get it removed later.
-	 */
-
-	private AutoCompletion oldAC;
 
 	/**
 	 * MainFrame instance used by this class to reference bottombar.
@@ -43,8 +37,14 @@ public class CodeCompletionActionManager {
 	private final MainFrame instance;
 
 	/**
+	 * This field is storing old autocompletion to get it removed later.
+	 */
+
+	private AutoCompletion oldAC;
+
+	/**
 	 * This is constructor that we pass MainFrame instance to.
-	 * 
+	 *
 	 * @param instance
 	 */
 
@@ -53,31 +53,16 @@ public class CodeCompletionActionManager {
 	}
 
 	/**
-	 * Setup code completion
-	 */
-
-	public void SetUpCodeCompletion(String language) {
-		language = language.substring(5);
-		if (oldAC != null)
-			oldAC.uninstall();
-		CompletionProvider provider = createCompletionProvider(language);
-		AutoCompletion ac = new AutoCompletion(provider);
-		ac.setAutoActivationDelay(100);
-		ac.install(instance.textPane);
-		oldAC = ac;
-	}
-
-	/**
 	 * Get code completion entries
 	 */
-	private CompletionProvider createCompletionProvider(String language) {
-		DefaultCompletionProvider provider = new DefaultCompletionProvider();
+	private CompletionProvider createCompletionProvider(final String language) {
+		final DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		if (new File("completion.xml").exists()) {
 			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = null;
 			try {
 				dBuilder = dbFactory.newDocumentBuilder();
-			} catch (ParserConfigurationException e1) {
+			} catch (final ParserConfigurationException e1) {
 				final Crash dialog2 = new Crash(e1);
 				dialog2.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 				dialog2.setVisible(true);
@@ -110,5 +95,20 @@ public class CodeCompletionActionManager {
 
 		return provider;
 
+	}
+
+	/**
+	 * Setup code completion
+	 */
+
+	public void SetUpCodeCompletion(String language) {
+		language = language.substring(5);
+		if (this.oldAC != null)
+			this.oldAC.uninstall();
+		final CompletionProvider provider = this.createCompletionProvider(language);
+		final AutoCompletion ac = new AutoCompletion(provider);
+		ac.setAutoActivationDelay(100);
+		ac.install(this.instance.textPane);
+		this.oldAC = ac;
 	}
 }

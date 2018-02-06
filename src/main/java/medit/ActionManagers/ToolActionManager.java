@@ -25,7 +25,7 @@ import medit.NTS.NTSRunnable;
 /**
  * This class is nearly copy+paste of ScriptActionManager. It's aim is to create
  * elements in tools menu based on tools.xml file.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -39,7 +39,7 @@ public class ToolActionManager {
 
 	/**
 	 * Constructor assigning passed instance to internal instance.
-	 * 
+	 *
 	 * @param instance
 	 */
 
@@ -49,7 +49,7 @@ public class ToolActionManager {
 
 	/**
 	 * This function is setting up tools menu.
-	 * 
+	 *
 	 * @param mnTools
 	 */
 

@@ -3,7 +3,7 @@
  *
  * OutlineHighlightPainter.java - Highlight painter that draws an outline
  * around its text.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -13,6 +13,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.JTextComponent;
@@ -49,9 +50,9 @@ class OutlineHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
 	 *            The color to draw the bounding boxes with. This cannot be
 	 *            <code>null</code>.
 	 */
-	public OutlineHighlightPainter(Color color) {
+	public OutlineHighlightPainter(final Color color) {
 		super(color);
-		setColor(color);
+		this.setColor(color);
 	}
 
 	/**
@@ -62,16 +63,17 @@ class OutlineHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
 	 */
 	@Override
 	public Color getColor() {
-		return color;
+		return this.color;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Shape paintLayer(Graphics g, int p0, int p1, Shape viewBounds, JTextComponent c, View view) {
+	public Shape paintLayer(final Graphics g, int p0, final int p1, final Shape viewBounds, final JTextComponent c,
+			final View view) {
 
-		g.setColor(getColor());
+		g.setColor(this.getColor());
 		p0++; // Workaround for Java Highlight issues.
 
 		// This special case isn't needed for most standard Swing Views (which
@@ -79,26 +81,24 @@ class OutlineHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
 		// needed for RSTA views, which actually return the width of chars for
 		// modelToView calls. But this should be faster anyway, as we
 		// short-circuit and do only one modelToView() for one offset.
-		if (p0 == p1) {
+		if (p0 == p1)
 			try {
-				Shape s = view.modelToView(p0, viewBounds, Position.Bias.Forward);
-				Rectangle r = s.getBounds();
+				final Shape s = view.modelToView(p0, viewBounds, Position.Bias.Forward);
+				final Rectangle r = s.getBounds();
 				g.drawLine(r.x, r.y, r.x, r.y + r.height);
 				return r;
-			} catch (BadLocationException ble) {
+			} catch (final BadLocationException ble) {
 				ble.printStackTrace(); // Never happens
 				return null;
 			}
-		}
 
 		if (p0 == view.getStartOffset() && p1 == view.getEndOffset()) {
 			// Contained in view, can just use bounds.
 			Rectangle alloc;
-			if (viewBounds instanceof Rectangle) {
+			if (viewBounds instanceof Rectangle)
 				alloc = (Rectangle) viewBounds;
-			} else {
+			else
 				alloc = viewBounds.getBounds();
-			}
 			g.drawRect(alloc.x, alloc.y, alloc.width - 1, alloc.height - 1);
 			return alloc;
 		}
@@ -106,11 +106,11 @@ class OutlineHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
 		// Should only render part of View.
 		try {
 			// --- determine locations ---
-			Shape shape = view.modelToView(p0, Position.Bias.Forward, p1, Position.Bias.Backward, viewBounds);
-			Rectangle r = (shape instanceof Rectangle) ? (Rectangle) shape : shape.getBounds();
+			final Shape shape = view.modelToView(p0, Position.Bias.Forward, p1, Position.Bias.Backward, viewBounds);
+			final Rectangle r = shape instanceof Rectangle ? (Rectangle) shape : shape.getBounds();
 			g.drawRect(r.x, r.y, r.width - 1, r.height - 1);
 			return r;
-		} catch (BadLocationException e) { // Never happens
+		} catch (final BadLocationException e) { // Never happens
 			e.printStackTrace();
 			return null;
 		}
@@ -124,10 +124,9 @@ class OutlineHighlightPainter extends DefaultHighlighter.DefaultHighlightPainter
 	 *            The new color. This cannot be <code>null</code>.
 	 * @see #getColor()
 	 */
-	public void setColor(Color color) {
-		if (color == null) {
+	public void setColor(final Color color) {
+		if (color == null)
 			throw new IllegalArgumentException("color cannot be null");
-		}
 		this.color = color;
 	}
 

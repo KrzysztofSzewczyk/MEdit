@@ -2,7 +2,7 @@
  * 02/06/2010
  *
  * CompletionProviderBase.java - Base completion provider implementation.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -11,6 +11,7 @@ package org.fife.ui.autocomplete;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.ListCellRenderer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -28,31 +29,13 @@ import javax.swing.text.Segment;
  */
 public abstract class CompletionProviderBase implements CompletionProvider {
 
-	/**
-	 * The parent completion provider.
-	 */
-	private CompletionProvider parent;
+	protected static final String EMPTY_STRING = "";
 
 	/**
-	 * The renderer to use for completions from this provider. If this is
-	 * <code>null</code>, a default renderer is used.
+	 * Comparator used to sort completions by their relevance before sorting them
+	 * lexicographically.
 	 */
-	private ListCellRenderer listCellRenderer;
-
-	/**
-	 * Text that marks the beginning of a parameter list, for example, '('.
-	 */
-	private char paramListStart;
-
-	/**
-	 * Text that marks the end of a parameter list, for example, ')'.
-	 */
-	private char paramListEnd;
-
-	/**
-	 * Text that separates items in a parameter list, for example, ", ".
-	 */
-	private String paramListSeparator;
+	private static final Comparator<Completion> sortByRelevanceComparator = new SortByRelevanceComparator();
 
 	/**
 	 * Whether auto-activation should occur after letters.
@@ -65,41 +48,59 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	private String autoActivateChars;
 
 	/**
+	 * The renderer to use for completions from this provider. If this is
+	 * <code>null</code>, a default renderer is used.
+	 */
+	private ListCellRenderer listCellRenderer;
+
+	/**
 	 * Provides completion choices for a parameterized completion's parameters.
 	 */
 	private ParameterChoicesProvider paramChoicesProvider;
 
 	/**
-	 * A segment to use for fast char access.
+	 * Text that marks the end of a parameter list, for example, ')'.
 	 */
-	private Segment s = new Segment();
-
-	protected static final String EMPTY_STRING = "";
+	private char paramListEnd;
 
 	/**
-	 * Comparator used to sort completions by their relevance before sorting them
-	 * lexicographically.
+	 * Text that separates items in a parameter list, for example, ", ".
 	 */
-	private static final Comparator<Completion> sortByRelevanceComparator = new SortByRelevanceComparator();
+	private String paramListSeparator;
+
+	/**
+	 * Text that marks the beginning of a parameter list, for example, '('.
+	 */
+	private char paramListStart;
+
+	/**
+	 * The parent completion provider.
+	 */
+	private CompletionProvider parent;
+
+	/**
+	 * A segment to use for fast char access.
+	 */
+	private final Segment s = new Segment();
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void clearParameterizedCompletionParams() {
-		paramListEnd = paramListStart = 0;
-		paramListSeparator = null;
+		this.paramListEnd = this.paramListStart = 0;
+		this.paramListSeparator = null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Completion> getCompletions(JTextComponent comp) {
+	public List<Completion> getCompletions(final JTextComponent comp) {
 
-		List<Completion> completions = getCompletionsImpl(comp);
-		if (parent != null) {
-			List<Completion> parentCompletions = parent.getCompletions(comp);
+		final List<Completion> completions = this.getCompletionsImpl(comp);
+		if (this.parent != null) {
+			final List<Completion> parentCompletions = this.parent.getCompletions(comp);
 			if (parentCompletions != null) {
 				completions.addAll(parentCompletions);
 				Collections.sort(completions);
@@ -109,9 +110,8 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 		// NOTE: We can't sort by relevance prior to this; we need to have
 		// things alphabetical so we can easily narrow down completions to
 		// those starting with what was already typed.
-		if (/* sortByRelevance */true) {
-			Collections.sort(completions, sortByRelevanceComparator);
-		}
+		if (/* sortByRelevance */true)
+			Collections.sort(completions, CompletionProviderBase.sortByRelevanceComparator);
 
 		return completions;
 
@@ -131,7 +131,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public ListCellRenderer getListCellRenderer() {
-		return listCellRenderer;
+		return this.listCellRenderer;
 	}
 
 	/**
@@ -139,7 +139,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public ParameterChoicesProvider getParameterChoicesProvider() {
-		return paramChoicesProvider;
+		return this.paramChoicesProvider;
 	}
 
 	/**
@@ -147,7 +147,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public char getParameterListEnd() {
-		return paramListEnd;
+		return this.paramListEnd;
 	}
 
 	/**
@@ -155,7 +155,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public String getParameterListSeparator() {
-		return paramListSeparator;
+		return this.paramListSeparator;
 	}
 
 	/**
@@ -163,7 +163,7 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public char getParameterListStart() {
-		return paramListStart;
+		return this.paramListStart;
 	}
 
 	/**
@@ -171,24 +171,24 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 */
 	@Override
 	public CompletionProvider getParent() {
-		return parent;
+		return this.parent;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isAutoActivateOkay(JTextComponent tc) {
-		Document doc = tc.getDocument();
+	public boolean isAutoActivateOkay(final JTextComponent tc) {
+		final Document doc = tc.getDocument();
 		char ch = 0;
 		try {
-			doc.getText(tc.getCaretPosition(), 1, s);
-			ch = s.first();
-		} catch (BadLocationException ble) { // Never happens
+			doc.getText(tc.getCaretPosition(), 1, this.s);
+			ch = this.s.first();
+		} catch (final BadLocationException ble) { // Never happens
 			ble.printStackTrace();
 		}
-		return (autoActivateAfterLetters && Character.isLetter(ch))
-				|| (autoActivateChars != null && autoActivateChars.indexOf(ch) > -1);
+		return this.autoActivateAfterLetters && Character.isLetter(ch)
+				|| this.autoActivateChars != null && this.autoActivateChars.indexOf(ch) > -1;
 	}
 
 	/**
@@ -202,9 +202,17 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 *            A string of (non-letter) chars that auto-activation should occur
 	 *            after. This may be <code>null</code>.
 	 */
-	public void setAutoActivationRules(boolean letters, String others) {
-		autoActivateAfterLetters = letters;
-		autoActivateChars = others;
+	public void setAutoActivationRules(final boolean letters, final String others) {
+		this.autoActivateAfterLetters = letters;
+		this.autoActivateChars = others;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setListCellRenderer(final ListCellRenderer r) {
+		this.listCellRenderer = r;
 	}
 
 	/**
@@ -216,42 +224,31 @@ public abstract class CompletionProviderBase implements CompletionProvider {
 	 *            The parameter choices provider, or <code>null</code> for none.
 	 * @see #getParameterChoicesProvider()
 	 */
-	public void setParameterChoicesProvider(ParameterChoicesProvider pcp) {
-		paramChoicesProvider = pcp;
+	public void setParameterChoicesProvider(final ParameterChoicesProvider pcp) {
+		this.paramChoicesProvider = pcp;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setListCellRenderer(ListCellRenderer r) {
-		listCellRenderer = r;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setParameterizedCompletionParams(char listStart, String separator, char listEnd) {
-		if (listStart < 0x20 || listStart == 0x7F) {
+	public void setParameterizedCompletionParams(final char listStart, final String separator, final char listEnd) {
+		if (listStart < 0x20 || listStart == 0x7F)
 			throw new IllegalArgumentException("Invalid listStart");
-		}
-		if (listEnd < 0x20 || listEnd == 0x7F) {
+		if (listEnd < 0x20 || listEnd == 0x7F)
 			throw new IllegalArgumentException("Invalid listEnd");
-		}
-		if (separator == null || separator.length() == 0) {
+		if (separator == null || separator.length() == 0)
 			throw new IllegalArgumentException("Invalid separator");
-		}
-		paramListStart = listStart;
-		paramListSeparator = separator;
-		paramListEnd = listEnd;
+		this.paramListStart = listStart;
+		this.paramListSeparator = separator;
+		this.paramListEnd = listEnd;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void setParent(CompletionProvider parent) {
+	public void setParent(final CompletionProvider parent) {
 		this.parent = parent;
 	}
 

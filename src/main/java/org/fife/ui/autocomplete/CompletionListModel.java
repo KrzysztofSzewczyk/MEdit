@@ -2,7 +2,7 @@
  * 12/22/2008
  *
  * CompletionListModel.java - A model that allows bulk addition of elements.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -24,15 +24,19 @@ import javax.swing.AbstractListModel;
 class CompletionListModel extends AbstractListModel {
 
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * Container for items in this model.
 	 */
-	private List<Completion> delegate;
+	private final List<Completion> delegate;
 
 	/**
 	 * Constructor.
 	 */
 	public CompletionListModel() {
-		delegate = new ArrayList<Completion>();
+		this.delegate = new ArrayList<>();
 	}
 
 	/**
@@ -42,19 +46,18 @@ class CompletionListModel extends AbstractListModel {
 	 * @see #setContents(Collection)
 	 */
 	public void clear() {
-		int end = delegate.size() - 1;
-		delegate.clear();
-		if (end >= 0) {
-			fireIntervalRemoved(this, 0, end);
-		}
+		final int end = this.delegate.size() - 1;
+		this.delegate.clear();
+		if (end >= 0)
+			this.fireIntervalRemoved(this, 0, end);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Object getElementAt(int index) {
-		return delegate.get(index);
+	public Object getElementAt(final int index) {
+		return this.delegate.get(index);
 	}
 
 	/**
@@ -62,7 +65,7 @@ class CompletionListModel extends AbstractListModel {
 	 */
 	@Override
 	public int getSize() {
-		return delegate.size();
+		return this.delegate.size();
 	}
 
 	/**
@@ -71,12 +74,12 @@ class CompletionListModel extends AbstractListModel {
 	 * @param contents
 	 *            The new contents of this model.
 	 */
-	public void setContents(Collection<Completion> contents) {
-		clear();
-		int count = contents.size();
+	public void setContents(final Collection<Completion> contents) {
+		this.clear();
+		final int count = contents.size();
 		if (count > 0) {
-			delegate.addAll(contents);
-			fireIntervalAdded(this, 0, count - 1); // endpoints included (!)
+			this.delegate.addAll(contents);
+			this.fireIntervalAdded(this, 0, count - 1); // endpoints included (!)
 		}
 	}
 

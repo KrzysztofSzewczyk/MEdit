@@ -15,7 +15,7 @@ import medit.Crash;
 
 /**
  * This class is adding print support for MEdit.
- * 
+ *
  * @author Krzysztof Szewczyk
  */
 public class PrintActionManager implements Printable {

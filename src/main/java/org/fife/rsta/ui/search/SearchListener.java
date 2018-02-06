@@ -2,7 +2,7 @@
  * 09/20/2013
  *
  * SearchListener - Listens for events in find/replace dialogs and tool bars.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * RSyntaxTextArea.License.txt file for details.
  */
@@ -22,6 +22,8 @@ import org.fife.ui.rtextarea.SearchEngine;
  */
 public interface SearchListener extends EventListener {
 
+	String getSelectedText();
+
 	/**
 	 * Callback called whenever a search event occurs.
 	 *
@@ -29,7 +31,5 @@ public interface SearchListener extends EventListener {
 	 *            The event.
 	 */
 	void searchEvent(SearchEvent e);
-
-	String getSelectedText();
 
 }

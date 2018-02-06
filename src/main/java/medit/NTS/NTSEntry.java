@@ -2,7 +2,7 @@ package medit.NTS;
 
 /**
  * This class is 'entry' of new tool system. It's representing script.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */

@@ -3,7 +3,7 @@
  *
  * FindReplaceButtonsEnableResult - Whether "find" and "replace" buttons
  * should be enabled.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * RSyntaxTextArea.License.txt file for details.
  */
@@ -21,22 +21,22 @@ package org.fife.rsta.ui.search;
 public class FindReplaceButtonsEnableResult {
 
 	private boolean enable;
-	private String error;
+	private final String error;
 
-	public FindReplaceButtonsEnableResult(boolean enable, String error) {
+	public FindReplaceButtonsEnableResult(final boolean enable, final String error) {
 		this.enable = enable;
 		this.error = error;
 	}
 
 	public boolean getEnable() {
-		return enable;
+		return this.enable;
 	}
 
 	public String getError() {
-		return error;
+		return this.error;
 	}
 
-	public void setEnable(boolean enable) {
+	public void setEnable(final boolean enable) {
 		this.enable = enable;
 	}
 

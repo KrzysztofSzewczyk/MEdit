@@ -2,7 +2,7 @@
  * 12/22/2008
  *
  * FunctionCompletion.java - A completion representing a function.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -10,6 +10,7 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Position;
@@ -23,6 +24,11 @@ import javax.swing.text.Position;
 public class FunctionCompletion extends VariableCompletion implements ParameterizedCompletion {
 
 	/**
+	 * Used to improve performance of sorting FunctionCompletions.
+	 */
+	private String compareString;
+
+	/**
 	 * Parameters to the function.
 	 */
 	private List<Parameter> params;
@@ -31,11 +37,6 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * A description of the return value of this function.
 	 */
 	private String returnValDesc;
-
-	/**
-	 * Used to improve performance of sorting FunctionCompletions.
-	 */
-	private String compareString;
 
 	/**
 	 * Constructor.
@@ -47,14 +48,14 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * @param returnType
 	 *            The return type of this function.
 	 */
-	public FunctionCompletion(CompletionProvider provider, String name, String returnType) {
+	public FunctionCompletion(final CompletionProvider provider, final String name, final String returnType) {
 		super(provider, name, returnType);
 	}
 
 	@Override
-	protected void addDefinitionString(StringBuilder sb) {
+	protected void addDefinitionString(final StringBuilder sb) {
 		sb.append("<html><b>");
-		sb.append(getDefinitionString());
+		sb.append(this.getDefinitionString());
 		sb.append("</b>");
 	}
 
@@ -64,31 +65,30 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * @param sb
 	 *            The buffer to append to.
 	 */
-	protected void addParameters(StringBuilder sb) {
+	protected void addParameters(final StringBuilder sb) {
 
 		// TODO: Localize me
 
-		int paramCount = getParamCount();
+		final int paramCount = this.getParamCount();
 		if (paramCount > 0) {
 			sb.append("<b>Parameters:</b><br>");
 			sb.append("<center><table width='90%'><tr><td>");
 			for (int i = 0; i < paramCount; i++) {
-				Parameter param = getParam(i);
+				final Parameter param = this.getParam(i);
 				sb.append("<b>");
 				sb.append(param.getName() != null ? param.getName() : param.getType());
 				sb.append("</b>&nbsp;");
-				String desc = param.getDescription();
-				if (desc != null) {
+				final String desc = param.getDescription();
+				if (desc != null)
 					sb.append(desc);
-				}
 				sb.append("<br>");
 			}
 			sb.append("</td></tr></table></center><br><br>");
 		}
 
-		if (returnValDesc != null) {
+		if (this.returnValDesc != null) {
 			sb.append("<b>Returns:</b><br><center><table width='90%'><tr><td>");
-			sb.append(returnValDesc);
+			sb.append(this.returnValDesc);
 			sb.append("</td></tr></table></center><br><br>");
 		}
 
@@ -102,21 +102,16 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * @return The sort order.
 	 */
 	@Override
-	public int compareTo(Completion c2) {
+	public int compareTo(final Completion c2) {
 
 		int rc = -1;
 
-		if (c2 == this) {
+		if (c2 == this)
 			rc = 0;
-		}
-
-		else if (c2 instanceof FunctionCompletion) {
-			rc = getCompareString().compareTo(((FunctionCompletion) c2).getCompareString());
-		}
-
-		else {
+		else if (c2 instanceof FunctionCompletion)
+			rc = this.getCompareString().compareTo(((FunctionCompletion) c2).getCompareString());
+		else
 			rc = super.compareTo(c2);
-		}
 
 		return rc;
 
@@ -137,25 +132,23 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		 * type.
 		 */
 
-		if (compareString == null) {
-			StringBuilder sb = new StringBuilder(getName());
+		if (this.compareString == null) {
+			final StringBuilder sb = new StringBuilder(this.getName());
 			// NOTE: This will fail if a method has > 99 parameters (!)
-			int paramCount = getParamCount();
-			if (paramCount < 10) {
+			final int paramCount = this.getParamCount();
+			if (paramCount < 10)
 				sb.append('0');
-			}
 			sb.append(paramCount);
 			for (int i = 0; i < paramCount; i++) {
-				String type = getParam(i).getType();
+				final String type = this.getParam(i).getType();
 				sb.append(type);
-				if (i < paramCount - 1) {
+				if (i < paramCount - 1)
 					sb.append(',');
-				}
 			}
-			compareString = sb.toString();
+			this.compareString = sb.toString();
 		}
 
-		return compareString;
+		return this.compareString;
 
 	}
 
@@ -163,75 +156,69 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * Returns the "definition string" for this function completion. For example,
 	 * for the C "<code>printf</code>" function, this would return
 	 * "<code>int printf(const char *, ...)</code>".
-	 * 
+	 *
 	 * @return The definition string.
 	 */
 	@Override
 	public String getDefinitionString() {
 
-		StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder();
 
 		// Add the return type if applicable (C macros like NULL have no type).
-		String type = getType();
-		if (type != null) {
+		String type = this.getType();
+		if (type != null)
 			sb.append(type).append(' ');
-		}
 
 		// Add the item being described's name.
-		sb.append(getName());
+		sb.append(this.getName());
 
 		// Add parameters for functions.
-		CompletionProvider provider = getProvider();
-		char start = provider.getParameterListStart();
-		if (start != 0) {
+		final CompletionProvider provider = this.getProvider();
+		final char start = provider.getParameterListStart();
+		if (start != 0)
 			sb.append(start);
-		}
-		for (int i = 0; i < getParamCount(); i++) {
-			Parameter param = getParam(i);
+		for (int i = 0; i < this.getParamCount(); i++) {
+			final Parameter param = this.getParam(i);
 			type = param.getType();
-			String name = param.getName();
+			final String name = param.getName();
 			if (type != null) {
 				sb.append(type);
-				if (name != null) {
+				if (name != null)
 					sb.append(' ');
-				}
 			}
-			if (name != null) {
+			if (name != null)
 				sb.append(name);
-			}
-			if (i < params.size() - 1) {
+			if (i < this.params.size() - 1)
 				sb.append(provider.getParameterListSeparator());
-			}
 		}
-		char end = provider.getParameterListEnd();
-		if (end != 0) {
+		final char end = provider.getParameterListEnd();
+		if (end != 0)
 			sb.append(end);
-		}
 
 		return sb.toString();
 
 	}
 
 	@Override
-	public ParameterizedCompletionInsertionInfo getInsertionInfo(JTextComponent tc, boolean replaceTabsWithSpaces) {
+	public ParameterizedCompletionInsertionInfo getInsertionInfo(final JTextComponent tc,
+			final boolean replaceTabsWithSpaces) {
 
-		ParameterizedCompletionInsertionInfo info = new ParameterizedCompletionInsertionInfo();
+		final ParameterizedCompletionInsertionInfo info = new ParameterizedCompletionInsertionInfo();
 
-		StringBuilder sb = new StringBuilder();
-		char paramListStart = getProvider().getParameterListStart();
-		if (paramListStart != '\0') {
+		final StringBuilder sb = new StringBuilder();
+		final char paramListStart = this.getProvider().getParameterListStart();
+		if (paramListStart != '\0')
 			sb.append(paramListStart);
-		}
-		int dot = tc.getCaretPosition() + sb.length();
-		int paramCount = getParamCount();
+		final int dot = tc.getCaretPosition() + sb.length();
+		final int paramCount = this.getParamCount();
 
 		// Get the range in which the caret can move before we hide
 		// this tool tip.
-		int minPos = dot;
+		final int minPos = dot;
 		Position maxPos = null;
 		try {
 			maxPos = tc.getDocument().createPosition(dot - sb.length() + 1);
-		} catch (BadLocationException ble) {
+		} catch (final BadLocationException ble) {
 			ble.printStackTrace(); // Never happens
 		}
 		info.setCaretRange(minPos, maxPos);
@@ -241,29 +228,28 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 		// performance and simplicity of undo/redo).
 		int start = dot;
 		for (int i = 0; i < paramCount; i++) {
-			Parameter param = getParam(i);
-			String paramText = getParamText(param);
-			if (i == 0) {
+			final Parameter param = this.getParam(i);
+			final String paramText = this.getParamText(param);
+			if (i == 0)
 				firstParamLen = paramText.length();
-			}
 			sb.append(paramText);
-			int end = start + paramText.length();
+			final int end = start + paramText.length();
 			info.addReplacementLocation(start, end);
 			// Patch for param. list separators with length > 2 -
 			// thanks to Matthew Adereth!
-			String sep = getProvider().getParameterListSeparator();
+			final String sep = this.getProvider().getParameterListSeparator();
 			if (i < paramCount - 1 && sep != null) {
 				sb.append(sep);
 				start = end + sep.length();
 			}
 		}
-		sb.append(getProvider().getParameterListEnd());
+		sb.append(this.getProvider().getParameterListEnd());
 		int endOffs = dot + sb.length();
 		endOffs -= 1;// getProvider().getParameterListStart().length();
 		info.addReplacementLocation(endOffs, endOffs); // offset after function
 		info.setDefaultEndOffs(endOffs);
 
-		int selectionEnd = paramCount > 0 ? (dot + firstParamLen) : dot;
+		final int selectionEnd = paramCount > 0 ? dot + firstParamLen : dot;
 		info.setInitialSelection(dot, selectionEnd);
 		info.setTextToInsert(sb.toString());
 		return info;
@@ -274,8 +260,8 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Parameter getParam(int index) {
-		return params.get(index);
+	public Parameter getParam(final int index) {
+		return this.params.get(index);
 	}
 
 	/**
@@ -286,15 +272,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 */
 	@Override
 	public int getParamCount() {
-		return params == null ? 0 : params.size();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean getShowParameterToolTip() {
-		return true;
+		return this.params == null ? 0 : this.params.size();
 	}
 
 	/**
@@ -304,13 +282,12 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 *            The parameter.
 	 * @return The text.
 	 */
-	private String getParamText(ParameterizedCompletion.Parameter param) {
+	private String getParamText(final ParameterizedCompletion.Parameter param) {
 		String text = param.getName();
 		if (text == null) {
 			text = param.getType();
-			if (text == null) { // Shouldn't ever happen
+			if (text == null)
 				text = "arg";
-			}
 		}
 		return text;
 	}
@@ -322,7 +299,15 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * @see #setReturnValueDescription(String)
 	 */
 	public String getReturnValueDescription() {
-		return returnValDesc;
+		return this.returnValDesc;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean getShowParameterToolTip() {
+		return true;
 	}
 
 	/**
@@ -330,13 +315,12 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 */
 	@Override
 	public String getSummary() {
-		StringBuilder sb = new StringBuilder();
-		addDefinitionString(sb);
-		if (!possiblyAddDescription(sb)) {
+		final StringBuilder sb = new StringBuilder();
+		this.addDefinitionString(sb);
+		if (!this.possiblyAddDescription(sb))
 			sb.append("<br><br><br>");
-		}
-		addParameters(sb);
-		possiblyAddDefinedIn(sb);
+		this.addParameters(sb);
+		this.possiblyAddDefinedIn(sb);
 		return sb.toString();
 	}
 
@@ -345,10 +329,9 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 */
 	@Override
 	public String getToolTipText() {
-		String text = getSummary();
-		if (text == null) {
-			text = getDefinitionString();
-		}
+		String text = this.getSummary();
+		if (text == null)
+			text = this.getDefinitionString();
 		return text;
 	}
 
@@ -361,11 +344,10 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 * @see #getParam(int)
 	 * @see #getParamCount()
 	 */
-	public void setParams(List<Parameter> params) {
-		if (params != null) {
+	public void setParams(final List<Parameter> params) {
+		if (params != null)
 			// Deep copy so parsing can re-use its array.
-			this.params = new ArrayList<Parameter>(params);
-		}
+			this.params = new ArrayList<>(params);
 	}
 
 	/**
@@ -375,7 +357,7 @@ public class FunctionCompletion extends VariableCompletion implements Parameteri
 	 *            The description.
 	 * @see #getReturnValueDescription()
 	 */
-	public void setReturnValueDescription(String desc) {
+	public void setReturnValueDescription(final String desc) {
 		this.returnValDesc = desc;
 	}
 

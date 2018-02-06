@@ -27,10 +27,84 @@ import org.fife.ui.autocomplete.DefaultCompletionProvider;
  */
 public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssistable {
 
-	private boolean enabled;
-	private boolean replace;
+	/**
+	 * A completion provider for regular expressions.
+	 */
+	private static class RegexAwareProvider extends DefaultCompletionProvider {
+
+		@Override
+		protected boolean isValidChar(final char ch) {
+			switch (ch) {
+			case '\\':
+			case '(':
+			case '*':
+			case '.':
+			case '?':
+			case '[':
+			case '^':
+			case ':':
+			case '{':
+			case '$':
+			case '+':
+				return true;
+			default:
+				return false;
+			}
+		}
+
+	}
+
+	private static class RegexCompletion extends BasicCompletion {
+
+		private final String inputText;
+
+		/**
+		 * Constructor.
+		 *
+		 * @param provider
+		 *            The parent completion provider.
+		 * @param inputText
+		 *            The text the user must input.
+		 * @param replacementText
+		 *            The text to replace.
+		 * @param shortDesc
+		 *            A short description of the completion. This will be displayed in
+		 *            the completion list.
+		 */
+		public RegexCompletion(final CompletionProvider provider, final String inputText, final String replacementText,
+				final String shortDesc) {
+			super(provider, replacementText, shortDesc);
+			this.inputText = inputText;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String getInputText() {
+			return this.inputText;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			return this.getShortDescription();
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private AutoCompletion ac;
+	private boolean enabled;
+
 	private RegexAwareProvider provider;
+
+	private final boolean replace;
 
 	/**
 	 * Constructor.
@@ -40,7 +114,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 *            combo box). This dictates what auto-complete choices the user is
 	 *            offered.
 	 */
-	public RegexAwareComboBox(boolean replace) {
+	public RegexAwareComboBox(final boolean replace) {
 		this(new RComboBoxModel(), 200, replace);
 	}
 
@@ -56,9 +130,9 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 *            combo box). This dictates what auto-complete choices the user is
 	 *            offered.
 	 */
-	public RegexAwareComboBox(ComboBoxModel model, int maxWidth, boolean replace) {
+	public RegexAwareComboBox(final ComboBoxModel model, final int maxWidth, final boolean replace) {
 		super(model, maxWidth);
-		setEditable(true);
+		this.setEditable(true);
 		this.replace = replace;
 	}
 
@@ -69,7 +143,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 *            The completion provider to add to.
 	 * @see #addReplaceFieldCompletions(RegexAwareProvider)
 	 */
-	private void addFindFieldCompletions(RegexAwareProvider p) {
+	private void addFindFieldCompletions(final RegexAwareProvider p) {
 
 		// Characters
 		p.addCompletion(new RegexCompletion(p, "\\\\", "\\\\", "\\\\ - Backslash"));
@@ -125,7 +199,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 *            The completion provider to add to.
 	 * @see #addFindFieldCompletions(RegexAwareProvider)
 	 */
-	private void addReplaceFieldCompletions(RegexAwareProvider p) {
+	private void addReplaceFieldCompletions(final RegexAwareProvider p) {
 		p.addCompletion(new RegexCompletion(p, "$", "$", "$i - Match of the capturing group i"));
 		p.addCompletion(new RegexCompletion(p, "\\", "\\", "\\ - Quote next character"));
 		p.addCompletion(new RegexCompletion(p, "\\t", "\\t", "\\t - Tab"));
@@ -138,10 +212,9 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 * @return The auto-completion instance.
 	 */
 	private AutoCompletion getAutoCompletion() {
-		if (ac == null) {
-			ac = new AutoCompletion(getCompletionProvider());
-		}
-		return ac;
+		if (this.ac == null)
+			this.ac = new AutoCompletion(this.getCompletionProvider());
+		return this.ac;
 	}
 
 	/**
@@ -150,15 +223,14 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 * @return The completion provider.
 	 */
 	protected synchronized CompletionProvider getCompletionProvider() {
-		if (provider == null) {
-			provider = new RegexAwareProvider();
-			if (replace) {
-				addReplaceFieldCompletions(provider);
-			} else {
-				addFindFieldCompletions(provider);
-			}
+		if (this.provider == null) {
+			this.provider = new RegexAwareProvider();
+			if (this.replace)
+				this.addReplaceFieldCompletions(this.provider);
+			else
+				this.addFindFieldCompletions(this.provider);
 		}
-		return provider;
+		return this.provider;
 	}
 
 	/**
@@ -167,7 +239,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 * @return Whether any windows were visible.
 	 */
 	public boolean hideAutoCompletePopups() {
-		return ac == null ? false : ac.hideChildWindows();
+		return this.ac == null ? false : this.ac.hideChildWindows();
 	}
 
 	/**
@@ -177,7 +249,7 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 * @see #setAutoCompleteEnabled(boolean)
 	 */
 	public boolean isAutoCompleteEnabled() {
-		return enabled;
+		return this.enabled;
 	}
 
 	/**
@@ -188,94 +260,24 @@ public class RegexAwareComboBox extends MaxWidthComboBox implements ContentAssis
 	 *            Whether regex auto complete should be enabled.
 	 * @see #isAutoCompleteEnabled()
 	 */
-	public void setAutoCompleteEnabled(boolean enabled) {
+	public void setAutoCompleteEnabled(final boolean enabled) {
 		if (this.enabled != enabled) {
 			this.enabled = enabled;
 			if (enabled) {
-				AutoCompletion ac = getAutoCompletion();
-				JTextComponent tc = (JTextComponent) getEditor().getEditorComponent();
+				final AutoCompletion ac = this.getAutoCompletion();
+				final JTextComponent tc = (JTextComponent) this.getEditor().getEditorComponent();
 				ac.install(tc);
-			} else {
-				ac.uninstall();
-			}
-			String prop = ContentAssistable.ASSISTANCE_IMAGE;
+			} else
+				this.ac.uninstall();
+			final String prop = ContentAssistable.ASSISTANCE_IMAGE;
 			// Must take care how we fire the property event, as Swing
 			// property change support won't fire a notice if old and new are
 			// both non-null and old.equals(new).
-			if (enabled) {
-				firePropertyChange(prop, null, AbstractSearchDialog.getContentAssistImage());
-			} else {
-				firePropertyChange(prop, null, null);
-			}
+			if (enabled)
+				this.firePropertyChange(prop, null, AbstractSearchDialog.getContentAssistImage());
+			else
+				this.firePropertyChange(prop, null, null);
 		}
-	}
-
-	/**
-	 * A completion provider for regular expressions.
-	 */
-	private static class RegexAwareProvider extends DefaultCompletionProvider {
-
-		@Override
-		protected boolean isValidChar(char ch) {
-			switch (ch) {
-			case '\\':
-			case '(':
-			case '*':
-			case '.':
-			case '?':
-			case '[':
-			case '^':
-			case ':':
-			case '{':
-			case '$':
-			case '+':
-				return true;
-			default:
-				return false;
-			}
-		}
-
-	}
-
-	private static class RegexCompletion extends BasicCompletion {
-
-		private String inputText;
-
-		/**
-		 * Constructor.
-		 *
-		 * @param provider
-		 *            The parent completion provider.
-		 * @param inputText
-		 *            The text the user must input.
-		 * @param replacementText
-		 *            The text to replace.
-		 * @param shortDesc
-		 *            A short description of the completion. This will be displayed in
-		 *            the completion list.
-		 */
-		public RegexCompletion(CompletionProvider provider, String inputText, String replacementText,
-				String shortDesc) {
-			super(provider, replacementText, shortDesc);
-			this.inputText = inputText;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String getInputText() {
-			return inputText;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public String toString() {
-			return getShortDescription();
-		}
-
 	}
 
 }

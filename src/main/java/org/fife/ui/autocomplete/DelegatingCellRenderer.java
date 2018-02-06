@@ -3,13 +3,14 @@
  *
  * DelegatingCellRenderer.java - A renderer for Completions that will delegate
  * to the Completion's provider's renderer, if there is one.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 
 import java.awt.Component;
+
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -27,6 +28,10 @@ import javax.swing.ListCellRenderer;
 class DelegatingCellRenderer extends DefaultListCellRenderer {
 
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * The renderer to fall back on if one isn't specified by a provider. This is
 	 * usually <tt>this</tt>.
 	 */
@@ -39,25 +44,23 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 * @see #setFallbackCellRenderer(ListCellRenderer)
 	 */
 	public ListCellRenderer getFallbackCellRenderer() {
-		return fallback;
+		return this.fallback;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Component getListCellRendererComponent(JList list, Object value, int index, boolean selected,
-			boolean hasFocus) {
-		Completion c = (Completion) value;
-		CompletionProvider p = c.getProvider();
-		ListCellRenderer r = p.getListCellRenderer();
-		if (r != null) {
+	public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+			final boolean selected, final boolean hasFocus) {
+		final Completion c = (Completion) value;
+		final CompletionProvider p = c.getProvider();
+		final ListCellRenderer r = p.getListCellRenderer();
+		if (r != null)
 			return r.getListCellRendererComponent(list, value, index, selected, hasFocus);
-		}
-		if (fallback == null) {
+		if (this.fallback == null)
 			return super.getListCellRendererComponent(list, value, index, selected, hasFocus);
-		}
-		return fallback.getListCellRendererComponent(list, value, index, selected, hasFocus);
+		return this.fallback.getListCellRendererComponent(list, value, index, selected, hasFocus);
 	}
 
 	/**
@@ -68,7 +71,7 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	 *            <tt>this</tt> will be used.
 	 * @see #getFallbackCellRenderer()
 	 */
-	public void setFallbackCellRenderer(ListCellRenderer fallback) {
+	public void setFallbackCellRenderer(final ListCellRenderer fallback) {
 		this.fallback = fallback;
 	}
 
@@ -78,9 +81,8 @@ class DelegatingCellRenderer extends DefaultListCellRenderer {
 	@Override
 	public void updateUI() {
 		super.updateUI();
-		if ((fallback instanceof JComponent) && fallback != this) {
-			((JComponent) fallback).updateUI();
-		}
+		if (this.fallback instanceof JComponent && this.fallback != this)
+			((JComponent) this.fallback).updateUI();
 	}
 
 }

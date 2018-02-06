@@ -38,17 +38,82 @@ import javax.swing.Timer;
  */
 public class CollapsibleSectionPanel extends JPanel {
 
-	private List<BottomComponentInfo> bottomComponentInfos;
-	private BottomComponentInfo currentBci;
+	/**
+	 * Information about a "bottom component."
+	 */
+	private static class BottomComponentInfo {
 
-	private boolean animate;
-	private Timer timer;
-	private int tick;
-	private int totalTicks = 10;
-	private boolean down;
-	private boolean firstTick;
+		private Dimension _preferredSize;
+		private final JComponent component;
+
+		public BottomComponentInfo(final JComponent component) {
+			this.component = component;
+		}
+
+		public Dimension getRealPreferredSize() {
+			if (this._preferredSize == null)
+				this._preferredSize = this.component.getPreferredSize();
+			return this._preferredSize;
+		}
+
+		private void uiUpdated() {
+			// Remove explicit size previously set
+			this.component.setPreferredSize(null);
+		}
+
+	}
+
+	private class HideBottomComponentAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			CollapsibleSectionPanel.this.hideBottomComponent();
+		}
+
+	}
+
+	private class ShowBottomComponentAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		private final BottomComponentInfo bci;
+
+		public ShowBottomComponentAction(final KeyStroke ks, final BottomComponentInfo bci) {
+			this.putValue(Action.ACCELERATOR_KEY, ks);
+			this.bci = bci;
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			CollapsibleSectionPanel.this.showBottomComponent(this.bci);
+		}
+
+	}
 
 	private static final int FRAME_MILLIS = 10;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final boolean animate;
+	private final List<BottomComponentInfo> bottomComponentInfos;
+	private BottomComponentInfo currentBci;
+	private boolean down;
+
+	private boolean firstTick;
+
+	private int tick;
+
+	private Timer timer;
+
+	private int totalTicks = 10;
 
 	/**
 	 * Constructor.
@@ -63,10 +128,10 @@ public class CollapsibleSectionPanel extends JPanel {
 	 * @param animate
 	 *            Whether the collapsible sections should animate in.
 	 */
-	public CollapsibleSectionPanel(boolean animate) {
+	public CollapsibleSectionPanel(final boolean animate) {
 		super(new BorderLayout());
-		bottomComponentInfos = new ArrayList<BottomComponentInfo>();
-		installKeystrokes();
+		this.bottomComponentInfos = new ArrayList<>();
+		this.installKeystrokes();
 		this.animate = animate;
 	}
 
@@ -79,8 +144,8 @@ public class CollapsibleSectionPanel extends JPanel {
 	 *            The component to add.
 	 * @see #addBottomComponent(KeyStroke, JComponent)
 	 */
-	public void addBottomComponent(JComponent comp) {
-		addBottomComponent(null, comp);
+	public void addBottomComponent(final JComponent comp) {
+		this.addBottomComponent(null, comp);
 	}
 
 	/**
@@ -100,68 +165,70 @@ public class CollapsibleSectionPanel extends JPanel {
 	 *         display the component.
 	 * @see #addBottomComponent(JComponent)
 	 */
-	public Action addBottomComponent(KeyStroke ks, JComponent comp) {
+	public Action addBottomComponent(final KeyStroke ks, final JComponent comp) {
 
-		BottomComponentInfo bci = new BottomComponentInfo(comp);
-		bottomComponentInfos.add(bci);
+		final BottomComponentInfo bci = new BottomComponentInfo(comp);
+		this.bottomComponentInfos.add(bci);
 
 		Action action = null;
 		if (ks != null) {
-			InputMap im = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+			final InputMap im = this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 			im.put(ks, ks);
 			action = new ShowBottomComponentAction(ks, bci);
-			getActionMap().put(ks, action);
+			this.getActionMap().put(ks, action);
 		}
 		return action;
 
 	}
 
 	private void createTimer() {
-		timer = new Timer(FRAME_MILLIS, new ActionListener() {
+		this.timer = new Timer(CollapsibleSectionPanel.FRAME_MILLIS, new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				tick++;
-				if (tick == totalTicks) {
-					timer.stop();
-					timer = null;
-					tick = 0;
-					Dimension finalSize = down ? new Dimension(0, 0) : currentBci.getRealPreferredSize();
-					currentBci.component.setPreferredSize(finalSize);
-					if (down) {
-						remove(currentBci.component);
-						currentBci = null;
+			public void actionPerformed(final ActionEvent e) {
+				CollapsibleSectionPanel.this.tick++;
+				if (CollapsibleSectionPanel.this.tick == CollapsibleSectionPanel.this.totalTicks) {
+					CollapsibleSectionPanel.this.timer.stop();
+					CollapsibleSectionPanel.this.timer = null;
+					CollapsibleSectionPanel.this.tick = 0;
+					final Dimension finalSize = CollapsibleSectionPanel.this.down ? new Dimension(0, 0)
+							: CollapsibleSectionPanel.this.currentBci.getRealPreferredSize();
+					CollapsibleSectionPanel.this.currentBci.component.setPreferredSize(finalSize);
+					if (CollapsibleSectionPanel.this.down) {
+						CollapsibleSectionPanel.this.remove(CollapsibleSectionPanel.this.currentBci.component);
+						CollapsibleSectionPanel.this.currentBci = null;
 					}
 				} else {
-					if (firstTick) {
-						if (down) {
-							focusMainComponent();
-						} else {
+					if (CollapsibleSectionPanel.this.firstTick) {
+						if (CollapsibleSectionPanel.this.down)
+							CollapsibleSectionPanel.this.focusMainComponent();
+						else
 							// We assume here that the component has some
 							// focusable child we want to play with
-							currentBci.component.requestFocusInWindow();
-						}
-						firstTick = false;
+							CollapsibleSectionPanel.this.currentBci.component.requestFocusInWindow();
+						CollapsibleSectionPanel.this.firstTick = false;
 					}
-					float proportion = !down ? (((float) tick) / totalTicks) : (1f - (((float) tick) / totalTicks));
-					Dimension size = new Dimension(currentBci.getRealPreferredSize());
+					final float proportion = !CollapsibleSectionPanel.this.down
+							? (float) CollapsibleSectionPanel.this.tick / CollapsibleSectionPanel.this.totalTicks
+							: 1f - (float) CollapsibleSectionPanel.this.tick / CollapsibleSectionPanel.this.totalTicks;
+					final Dimension size = new Dimension(
+							CollapsibleSectionPanel.this.currentBci.getRealPreferredSize());
 					size.height = (int) (size.height * proportion);
-					currentBci.component.setPreferredSize(size);
+					CollapsibleSectionPanel.this.currentBci.component.setPreferredSize(size);
 				}
-				revalidate();
-				repaint();
+				CollapsibleSectionPanel.this.revalidate();
+				CollapsibleSectionPanel.this.repaint();
 			}
 		});
-		timer.setRepeats(true);
+		this.timer.setRepeats(true);
 	}
 
 	/**
 	 * Attempt to focus the "center" component of this panel.
 	 */
 	private void focusMainComponent() {
-		Component center = ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
-		if (center instanceof JScrollPane) {
+		Component center = ((BorderLayout) this.getLayout()).getLayoutComponent(BorderLayout.CENTER);
+		if (center instanceof JScrollPane)
 			center = ((JScrollPane) center).getViewport().getView();
-		}
 		center.requestFocusInWindow();
 	}
 
@@ -174,9 +241,8 @@ public class CollapsibleSectionPanel extends JPanel {
 	public JComponent getDisplayedBottomComponent() {
 		// If a component is animating in or out, we consider it to be "not
 		// displayed."
-		if (currentBci != null && (timer == null || !timer.isRunning())) {
-			return currentBci.component;
-		}
+		if (this.currentBci != null && (this.timer == null || !this.timer.isRunning()))
+			return this.currentBci.component;
 		return null;
 	}
 
@@ -187,30 +253,28 @@ public class CollapsibleSectionPanel extends JPanel {
 	 */
 	public void hideBottomComponent() {
 
-		if (currentBci == null) {
+		if (this.currentBci == null)
 			return;
-		}
-		if (!animate) {
-			remove(currentBci.component);
-			revalidate();
-			repaint();
-			currentBci = null;
-			focusMainComponent();
+		if (!this.animate) {
+			this.remove(this.currentBci.component);
+			this.revalidate();
+			this.repaint();
+			this.currentBci = null;
+			this.focusMainComponent();
 			return;
 		}
 
-		if (timer != null) {
-			if (down) {
+		if (this.timer != null) {
+			if (this.down)
 				return; // Already animating away
-			}
-			timer.stop();
-			tick = totalTicks - tick;
+			this.timer.stop();
+			this.tick = this.totalTicks - this.tick;
 		}
-		down = true;
-		firstTick = true;
+		this.down = true;
+		this.firstTick = true;
 
-		createTimer();
-		timer.start();
+		this.createTimer();
+		this.timer.start();
 
 	}
 
@@ -219,8 +283,8 @@ public class CollapsibleSectionPanel extends JPanel {
 	 */
 	private void installKeystrokes() {
 
-		InputMap im = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		ActionMap am = getActionMap();
+		final InputMap im = this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap am = this.getActionMap();
 
 		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "onEscape");
 		am.put("onEscape", new HideBottomComponentAction());
@@ -234,11 +298,10 @@ public class CollapsibleSectionPanel extends JPanel {
 	 * @param millis
 	 *            The amount of time, in milliseconds.
 	 */
-	public void setAnimationTime(int millis) {
-		if (millis < 0) {
+	public void setAnimationTime(final int millis) {
+		if (millis < 0)
 			throw new IllegalArgumentException("millis must be >= 0");
-		}
-		totalTicks = Math.max(millis / FRAME_MILLIS, 1);
+		this.totalTicks = Math.max(millis / CollapsibleSectionPanel.FRAME_MILLIS, 1);
 	}
 
 	/**
@@ -249,36 +312,34 @@ public class CollapsibleSectionPanel extends JPanel {
 	 *            The new bottom component.
 	 * @see #hideBottomComponent()
 	 */
-	private void showBottomComponent(BottomComponentInfo bci) {
+	private void showBottomComponent(final BottomComponentInfo bci) {
 
-		if (bci.equals(currentBci)) {
-			currentBci.component.requestFocusInWindow();
+		if (bci.equals(this.currentBci)) {
+			this.currentBci.component.requestFocusInWindow();
 			return;
 		}
 
 		// Remove currently displayed bottom component
-		if (currentBci != null) {
-			remove(currentBci.component);
-		}
-		currentBci = bci;
-		add(currentBci.component, BorderLayout.SOUTH);
-		if (!animate) {
-			currentBci.component.requestFocusInWindow();
-			revalidate();
-			repaint();
+		if (this.currentBci != null)
+			this.remove(this.currentBci.component);
+		this.currentBci = bci;
+		this.add(this.currentBci.component, BorderLayout.SOUTH);
+		if (!this.animate) {
+			this.currentBci.component.requestFocusInWindow();
+			this.revalidate();
+			this.repaint();
 			return;
 		}
 
-		if (timer != null) {
-			timer.stop();
-		}
-		tick = 0;
-		down = false;
-		firstTick = true;
+		if (this.timer != null)
+			this.timer.stop();
+		this.tick = 0;
+		this.down = false;
+		this.firstTick = true;
 
 		// Animate display of new bottom component.
-		createTimer();
-		timer.start();
+		this.createTimer();
+		this.timer.start();
 
 	}
 
@@ -291,84 +352,29 @@ public class CollapsibleSectionPanel extends JPanel {
 	 * @see #addBottomComponent(KeyStroke, JComponent)
 	 * @see #hideBottomComponent()
 	 */
-	public void showBottomComponent(JComponent comp) {
+	public void showBottomComponent(final JComponent comp) {
 
 		BottomComponentInfo info = null;
-		for (BottomComponentInfo bci : bottomComponentInfos) {
+		for (final BottomComponentInfo bci : this.bottomComponentInfos)
 			if (bci.component == comp) {
 				info = bci;
 				break;
 			}
-		}
 
-		if (info != null) {
-			showBottomComponent(info);
-		}
+		if (info != null)
+			this.showBottomComponent(info);
 
 	}
 
 	@Override
 	public void updateUI() {
 		super.updateUI();
-		if (bottomComponentInfos != null) { // First time through
-			for (BottomComponentInfo info : bottomComponentInfos) {
-				if (!info.component.isDisplayable()) {
+		if (this.bottomComponentInfos != null)
+			for (final BottomComponentInfo info : this.bottomComponentInfos) {
+				if (!info.component.isDisplayable())
 					SwingUtilities.updateComponentTreeUI(info.component);
-				}
 				info.uiUpdated();
 			}
-		}
-	}
-
-	/**
-	 * Information about a "bottom component."
-	 */
-	private static class BottomComponentInfo {
-
-		private JComponent component;
-		private Dimension _preferredSize;
-
-		public BottomComponentInfo(JComponent component) {
-			this.component = component;
-		}
-
-		public Dimension getRealPreferredSize() {
-			if (_preferredSize == null) {
-				_preferredSize = component.getPreferredSize();
-			}
-			return _preferredSize;
-		}
-
-		private void uiUpdated() {
-			// Remove explicit size previously set
-			component.setPreferredSize(null);
-		}
-
-	}
-
-	private class HideBottomComponentAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			hideBottomComponent();
-		}
-
-	}
-
-	private class ShowBottomComponentAction extends AbstractAction {
-
-		private BottomComponentInfo bci;
-
-		public ShowBottomComponentAction(KeyStroke ks, BottomComponentInfo bci) {
-			putValue(ACCELERATOR_KEY, ks);
-			this.bci = bci;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			showBottomComponent(bci);
-		}
-
 	}
 
 }

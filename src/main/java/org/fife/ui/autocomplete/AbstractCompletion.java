@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * AbstractCompletion.java - Base class for possible completions.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -31,14 +31,14 @@ import javax.swing.text.JTextComponent;
 public abstract class AbstractCompletion implements Completion {
 
 	/**
-	 * The provider that created this completion;
-	 */
-	private CompletionProvider provider;
-
-	/**
 	 * The icon to use for this completion.
 	 */
 	private Icon icon;
+
+	/**
+	 * The provider that created this completion;
+	 */
+	private final CompletionProvider provider;
 
 	/**
 	 * The relevance of this completion. Completion instances with higher
@@ -54,7 +54,7 @@ public abstract class AbstractCompletion implements Completion {
 	 * @param provider
 	 *            The provider that created this completion.
 	 */
-	protected AbstractCompletion(CompletionProvider provider) {
+	protected AbstractCompletion(final CompletionProvider provider) {
 		this.provider = provider;
 	}
 
@@ -66,21 +66,20 @@ public abstract class AbstractCompletion implements Completion {
 	 * @param icon
 	 *            The icon for this completion.
 	 */
-	protected AbstractCompletion(CompletionProvider provider, Icon icon) {
+	protected AbstractCompletion(final CompletionProvider provider, final Icon icon) {
 		this(provider);
-		setIcon(icon);
+		this.setIcon(icon);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int compareTo(Completion c2) {
-		if (c2 == this) {
+	public int compareTo(final Completion c2) {
+		if (c2 == this)
 			return 0;
-		} else if (c2 != null) {
-			return toString().compareToIgnoreCase(c2.toString());
-		}
+		else if (c2 != null)
+			return this.toString().compareToIgnoreCase(c2.toString());
 		return -1;
 	}
 
@@ -88,8 +87,8 @@ public abstract class AbstractCompletion implements Completion {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String getAlreadyEntered(JTextComponent comp) {
-		return provider.getAlreadyEnteredText(comp);
+	public String getAlreadyEntered(final JTextComponent comp) {
+		return this.provider.getAlreadyEnteredText(comp);
 	}
 
 	/**
@@ -97,7 +96,7 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	@Override
 	public Icon getIcon() {
-		return icon;
+		return this.icon;
 	}
 
 	/**
@@ -110,7 +109,7 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	@Override
 	public String getInputText() {
-		return getReplacementText();
+		return this.getReplacementText();
 	}
 
 	/**
@@ -118,7 +117,7 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	@Override
 	public CompletionProvider getProvider() {
-		return provider;
+		return this.provider;
 	}
 
 	/**
@@ -126,7 +125,7 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	@Override
 	public int getRelevance() {
-		return relevance;
+		return this.relevance;
 	}
 
 	/**
@@ -147,7 +146,7 @@ public abstract class AbstractCompletion implements Completion {
 	 *            The icon to use.
 	 * @see #getIcon()
 	 */
-	public void setIcon(Icon icon) {
+	public void setIcon(final Icon icon) {
 		this.icon = icon;
 	}
 
@@ -158,7 +157,7 @@ public abstract class AbstractCompletion implements Completion {
 	 *            The new relevance of this completion.
 	 * @see #getRelevance()
 	 */
-	public void setRelevance(int relevance) {
+	public void setRelevance(final int relevance) {
 		this.relevance = relevance;
 	}
 
@@ -170,7 +169,7 @@ public abstract class AbstractCompletion implements Completion {
 	 */
 	@Override
 	public String toString() {
-		return getInputText();
+		return this.getInputText();
 	}
 
 }

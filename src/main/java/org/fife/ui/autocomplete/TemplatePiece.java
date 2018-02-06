@@ -2,7 +2,7 @@
  * 06/17/2012
  *
  * TemplatePiece.java - A logical piece of a template completion.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -18,66 +18,66 @@ package org.fife.ui.autocomplete;
  */
 interface TemplatePiece {
 
-	String getText();
-
-	public class Text implements TemplatePiece {
-
-		private String text;
-
-		public Text(String text) {
-			this.text = text;
-		}
-
-		@Override
-		public String getText() {
-			return text;
-		}
-
-		@Override
-		public String toString() {
-			return "[TemplatePiece.Text: text=" + text + "]";
-		}
-
-	}
-
 	public class Param implements TemplatePiece {
 
 		String text;
 
-		public Param(String text) {
+		public Param(final String text) {
 			this.text = text;
 		}
 
 		@Override
 		public String getText() {
-			return text;
+			return this.text;
 		}
 
 		@Override
 		public String toString() {
-			return "[TemplatePiece.Param: param=" + text + "]";
+			return "[TemplatePiece.Param: param=" + this.text + "]";
 		}
 
 	}
 
 	public class ParamCopy implements TemplatePiece {
 
-		private String text;
+		private final String text;
 
-		public ParamCopy(String text) {
+		public ParamCopy(final String text) {
 			this.text = text;
 		}
 
 		@Override
 		public String getText() {
-			return text;
+			return this.text;
 		}
 
 		@Override
 		public String toString() {
-			return "[TemplatePiece.ParamCopy: param=" + text + "]";
+			return "[TemplatePiece.ParamCopy: param=" + this.text + "]";
 		}
 
 	}
+
+	public class Text implements TemplatePiece {
+
+		private final String text;
+
+		public Text(final String text) {
+			this.text = text;
+		}
+
+		@Override
+		public String getText() {
+			return this.text;
+		}
+
+		@Override
+		public String toString() {
+			return "[TemplatePiece.Text: text=" + this.text + "]";
+		}
+
+	}
+
+	String getText();
 
 }

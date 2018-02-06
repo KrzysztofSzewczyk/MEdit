@@ -4,7 +4,7 @@ import medit.MainFrame;
 
 /**
  * Interface for current file script management for MEdit B++ scripts.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -13,16 +13,16 @@ public class File {
 
 	MainFrame instance;
 
-	public File(MainFrame instance) {
+	public File(final MainFrame instance) {
 		this.instance = instance;
 	}
 
 	public java.io.File getFile() {
-		return instance.currentFile;
+		return this.instance.currentFile;
 	}
 
-	public void setFile(java.io.File file) {
-		instance.currentFile = file;
+	public void setFile(final java.io.File file) {
+		this.instance.currentFile = file;
 	}
 
 }

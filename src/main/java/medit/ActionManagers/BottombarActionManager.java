@@ -11,7 +11,7 @@ import medit.MainFrame;
  * This class is small, but it was needed to split it away from MainFrame to
  * keep code climate and internal structure of MEdit. It's setting up bottombar
  * containing information about current opened document.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -26,7 +26,7 @@ public class BottombarActionManager {
 
 	/**
 	 * This is constructor creating internal MainFrame instance.
-	 * 
+	 *
 	 * @param instance
 	 */
 

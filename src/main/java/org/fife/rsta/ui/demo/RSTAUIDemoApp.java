@@ -1,9 +1,24 @@
 package org.fife.rsta.ui.demo;
 
 import java.awt.BorderLayout;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ButtonGroup;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.text.BadLocationException;
 
@@ -12,11 +27,11 @@ import org.fife.rsta.ui.CollapsibleSectionPanel;
 import org.fife.rsta.ui.GoToDialog;
 import org.fife.rsta.ui.SizeGripIcon;
 import org.fife.rsta.ui.search.FindDialog;
+import org.fife.rsta.ui.search.FindToolBar;
 import org.fife.rsta.ui.search.ReplaceDialog;
 import org.fife.rsta.ui.search.ReplaceToolBar;
 import org.fife.rsta.ui.search.SearchEvent;
 import org.fife.rsta.ui.search.SearchListener;
-import org.fife.rsta.ui.search.FindToolBar;
 import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
@@ -37,82 +52,238 @@ import org.fife.ui.rtextarea.SearchResult;
  */
 public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
-	private CollapsibleSectionPanel csp;
-	private RSyntaxTextArea textArea;
+	private class GoToLineAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public GoToLineAction() {
+			super("Go To Line...");
+			final int c = RSTAUIDemoApp.this.getToolkit().getMenuShortcutKeyMask();
+			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, c));
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (RSTAUIDemoApp.this.findDialog.isVisible())
+				RSTAUIDemoApp.this.findDialog.setVisible(false);
+			if (RSTAUIDemoApp.this.replaceDialog.isVisible())
+				RSTAUIDemoApp.this.replaceDialog.setVisible(false);
+			final GoToDialog dialog = new GoToDialog(RSTAUIDemoApp.this);
+			dialog.setMaxLineNumberAllowed(RSTAUIDemoApp.this.textArea.getLineCount());
+			dialog.setVisible(true);
+			final int line = dialog.getLineNumber();
+			if (line > 0)
+				try {
+					RSTAUIDemoApp.this.textArea
+							.setCaretPosition(RSTAUIDemoApp.this.textArea.getLineStartOffset(line - 1));
+				} catch (final BadLocationException ble) { // Never happens
+					UIManager.getLookAndFeel().provideErrorFeedback(RSTAUIDemoApp.this.textArea);
+					ble.printStackTrace();
+				}
+		}
+
+	}
+
+	private class LookAndFeelAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		private final LookAndFeelInfo info;
+
+		public LookAndFeelAction(final LookAndFeelInfo info) {
+			this.putValue(Action.NAME, info.getName());
+			this.info = info;
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			try {
+				UIManager.setLookAndFeel(this.info.getClassName());
+				SwingUtilities.updateComponentTreeUI(RSTAUIDemoApp.this);
+				if (RSTAUIDemoApp.this.findDialog != null) {
+					RSTAUIDemoApp.this.findDialog.updateUI();
+					RSTAUIDemoApp.this.replaceDialog.updateUI();
+				}
+				RSTAUIDemoApp.this.pack();
+			} catch (final RuntimeException re) {
+				throw re; // FindBugs
+			} catch (final Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+
+	private class ShowFindDialogAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ShowFindDialogAction() {
+			super("Find...");
+			final int c = RSTAUIDemoApp.this.getToolkit().getMenuShortcutKeyMask();
+			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, c));
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (RSTAUIDemoApp.this.replaceDialog.isVisible())
+				RSTAUIDemoApp.this.replaceDialog.setVisible(false);
+			RSTAUIDemoApp.this.findDialog.setVisible(true);
+		}
+
+	}
+
+	private class ShowReplaceDialogAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ShowReplaceDialogAction() {
+			super("Replace...");
+			final int c = RSTAUIDemoApp.this.getToolkit().getMenuShortcutKeyMask();
+			this.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, c));
+		}
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (RSTAUIDemoApp.this.findDialog.isVisible())
+				RSTAUIDemoApp.this.findDialog.setVisible(false);
+			RSTAUIDemoApp.this.replaceDialog.setVisible(true);
+		}
+
+	}
+
+	private static class StatusBar extends JPanel {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		private final JLabel label;
+
+		public StatusBar() {
+			this.label = new JLabel("Ready");
+			this.setLayout(new BorderLayout());
+			this.add(this.label, BorderLayout.LINE_START);
+			this.add(new JLabel(new SizeGripIcon()), BorderLayout.LINE_END);
+		}
+
+		public void setLabel(final String label) {
+			this.label.setText(label);
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public static void main(final String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+					// UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteAquaLookAndFeel");
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+				new RSTAUIDemoApp().setVisible(true);
+			}
+		});
+	}
+
+	private final CollapsibleSectionPanel csp;
+
 	private FindDialog findDialog;
-	private ReplaceDialog replaceDialog;
+
 	private FindToolBar findToolBar;
+
+	private ReplaceDialog replaceDialog;
+
 	private ReplaceToolBar replaceToolBar;
-	private StatusBar statusBar;
+
+	private final StatusBar statusBar;
+
+	private final RSyntaxTextArea textArea;
 
 	public RSTAUIDemoApp() {
 
-		initSearchDialogs();
+		this.initSearchDialogs();
 
-		JPanel contentPane = new JPanel(new BorderLayout());
-		setContentPane(contentPane);
-		csp = new CollapsibleSectionPanel();
-		contentPane.add(csp);
+		final JPanel contentPane = new JPanel(new BorderLayout());
+		this.setContentPane(contentPane);
+		this.csp = new CollapsibleSectionPanel();
+		contentPane.add(this.csp);
 
-		setJMenuBar(createMenuBar());
+		this.setJMenuBar(this.createMenuBar());
 
-		textArea = new RSyntaxTextArea(25, 80);
-		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-		textArea.setCodeFoldingEnabled(true);
-		textArea.setMarkOccurrences(true);
-		RTextScrollPane sp = new RTextScrollPane(textArea);
-		csp.add(sp);
+		this.textArea = new RSyntaxTextArea(25, 80);
+		this.textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+		this.textArea.setCodeFoldingEnabled(true);
+		this.textArea.setMarkOccurrences(true);
+		final RTextScrollPane sp = new RTextScrollPane(this.textArea);
+		this.csp.add(sp);
 
-		ErrorStrip errorStrip = new ErrorStrip(textArea);
+		final ErrorStrip errorStrip = new ErrorStrip(this.textArea);
 		contentPane.add(errorStrip, BorderLayout.LINE_END);
 		// org.fife.rsta.ui.DocumentMap docMap = new
 		// org.fife.rsta.ui.DocumentMap(textArea);
 		// contentPane.add(docMap, BorderLayout.LINE_END);
 
-		statusBar = new StatusBar();
-		contentPane.add(statusBar, BorderLayout.SOUTH);
+		this.statusBar = new StatusBar();
+		contentPane.add(this.statusBar, BorderLayout.SOUTH);
 
-		setTitle("RSTAUI Demo Application");
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		pack();
-		setLocationRelativeTo(null);
+		this.setTitle("RSTAUI Demo Application");
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.pack();
+		this.setLocationRelativeTo(null);
 
 	}
 
-	private void addItem(Action a, ButtonGroup bg, JMenu menu) {
-		JRadioButtonMenuItem item = new JRadioButtonMenuItem(a);
+	private void addItem(final Action a, final ButtonGroup bg, final JMenu menu) {
+		final JRadioButtonMenuItem item = new JRadioButtonMenuItem(a);
 		bg.add(item);
 		menu.add(item);
 	}
 
 	private JMenuBar createMenuBar() {
 
-		JMenuBar mb = new JMenuBar();
+		final JMenuBar mb = new JMenuBar();
 		JMenu menu = new JMenu("Search");
 		menu.add(new JMenuItem(new ShowFindDialogAction()));
 		menu.add(new JMenuItem(new ShowReplaceDialogAction()));
 		menu.add(new JMenuItem(new GoToLineAction()));
 		menu.addSeparator();
 
-		int ctrl = getToolkit().getMenuShortcutKeyMask();
-		int shift = InputEvent.SHIFT_MASK;
+		final int ctrl = this.getToolkit().getMenuShortcutKeyMask();
+		final int shift = InputEvent.SHIFT_MASK;
 		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_F, ctrl | shift);
-		Action a = csp.addBottomComponent(ks, findToolBar);
+		Action a = this.csp.addBottomComponent(ks, this.findToolBar);
 		a.putValue(Action.NAME, "Show Find Search Bar");
 		menu.add(new JMenuItem(a));
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_H, ctrl | shift);
-		a = csp.addBottomComponent(ks, replaceToolBar);
+		a = this.csp.addBottomComponent(ks, this.replaceToolBar);
 		a.putValue(Action.NAME, "Show Replace Search Bar");
 		menu.add(new JMenuItem(a));
 
 		mb.add(menu);
 
 		menu = new JMenu("LookAndFeel");
-		ButtonGroup bg = new ButtonGroup();
-		LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
-		for (int i = 0; i < infos.length; i++) {
-			addItem(new LookAndFeelAction(infos[i]), bg, menu);
-		}
+		final ButtonGroup bg = new ButtonGroup();
+		final LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
+		for (final LookAndFeelInfo info : infos)
+			this.addItem(new LookAndFeelAction(info), bg, menu);
 		mb.add(menu);
 
 		return mb;
@@ -121,7 +292,7 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 	@Override
 	public String getSelectedText() {
-		return textArea.getSelectedText();
+		return this.textArea.getSelectedText();
 	}
 
 	/**
@@ -129,19 +300,19 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 	 */
 	public void initSearchDialogs() {
 
-		findDialog = new FindDialog(this, this);
-		replaceDialog = new ReplaceDialog(this, this);
+		this.findDialog = new FindDialog(this, this);
+		this.replaceDialog = new ReplaceDialog(this, this);
 
 		// This ties the properties of the two dialogs together (match case,
 		// regex, etc.).
-		SearchContext context = findDialog.getSearchContext();
-		replaceDialog.setSearchContext(context);
+		final SearchContext context = this.findDialog.getSearchContext();
+		this.replaceDialog.setSearchContext(context);
 
 		// Create tool bars and tie their search contexts together also.
-		findToolBar = new FindToolBar(this);
-		findToolBar.setSearchContext(context);
-		replaceToolBar = new ReplaceToolBar(this);
-		replaceToolBar.setSearchContext(context);
+		this.findToolBar = new FindToolBar(this);
+		this.findToolBar.setSearchContext(context);
+		this.replaceToolBar = new ReplaceToolBar(this);
+		this.replaceToolBar.setSearchContext(context);
 
 	}
 
@@ -149,175 +320,44 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 	 * Listens for events from our search dialogs and actually does the dirty work.
 	 */
 	@Override
-	public void searchEvent(SearchEvent e) {
+	public void searchEvent(final SearchEvent e) {
 
-		SearchEvent.Type type = e.getType();
-		SearchContext context = e.getSearchContext();
+		final SearchEvent.Type type = e.getType();
+		final SearchContext context = e.getSearchContext();
 		SearchResult result = null;
 
 		switch (type) {
 		default: // Prevent FindBugs warning later
 		case MARK_ALL:
-			result = SearchEngine.markAll(textArea, context);
+			result = SearchEngine.markAll(this.textArea, context);
 			break;
 		case FIND:
-			result = SearchEngine.find(textArea, context);
-			if (!result.wasFound()) {
-				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-			}
+			result = SearchEngine.find(this.textArea, context);
+			if (!result.wasFound())
+				UIManager.getLookAndFeel().provideErrorFeedback(this.textArea);
 			break;
 		case REPLACE:
-			result = SearchEngine.replace(textArea, context);
-			if (!result.wasFound()) {
-				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-			}
+			result = SearchEngine.replace(this.textArea, context);
+			if (!result.wasFound())
+				UIManager.getLookAndFeel().provideErrorFeedback(this.textArea);
 			break;
 		case REPLACE_ALL:
-			result = SearchEngine.replaceAll(textArea, context);
+			result = SearchEngine.replaceAll(this.textArea, context);
 			JOptionPane.showMessageDialog(null, result.getCount() + " occurrences replaced.");
 			break;
 		}
 
 		String text = null;
-		if (result.wasFound()) {
+		if (result.wasFound())
 			text = "Text found; occurrences marked: " + result.getMarkedCount();
-		} else if (type == SearchEvent.Type.MARK_ALL) {
-			if (result.getMarkedCount() > 0) {
+		else if (type == SearchEvent.Type.MARK_ALL) {
+			if (result.getMarkedCount() > 0)
 				text = "Occurrences marked: " + result.getMarkedCount();
-			} else {
+			else
 				text = "";
-			}
-		} else {
+		} else
 			text = "Text not found";
-		}
-		statusBar.setLabel(text);
-
-	}
-
-	public static void main(String[] args) {
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					// UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteAquaLookAndFeel");
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				new RSTAUIDemoApp().setVisible(true);
-			}
-		});
-	}
-
-	private class GoToLineAction extends AbstractAction {
-
-		public GoToLineAction() {
-			super("Go To Line...");
-			int c = getToolkit().getMenuShortcutKeyMask();
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_L, c));
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (findDialog.isVisible()) {
-				findDialog.setVisible(false);
-			}
-			if (replaceDialog.isVisible()) {
-				replaceDialog.setVisible(false);
-			}
-			GoToDialog dialog = new GoToDialog(RSTAUIDemoApp.this);
-			dialog.setMaxLineNumberAllowed(textArea.getLineCount());
-			dialog.setVisible(true);
-			int line = dialog.getLineNumber();
-			if (line > 0) {
-				try {
-					textArea.setCaretPosition(textArea.getLineStartOffset(line - 1));
-				} catch (BadLocationException ble) { // Never happens
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-					ble.printStackTrace();
-				}
-			}
-		}
-
-	}
-
-	private class LookAndFeelAction extends AbstractAction {
-
-		private LookAndFeelInfo info;
-
-		public LookAndFeelAction(LookAndFeelInfo info) {
-			putValue(NAME, info.getName());
-			this.info = info;
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			try {
-				UIManager.setLookAndFeel(info.getClassName());
-				SwingUtilities.updateComponentTreeUI(RSTAUIDemoApp.this);
-				if (findDialog != null) {
-					findDialog.updateUI();
-					replaceDialog.updateUI();
-				}
-				pack();
-			} catch (RuntimeException re) {
-				throw re; // FindBugs
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}
-	}
-
-	private class ShowFindDialogAction extends AbstractAction {
-
-		public ShowFindDialogAction() {
-			super("Find...");
-			int c = getToolkit().getMenuShortcutKeyMask();
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_F, c));
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (replaceDialog.isVisible()) {
-				replaceDialog.setVisible(false);
-			}
-			findDialog.setVisible(true);
-		}
-
-	}
-
-	private class ShowReplaceDialogAction extends AbstractAction {
-
-		public ShowReplaceDialogAction() {
-			super("Replace...");
-			int c = getToolkit().getMenuShortcutKeyMask();
-			putValue(ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_H, c));
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (findDialog.isVisible()) {
-				findDialog.setVisible(false);
-			}
-			replaceDialog.setVisible(true);
-		}
-
-	}
-
-	private static class StatusBar extends JPanel {
-
-		private JLabel label;
-
-		public StatusBar() {
-			label = new JLabel("Ready");
-			setLayout(new BorderLayout());
-			add(label, BorderLayout.LINE_START);
-			add(new JLabel(new SizeGripIcon()), BorderLayout.LINE_END);
-		}
-
-		public void setLabel(String label) {
-			this.label.setText(label);
-		}
+		this.statusBar.setLabel(text);
 
 	}
 

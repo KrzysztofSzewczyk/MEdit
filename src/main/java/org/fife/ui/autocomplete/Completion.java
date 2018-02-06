@@ -2,7 +2,7 @@
  * 12/21/2008
  *
  * Completion.java - Represents a single completion choice.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -15,7 +15,7 @@ import javax.swing.text.JTextComponent;
  * Represents a completion choice. A {@link CompletionProvider} returns lists of
  * objects implementing this interface. A <tt>Completion</tt> contains the
  * following information:
- * 
+ *
  * <ul>
  * <li>The text the user must (begin to) input for this to be a completion
  * choice.

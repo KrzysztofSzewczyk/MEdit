@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -52,148 +53,94 @@ import org.fife.ui.rsyntaxtextarea.TextEditorPane;
  */
 public class TextFilePropertiesDialog extends EscapableDialog implements ActionListener {
 
-	private static final long serialVersionUID = 1L;
+	private static class DocumentCharIterator implements CharacterIterator {
 
-	private JTextField filePathField;
-	private JComboBox terminatorCombo;
-	private JComboBox encodingCombo;
-	private JButton okButton;
+		private final Document doc;
+		private int index;
+		private final Segment s;
 
-	private TextEditorPane textArea;
-
-	private static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.TextFilePropertiesDialog");
-
-	private static final String[] LINE_TERMINATOR_LABELS = { msg.getString("SysDef"), msg.getString("CR"),
-			msg.getString("LF"), msg.getString("CRLF"), };
-
-	private static final String[] LINE_TERMINATORS = { System.getProperty("line.separator"), "\r", "\n", "\r\n" };
-
-	/**
-	 * Constructor.
-	 *
-	 * @param parent
-	 *            The main application dialog.
-	 * @param textArea
-	 *            The text area on which to report.
-	 */
-	public TextFilePropertiesDialog(Dialog parent, TextEditorPane textArea) {
-		super(parent);
-		init(textArea);
-	}
-
-	/**
-	 * Constructor.
-	 *
-	 * @param parent
-	 *            The main application window.
-	 * @param textArea
-	 *            The text area on which to report.
-	 */
-	public TextFilePropertiesDialog(Frame parent, TextEditorPane textArea) {
-		super(parent);
-		init(textArea);
-	}
-
-	/**
-	 * Listens for actions in this dialog.
-	 *
-	 * @param e
-	 *            The action event.
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-		String command = e.getActionCommand();
-
-		if ("TerminatorComboBox".equals(command)) {
-			okButton.setEnabled(true);
+		public DocumentCharIterator(final Document doc) {
+			this.doc = doc;
+			this.index = 0;
+			this.s = new Segment();
 		}
 
-		else if ("encodingCombo".equals(command)) {
-			okButton.setEnabled(true);
-		}
-
-		else if ("OKButton".equals(command)) {
-			String terminator = getSelectedLineTerminator();
-			if (terminator != null) {
-				String old = (String) textArea.getLineSeparator();
-				if (!terminator.equals(old)) {
-					textArea.setLineSeparator(terminator);
-				}
-			}
-			String encoding = (String) encodingCombo.getSelectedItem();
-			if (encoding != null) {
-				textArea.setEncoding(encoding);
-			}
-			setVisible(false);
-		}
-
-		else if ("CancelButton".equals(command)) {
-			escapePressed();
-		}
-
-	}
-
-	private int calculateWordCount(TextEditorPane textArea) {
-
-		int wordCount = 0;
-		RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
-
-		BreakIterator bi = BreakIterator.getWordInstance();
-		bi.setText(new DocumentCharIterator(textArea.getDocument()));
-		for (int nextBoundary = bi.first(); nextBoundary != BreakIterator.DONE; nextBoundary = bi.next()) {
-			// getWordInstance() returns boundaries for both words and
-			// non-words (whitespace, punctuation, etc.)
+		@Override
+		public Object clone() {
 			try {
-				char ch = doc.charAt(nextBoundary);
-				if (Character.isLetterOrDigit(ch)) {
-					wordCount++;
-				}
-			} catch (BadLocationException ble) {
-				ble.printStackTrace();
+				return super.clone();
+			} catch (final CloneNotSupportedException cnse) { // Never happens
+				throw new InternalError("Clone not supported???");
 			}
 		}
 
-		return wordCount;
+		@Override
+		public char current() {
+			if (this.index >= this.getEndIndex())
+				return CharacterIterator.DONE;
+			try {
+				this.doc.getText(this.index, 1, this.s);
+				return this.s.first();
+			} catch (final BadLocationException ble) {
+				return CharacterIterator.DONE;
+			}
+		}
+
+		@Override
+		public char first() {
+			this.index = this.getBeginIndex();
+			return this.current();
+		}
+
+		@Override
+		public int getBeginIndex() {
+			return 0;
+		}
+
+		@Override
+		public int getEndIndex() {
+			return this.doc.getLength();
+		}
+
+		@Override
+		public int getIndex() {
+			return this.index;
+		}
+
+		@Override
+		public char last() {
+			this.index = Math.max(0, this.getEndIndex() - 1);
+			return this.current();
+		}
+
+		@Override
+		public char next() {
+			this.index = Math.min(this.index + 1, this.getEndIndex());
+			return this.current();
+		}
+
+		@Override
+		public char previous() {
+			this.index = Math.max(this.index - 1, this.getBeginIndex());
+			return this.current();
+		}
+
+		@Override
+		public char setIndex(final int pos) {
+			if (pos < this.getBeginIndex() || pos > this.getEndIndex())
+				throw new IllegalArgumentException("Illegal index: " + this.index);
+			this.index = pos;
+			return this.current();
+		}
 
 	}
 
-	/**
-	 * Creates a "footer" component containing the OK and Cancel buttons.
-	 * 
-	 * @param ok
-	 *            The OK button.
-	 * @param cancel
-	 *            The Cancel button.
-	 * @return The footer component for the dialog.
-	 */
-	protected Container createButtonFooter(JButton ok, JButton cancel) {
-
-		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-		buttonPanel.add(ok);
-		buttonPanel.add(cancel);
-
-		JPanel panel = new JPanel(new BorderLayout());
-		ComponentOrientation o = getComponentOrientation();
-		final int PADDING = 8;
-		int left = o.isLeftToRight() ? 0 : PADDING;
-		int right = o.isLeftToRight() ? PADDING : 0;
-		panel.setBorder(BorderFactory.createEmptyBorder(10, left, 0, right));
-		panel.add(buttonPanel, BorderLayout.LINE_END);
-		return panel;
-
-	}
-
-	/**
-	 * Returns the title to use for this dialog.
-	 *
-	 * @param fileName
-	 *            The name of the file whose properties are being shown.
-	 * @return The title for this dialog.
-	 */
-	protected String createTitle(String fileName) {
-		return MessageFormat.format(msg.getString("Title"), textArea.getFileName());
-	}
+	private static final String[] LINE_TERMINATOR_LABELS = { TextFilePropertiesDialog.msg.getString("SysDef"),
+			TextFilePropertiesDialog.msg.getString("CR"), TextFilePropertiesDialog.msg.getString("LF"),
+			TextFilePropertiesDialog.msg.getString("CRLF"), };
+	private static final String[] LINE_TERMINATORS = { System.getProperty("line.separator"), "\r", "\n", "\r\n" };
+	private static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.TextFilePropertiesDialog");
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Returns a string representation of a file size, such as "842 bytes", "1.73
@@ -203,7 +150,7 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 	 *            The file to get the size of.
 	 * @return The string.
 	 */
-	private static final String getFileSizeStringFor(File file) {
+	private static final String getFileSizeStringFor(final File file) {
 
 		int count = 0;
 		double tempSize = file.length();
@@ -211,7 +158,7 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 
 		// Keep dividing by 1024 until you get the largest unit that goes
 		// into this file's size.
-		while (count < 4 && ((tempSize = prevSize / 1024f) >= 1)) {
+		while (count < 4 && (tempSize = prevSize / 1024f) >= 1) {
 			prevSize = tempSize;
 			count++;
 		}
@@ -235,7 +182,7 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 			break;
 		}
 
-		NumberFormat fileSizeFormat = NumberFormat.getNumberInstance();
+		final NumberFormat fileSizeFormat = NumberFormat.getNumberInstance();
 		fileSizeFormat.setGroupingUsed(true);
 		fileSizeFormat.setMinimumFractionDigits(0);
 		fileSizeFormat.setMaximumFractionDigits(1);
@@ -243,89 +190,214 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 
 	}
 
-	private String getSelectedLineTerminator() {
-		return LINE_TERMINATORS[terminatorCombo.getSelectedIndex()];
+	private JComboBox encodingCombo;
+
+	private JTextField filePathField;
+
+	private JButton okButton;
+
+	private JComboBox terminatorCombo;
+
+	private TextEditorPane textArea;
+
+	/**
+	 * Constructor.
+	 *
+	 * @param parent
+	 *            The main application dialog.
+	 * @param textArea
+	 *            The text area on which to report.
+	 */
+	public TextFilePropertiesDialog(final Dialog parent, final TextEditorPane textArea) {
+		super(parent);
+		this.init(textArea);
 	}
 
-	private void init(TextEditorPane textArea) {
+	/**
+	 * Constructor.
+	 *
+	 * @param parent
+	 *            The main application window.
+	 * @param textArea
+	 *            The text area on which to report.
+	 */
+	public TextFilePropertiesDialog(final Frame parent, final TextEditorPane textArea) {
+		super(parent);
+		this.init(textArea);
+	}
+
+	/**
+	 * Listens for actions in this dialog.
+	 *
+	 * @param e
+	 *            The action event.
+	 */
+	@Override
+	public void actionPerformed(final ActionEvent e) {
+
+		final String command = e.getActionCommand();
+
+		if ("TerminatorComboBox".equals(command))
+			this.okButton.setEnabled(true);
+		else if ("encodingCombo".equals(command))
+			this.okButton.setEnabled(true);
+		else if ("OKButton".equals(command)) {
+			final String terminator = this.getSelectedLineTerminator();
+			if (terminator != null) {
+				final String old = (String) this.textArea.getLineSeparator();
+				if (!terminator.equals(old))
+					this.textArea.setLineSeparator(terminator);
+			}
+			final String encoding = (String) this.encodingCombo.getSelectedItem();
+			if (encoding != null)
+				this.textArea.setEncoding(encoding);
+			this.setVisible(false);
+		}
+
+		else if ("CancelButton".equals(command))
+			this.escapePressed();
+
+	}
+
+	private int calculateWordCount(final TextEditorPane textArea) {
+
+		int wordCount = 0;
+		final RSyntaxDocument doc = (RSyntaxDocument) textArea.getDocument();
+
+		final BreakIterator bi = BreakIterator.getWordInstance();
+		bi.setText(new DocumentCharIterator(textArea.getDocument()));
+		for (int nextBoundary = bi.first(); nextBoundary != BreakIterator.DONE; nextBoundary = bi.next())
+			// getWordInstance() returns boundaries for both words and
+			// non-words (whitespace, punctuation, etc.)
+			try {
+				final char ch = doc.charAt(nextBoundary);
+				if (Character.isLetterOrDigit(ch))
+					wordCount++;
+			} catch (final BadLocationException ble) {
+				ble.printStackTrace();
+			}
+
+		return wordCount;
+
+	}
+
+	/**
+	 * Creates a "footer" component containing the OK and Cancel buttons.
+	 *
+	 * @param ok
+	 *            The OK button.
+	 * @param cancel
+	 *            The Cancel button.
+	 * @return The footer component for the dialog.
+	 */
+	protected Container createButtonFooter(final JButton ok, final JButton cancel) {
+
+		final JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
+		buttonPanel.add(ok);
+		buttonPanel.add(cancel);
+
+		final JPanel panel = new JPanel(new BorderLayout());
+		final ComponentOrientation o = this.getComponentOrientation();
+		final int PADDING = 8;
+		final int left = o.isLeftToRight() ? 0 : PADDING;
+		final int right = o.isLeftToRight() ? PADDING : 0;
+		panel.setBorder(BorderFactory.createEmptyBorder(10, left, 0, right));
+		panel.add(buttonPanel, BorderLayout.LINE_END);
+		return panel;
+
+	}
+
+	/**
+	 * Returns the title to use for this dialog.
+	 *
+	 * @param fileName
+	 *            The name of the file whose properties are being shown.
+	 * @return The title for this dialog.
+	 */
+	protected String createTitle(final String fileName) {
+		return MessageFormat.format(TextFilePropertiesDialog.msg.getString("Title"), this.textArea.getFileName());
+	}
+
+	private String getSelectedLineTerminator() {
+		return TextFilePropertiesDialog.LINE_TERMINATORS[this.terminatorCombo.getSelectedIndex()];
+	}
+
+	private void init(final TextEditorPane textArea) {
 
 		this.textArea = textArea;
-		setTitle(createTitle(textArea.getFileName()));
+		this.setTitle(this.createTitle(textArea.getFileName()));
 
-		ComponentOrientation o = ComponentOrientation.getOrientation(getLocale());
+		final ComponentOrientation o = ComponentOrientation.getOrientation(this.getLocale());
 
-		JPanel contentPane = new ResizableFrameContentPane(new BorderLayout());
+		final JPanel contentPane = new ResizableFrameContentPane(new BorderLayout());
 		contentPane.setBorder(UIUtil.getEmpty5Border());
 
 		// Where we actually add our content.
-		JPanel content2 = new JPanel();
+		final JPanel content2 = new JPanel();
 		content2.setLayout(new SpringLayout());
 		contentPane.add(content2, BorderLayout.NORTH);
 
-		filePathField = new JTextField(40);
-		filePathField.setText(textArea.getFileFullPath());
-		filePathField.setEditable(false);
-		JLabel filePathLabel = UIUtil.newLabel(msg, "Path", filePathField);
+		this.filePathField = new JTextField(40);
+		this.filePathField.setText(textArea.getFileFullPath());
+		this.filePathField.setEditable(false);
+		final JLabel filePathLabel = UIUtil.newLabel(TextFilePropertiesDialog.msg, "Path", this.filePathField);
 
-		JLabel linesLabel = new JLabel(msg.getString("Lines"));
-		JLabel linesCountLabel = new JLabel(Integer.toString(textArea.getLineCount()));
+		final JLabel linesLabel = new JLabel(TextFilePropertiesDialog.msg.getString("Lines"));
+		final JLabel linesCountLabel = new JLabel(Integer.toString(textArea.getLineCount()));
 
-		JLabel charsLabel = new JLabel(msg.getString("Characters"));
-		JLabel charsCountLabel = new JLabel(Integer.toString(textArea.getDocument().getLength()));
+		final JLabel charsLabel = new JLabel(TextFilePropertiesDialog.msg.getString("Characters"));
+		final JLabel charsCountLabel = new JLabel(Integer.toString(textArea.getDocument().getLength()));
 
-		JLabel wordsLabel = new JLabel(msg.getString("Words"));
-		JLabel wordsCountLabel = new JLabel(Integer.toString(calculateWordCount(textArea)));
+		final JLabel wordsLabel = new JLabel(TextFilePropertiesDialog.msg.getString("Words"));
+		final JLabel wordsCountLabel = new JLabel(Integer.toString(this.calculateWordCount(textArea)));
 
-		terminatorCombo = new JComboBox(LINE_TERMINATOR_LABELS);
-		if (textArea.isReadOnly()) {
-			terminatorCombo.setEnabled(false);
-		}
-		UIUtil.fixComboOrientation(terminatorCombo);
-		setSelectedLineTerminator((String) textArea.getLineSeparator());
-		terminatorCombo.setActionCommand("TerminatorComboBox");
-		terminatorCombo.addActionListener(this);
-		JLabel terminatorLabel = UIUtil.newLabel(msg, "LineTerminator", terminatorCombo);
+		this.terminatorCombo = new JComboBox(TextFilePropertiesDialog.LINE_TERMINATOR_LABELS);
+		if (textArea.isReadOnly())
+			this.terminatorCombo.setEnabled(false);
+		UIUtil.fixComboOrientation(this.terminatorCombo);
+		this.setSelectedLineTerminator((String) textArea.getLineSeparator());
+		this.terminatorCombo.setActionCommand("TerminatorComboBox");
+		this.terminatorCombo.addActionListener(this);
+		final JLabel terminatorLabel = UIUtil.newLabel(TextFilePropertiesDialog.msg, "LineTerminator",
+				this.terminatorCombo);
 
-		encodingCombo = new JComboBox();
-		if (textArea.isReadOnly()) {
-			encodingCombo.setEnabled(false);
-		}
-		UIUtil.fixComboOrientation(encodingCombo);
+		this.encodingCombo = new JComboBox();
+		if (textArea.isReadOnly())
+			this.encodingCombo.setEnabled(false);
+		UIUtil.fixComboOrientation(this.encodingCombo);
 
 		// Populate the combo box with all available encodings.
-		Map<String, Charset> availcs = Charset.availableCharsets();
-		Set<String> charsetNames = availcs.keySet();
-		for (String charsetName : charsetNames) {
-			encodingCombo.addItem(charsetName);
-		}
-		setEncoding(textArea.getEncoding());
-		encodingCombo.setActionCommand("encodingCombo");
-		encodingCombo.addActionListener(this);
-		JLabel encodingLabel = UIUtil.newLabel(msg, "Encoding", encodingCombo);
+		final Map<String, Charset> availcs = Charset.availableCharsets();
+		final Set<String> charsetNames = availcs.keySet();
+		for (final String charsetName : charsetNames)
+			this.encodingCombo.addItem(charsetName);
+		this.setEncoding(textArea.getEncoding());
+		this.encodingCombo.setActionCommand("encodingCombo");
+		this.encodingCombo.addActionListener(this);
+		final JLabel encodingLabel = UIUtil.newLabel(TextFilePropertiesDialog.msg, "Encoding", this.encodingCombo);
 
-		JLabel sizeLabel = new JLabel(msg.getString("FileSize"));
-		File file = new File(textArea.getFileFullPath());
+		final JLabel sizeLabel = new JLabel(TextFilePropertiesDialog.msg.getString("FileSize"));
+		final File file = new File(textArea.getFileFullPath());
 		String size = "";
-		if (file.exists() && !file.isDirectory()) {
-			size = getFileSizeStringFor(file);
-		}
-		JLabel sizeLabel2 = new JLabel(size);
+		if (file.exists() && !file.isDirectory())
+			size = TextFilePropertiesDialog.getFileSizeStringFor(file);
+		final JLabel sizeLabel2 = new JLabel(size);
 
-		long temp = textArea.getLastSaveOrLoadTime();
+		final long temp = textArea.getLastSaveOrLoadTime();
 		String modifiedString;
-		if (temp <= 0) { // 0 or -1, can be either
+		if (temp <= 0)
 			modifiedString = "";
-		} else {
-			Date modifiedDate = new Date(temp);
-			SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a  EEE, MMM d, yyyy");
+		else {
+			final Date modifiedDate = new Date(temp);
+			final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a  EEE, MMM d, yyyy");
 			modifiedString = sdf.format(modifiedDate);
 		}
-		JLabel modifiedLabel = new JLabel(msg.getString("LastModified"));
-		JLabel modified = new JLabel(modifiedString);
+		final JLabel modifiedLabel = new JLabel(TextFilePropertiesDialog.msg.getString("LastModified"));
+		final JLabel modified = new JLabel(modifiedString);
 
 		if (o.isLeftToRight()) {
 			content2.add(filePathLabel);
-			content2.add(filePathField);
+			content2.add(this.filePathField);
 			content2.add(linesLabel);
 			content2.add(linesCountLabel);
 			content2.add(charsLabel);
@@ -333,15 +405,15 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 			content2.add(wordsLabel);
 			content2.add(wordsCountLabel);
 			content2.add(terminatorLabel);
-			content2.add(terminatorCombo);
+			content2.add(this.terminatorCombo);
 			content2.add(encodingLabel);
-			content2.add(encodingCombo);
+			content2.add(this.encodingCombo);
 			content2.add(sizeLabel);
 			content2.add(sizeLabel2);
 			content2.add(modifiedLabel);
 			content2.add(modified);
 		} else {
-			content2.add(filePathField);
+			content2.add(this.filePathField);
 			content2.add(filePathLabel);
 			content2.add(linesCountLabel);
 			content2.add(linesLabel);
@@ -349,9 +421,9 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 			content2.add(charsLabel);
 			content2.add(wordsCountLabel);
 			content2.add(wordsLabel);
-			content2.add(terminatorCombo);
+			content2.add(this.terminatorCombo);
 			content2.add(terminatorLabel);
-			content2.add(encodingCombo);
+			content2.add(this.encodingCombo);
 			content2.add(encodingLabel);
 			content2.add(sizeLabel2);
 			content2.add(sizeLabel);
@@ -362,21 +434,21 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 		UIUtil.makeSpringCompactGrid(content2, 8, 2, 0, 0, 5, 5);
 
 		// Make a panel for OK and cancel buttons.
-		okButton = UIUtil.newButton(msg, "OK");
-		okButton.setActionCommand("OKButton");
-		okButton.addActionListener(this);
-		okButton.setEnabled(false);
-		JButton cancelButton = UIUtil.newButton(msg, "Cancel");
+		this.okButton = UIUtil.newButton(TextFilePropertiesDialog.msg, "OK");
+		this.okButton.setActionCommand("OKButton");
+		this.okButton.addActionListener(this);
+		this.okButton.setEnabled(false);
+		final JButton cancelButton = UIUtil.newButton(TextFilePropertiesDialog.msg, "Cancel");
 		cancelButton.setActionCommand("CancelButton");
 		cancelButton.addActionListener(this);
-		Container buttons = createButtonFooter(okButton, cancelButton);
+		final Container buttons = this.createButtonFooter(this.okButton, cancelButton);
 		contentPane.add(buttons, BorderLayout.SOUTH);
 
-		setContentPane(contentPane);
-		setModal(true);
-		applyComponentOrientation(o);
-		pack();
-		setLocationRelativeTo(getParent());
+		this.setContentPane(contentPane);
+		this.setModal(true);
+		this.applyComponentOrientation(o);
+		this.pack();
+		this.setLocationRelativeTo(this.getParent());
 
 	}
 
@@ -387,16 +459,16 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 	 *            The desired encoding. If this value is invalid or not supported by
 	 *            this OS, <code>US-ASCII</code> is used.
 	 */
-	private void setEncoding(String encoding) {
+	private void setEncoding(final String encoding) {
 
 		Charset cs1 = Charset.forName(encoding);
 
-		int count = encodingCombo.getItemCount();
+		final int count = this.encodingCombo.getItemCount();
 		for (int i = 0; i < count; i++) {
-			String item = (String) encodingCombo.getItemAt(i);
-			Charset cs2 = Charset.forName(item);
+			final String item = (String) this.encodingCombo.getItemAt(i);
+			final Charset cs2 = Charset.forName(item);
 			if (cs1.equals(cs2)) {
-				encodingCombo.setSelectedIndex(i);
+				this.encodingCombo.setSelectedIndex(i);
 				return;
 			}
 		}
@@ -404,23 +476,22 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 		// Encoding not found: select default.
 		cs1 = Charset.forName("US-ASCII");
 		for (int i = 0; i < count; i++) {
-			String item = (String) encodingCombo.getItemAt(i);
-			Charset cs2 = Charset.forName(item);
+			final String item = (String) this.encodingCombo.getItemAt(i);
+			final Charset cs2 = Charset.forName(item);
 			if (cs1.equals(cs2)) {
-				encodingCombo.setSelectedIndex(i);
+				this.encodingCombo.setSelectedIndex(i);
 				return;
 			}
 		}
 
 	}
 
-	private void setSelectedLineTerminator(String terminator) {
-		for (int i = 0; i < LINE_TERMINATORS.length; i++) {
-			if (LINE_TERMINATORS[i].equals(terminator)) {
-				terminatorCombo.setSelectedIndex(i);
+	private void setSelectedLineTerminator(final String terminator) {
+		for (int i = 0; i < TextFilePropertiesDialog.LINE_TERMINATORS.length; i++)
+			if (TextFilePropertiesDialog.LINE_TERMINATORS[i].equals(terminator)) {
+				this.terminatorCombo.setSelectedIndex(i);
 				break;
 			}
-		}
 	}
 
 	/**
@@ -431,101 +502,16 @@ public class TextFilePropertiesDialog extends EscapableDialog implements ActionL
 	 *            Whether this dialog should be made visible.
 	 */
 	@Override
-	public void setVisible(boolean visible) {
-		if (visible) {
+	public void setVisible(final boolean visible) {
+		if (visible)
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					filePathField.requestFocusInWindow();
-					filePathField.selectAll();
+					TextFilePropertiesDialog.this.filePathField.requestFocusInWindow();
+					TextFilePropertiesDialog.this.filePathField.selectAll();
 				}
 			});
-		}
 		super.setVisible(visible);
-	}
-
-	private static class DocumentCharIterator implements CharacterIterator {
-
-		private Document doc;
-		private int index;
-		private Segment s;
-
-		public DocumentCharIterator(Document doc) {
-			this.doc = doc;
-			index = 0;
-			s = new Segment();
-		}
-
-		@Override
-		public Object clone() {
-			try {
-				return super.clone();
-			} catch (CloneNotSupportedException cnse) { // Never happens
-				throw new InternalError("Clone not supported???");
-			}
-		}
-
-		@Override
-		public char current() {
-			if (index >= getEndIndex()) {
-				return DONE;
-			}
-			try {
-				doc.getText(index, 1, s);
-				return s.first();
-			} catch (BadLocationException ble) {
-				return DONE;
-			}
-		}
-
-		@Override
-		public char first() {
-			index = getBeginIndex();
-			return current();
-		}
-
-		@Override
-		public int getBeginIndex() {
-			return 0;
-		}
-
-		@Override
-		public int getEndIndex() {
-			return doc.getLength();
-		}
-
-		@Override
-		public int getIndex() {
-			return index;
-		}
-
-		@Override
-		public char last() {
-			index = Math.max(0, getEndIndex() - 1);
-			return current();
-		}
-
-		@Override
-		public char next() {
-			index = Math.min(index + 1, getEndIndex());
-			return current();
-		}
-
-		@Override
-		public char previous() {
-			index = Math.max(index - 1, getBeginIndex());
-			return current();
-		}
-
-		@Override
-		public char setIndex(int pos) {
-			if (pos < getBeginIndex() || pos > getEndIndex()) {
-				throw new IllegalArgumentException("Illegal index: " + index);
-			}
-			index = pos;
-			return current();
-		}
-
 	}
 
 }

@@ -3,6 +3,8 @@ package medit;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -61,7 +63,12 @@ public class AboutBox extends JDialog {
 			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				final JButton okButton = new JButton("OK");
-				okButton.addActionListener(e -> AboutBox.this.dispose());
+				okButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						AboutBox.this.dispose();
+					}
+				});
 				buttonPane.add(okButton);
 				this.getRootPane().setDefaultButton(okButton);
 			}

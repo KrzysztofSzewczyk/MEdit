@@ -544,14 +544,15 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 					if (font != null) {
 						final float oldSize = font.getSize2D();
 						final float newSize = oldSize - this.decreaseAmount;
-						if (newSize >= DecreaseFontSizeAction.MINIMUM_SIZE) {
+						if (newSize >= org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE) {
 							// Shrink by decreaseAmount.
 							ss.font = font.deriveFont(newSize);
 							changed = true;
-						} else if (oldSize > DecreaseFontSizeAction.MINIMUM_SIZE) {
+						} else if (oldSize > org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE) {
 							// Can't shrink by full decreaseAmount, but
 							// can shrink a little bit.
-							ss.font = font.deriveFont(DecreaseFontSizeAction.MINIMUM_SIZE);
+							ss.font = font.deriveFont(
+									org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE);
 							changed = true;
 						}
 					}
@@ -562,14 +563,15 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			final Font font = rsta.getFont();
 			final float oldSize = font.getSize2D();
 			final float newSize = oldSize - this.decreaseAmount;
-			if (newSize >= DecreaseFontSizeAction.MINIMUM_SIZE) {
+			if (newSize >= org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE) {
 				// Shrink by decreaseAmount.
 				rsta.setFont(font.deriveFont(newSize));
 				changed = true;
-			} else if (oldSize > DecreaseFontSizeAction.MINIMUM_SIZE) {
+			} else if (oldSize > org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE) {
 				// Can't shrink by full decreaseAmount, but
 				// can shrink a little bit.
-				rsta.setFont(font.deriveFont(DecreaseFontSizeAction.MINIMUM_SIZE));
+				rsta.setFont(
+						font.deriveFont(org.fife.ui.rtextarea.RTextAreaEditorKit.DecreaseFontSizeAction.MINIMUM_SIZE));
 				changed = true;
 			}
 
@@ -1154,14 +1156,15 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 					if (font != null) {
 						final float oldSize = font.getSize2D();
 						final float newSize = oldSize + this.increaseAmount;
-						if (newSize <= IncreaseFontSizeAction.MAXIMUM_SIZE) {
+						if (newSize <= org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE) {
 							// Grow by increaseAmount.
 							ss.font = font.deriveFont(newSize);
 							changed = true;
-						} else if (oldSize < IncreaseFontSizeAction.MAXIMUM_SIZE) {
+						} else if (oldSize < org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE) {
 							// Can't grow by full increaseAmount, but
 							// can grow a little bit.
-							ss.font = font.deriveFont(IncreaseFontSizeAction.MAXIMUM_SIZE);
+							ss.font = font.deriveFont(
+									org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE);
 							changed = true;
 						}
 					}
@@ -1172,14 +1175,15 @@ public class RSyntaxTextAreaEditorKit extends RTextAreaEditorKit {
 			final Font font = rsta.getFont();
 			final float oldSize = font.getSize2D();
 			final float newSize = oldSize + this.increaseAmount;
-			if (newSize <= IncreaseFontSizeAction.MAXIMUM_SIZE) {
+			if (newSize <= org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE) {
 				// Grow by increaseAmount.
 				rsta.setFont(font.deriveFont(newSize));
 				changed = true;
-			} else if (oldSize < IncreaseFontSizeAction.MAXIMUM_SIZE) {
+			} else if (oldSize < org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE) {
 				// Can't grow by full increaseAmount, but
 				// can grow a little bit.
-				rsta.setFont(font.deriveFont(IncreaseFontSizeAction.MAXIMUM_SIZE));
+				rsta.setFont(
+						font.deriveFont(org.fife.ui.rtextarea.RTextAreaEditorKit.IncreaseFontSizeAction.MAXIMUM_SIZE));
 				changed = true;
 			}
 

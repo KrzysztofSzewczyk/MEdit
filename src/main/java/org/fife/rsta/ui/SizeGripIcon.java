@@ -7,8 +7,14 @@
  */
 package org.fife.rsta.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.Icon;
+import javax.swing.UIManager;
 
 /**
  * An icon that looks like a Windows 98 or XP-style size grip.
@@ -27,7 +33,7 @@ public class SizeGripIcon implements Icon {
 	 */
 	@Override
 	public int getIconHeight() {
-		return SIZE;
+		return SizeGripIcon.SIZE;
 	}
 
 	/**
@@ -37,7 +43,7 @@ public class SizeGripIcon implements Icon {
 	 */
 	@Override
 	public int getIconWidth() {
-		return SIZE;
+		return SizeGripIcon.SIZE;
 	}
 
 	/**
@@ -53,17 +59,17 @@ public class SizeGripIcon implements Icon {
 	 *            The y-coordinate at which to paint.
 	 */
 	@Override
-	public void paintIcon(Component c, Graphics g, int x, int y) {
+	public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
 
-		Dimension dim = c.getSize();
-		Color c1 = UIManager.getColor("Label.disabledShadow");
-		Color c2 = UIManager.getColor("Label.disabledForeground");
+		final Dimension dim = c.getSize();
+		final Color c1 = UIManager.getColor("Label.disabledShadow");
+		final Color c2 = UIManager.getColor("Label.disabledForeground");
 
-		ComponentOrientation orientation = c.getComponentOrientation();
-		int height = dim.height -= 3;
+		final ComponentOrientation orientation = c.getComponentOrientation();
+		final int height = dim.height -= 3;
 
 		if (orientation.isLeftToRight()) {
-			int width = dim.width -= 3;
+			final int width = dim.width -= 3;
 			g.setColor(c1);
 			g.fillRect(width - 9, height - 1, 3, 3);
 			g.fillRect(width - 5, height - 1, 3, 3);

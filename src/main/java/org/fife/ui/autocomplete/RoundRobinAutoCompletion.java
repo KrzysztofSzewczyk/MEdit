@@ -20,7 +20,7 @@ import javax.swing.Action;
  * <p>
  *
  * Usage:
- * 
+ *
  * <pre>
  * XPathDynamicCompletionProvider dynamicProvider = new XPathDynamicCompletionProvider();
  * RoundRobinAutoCompletion ac = new RoundRobinAutoCompletion(dynamicProvider);
@@ -35,8 +35,51 @@ import javax.swing.Action;
  */
 public class RoundRobinAutoCompletion extends AutoCompletion {
 
+	/**
+	 * An implementation of the auto-complete action that ensures the proper
+	 * <code>CompletionProvider</code> is displayed based on the context in which
+	 * the user presses the trigger key.
+	 */
+	private class CycleAutoCompleteAction extends AutoCompleteAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (RoundRobinAutoCompletion.this.isAutoCompleteEnabled()) {
+				if (RoundRobinAutoCompletion.this.isPopupVisible())
+					// The popup is already visible, and user pressed the
+					// trigger-key. In this case, move to next provider.
+					RoundRobinAutoCompletion.this.advanceProvider();
+				else
+					// Be sure to start with the default provider
+					RoundRobinAutoCompletion.this.resetProvider();
+				// Check if there are completions from the current provider. If not, advance to
+				// the next provider and display that one.
+				// A completion provider can force displaying "his" empty completion pop-up by
+				// returning an empty BasicCompletion. This is useful when the user is typing
+				// backspace and you like to display the first provider always first.
+				for (int i = 1; i < RoundRobinAutoCompletion.this.cycle.size(); i++) {
+					final List<Completion> completions = RoundRobinAutoCompletion.this.getCompletionProvider()
+							.getCompletions(RoundRobinAutoCompletion.this.getTextComponent());
+					if (completions.size() > 0)
+						// nothing to do, just let the current provider display
+						break;
+					else
+						// search for non-empty completions
+						RoundRobinAutoCompletion.this.advanceProvider();
+				}
+			}
+			super.actionPerformed(e);
+		}
+
+	}
+
 	/** The List of CompletionProviders to use */
-	private List<CompletionProvider> cycle = new ArrayList<CompletionProvider>();
+	private final List<CompletionProvider> cycle = new ArrayList<>();
 
 	/**
 	 * Constructor.
@@ -45,21 +88,21 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 *            A single completion provider.
 	 * @see #addCompletionProvider(CompletionProvider)
 	 */
-	public RoundRobinAutoCompletion(CompletionProvider provider) {
+	public RoundRobinAutoCompletion(final CompletionProvider provider) {
 
 		super(provider);
-		cycle.add(provider);
+		this.cycle.add(provider);
 
 		// principal requirement for round-robin
-		setHideOnCompletionProviderChange(false);
+		this.setHideOnCompletionProviderChange(false);
 		// this is required since otherwise, on empty list of completions for
 		// one of the CompletionProviders, round-robin completion would not
 		// work
-		setHideOnNoText(false);
+		this.setHideOnNoText(false);
 		// this is required to prevent single choice of 1st provider to choose
 		// the completion since the user may want the second provider to be
 		// chosen.
-		setAutoCompleteSingleChoices(false);
+		this.setAutoCompleteSingleChoices(false);
 
 	}
 
@@ -70,8 +113,8 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 * @param provider
 	 *            The new completion provider.
 	 */
-	public void addCompletionProvider(CompletionProvider provider) {
-		cycle.add(provider);
+	public void addCompletionProvider(final CompletionProvider provider) {
+		this.cycle.add(provider);
 	}
 
 	/**
@@ -83,9 +126,9 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 *         case.
 	 */
 	public boolean advanceProvider() {
-		CompletionProvider currentProvider = getCompletionProvider();
-		int i = (cycle.indexOf(currentProvider) + 1) % cycle.size();
-		setCompletionProvider(cycle.get(i));
+		final CompletionProvider currentProvider = this.getCompletionProvider();
+		final int i = (this.cycle.indexOf(currentProvider) + 1) % this.cycle.size();
+		this.setCompletionProvider(this.cycle.get(i));
 		return i == 0;
 	}
 
@@ -101,50 +144,10 @@ public class RoundRobinAutoCompletion extends AutoCompletion {
 	 * Resets the cycle to use the default provider on next refresh.
 	 */
 	public void resetProvider() {
-		CompletionProvider currentProvider = getCompletionProvider();
-		CompletionProvider defaultProvider = cycle.get(0);
-		if (currentProvider != defaultProvider) {
-			setCompletionProvider(defaultProvider);
-		}
-	}
-
-	/**
-	 * An implementation of the auto-complete action that ensures the proper
-	 * <code>CompletionProvider</code> is displayed based on the context in which
-	 * the user presses the trigger key.
-	 */
-	private class CycleAutoCompleteAction extends AutoCompleteAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isAutoCompleteEnabled()) {
-				if (isPopupVisible()) {
-					// The popup is already visible, and user pressed the
-					// trigger-key. In this case, move to next provider.
-					advanceProvider();
-				} else {
-					// Be sure to start with the default provider
-					resetProvider();
-				}
-				// Check if there are completions from the current provider. If not, advance to
-				// the next provider and display that one.
-				// A completion provider can force displaying "his" empty completion pop-up by
-				// returning an empty BasicCompletion. This is useful when the user is typing
-				// backspace and you like to display the first provider always first.
-				for (int i = 1; i < cycle.size(); i++) {
-					List<Completion> completions = getCompletionProvider().getCompletions(getTextComponent());
-					if (completions.size() > 0) {
-						// nothing to do, just let the current provider display
-						break;
-					} else {
-						// search for non-empty completions
-						advanceProvider();
-					}
-				}
-			}
-			super.actionPerformed(e);
-		}
-
+		final CompletionProvider currentProvider = this.getCompletionProvider();
+		final CompletionProvider defaultProvider = this.cycle.get(0);
+		if (currentProvider != defaultProvider)
+			this.setCompletionProvider(defaultProvider);
 	}
 
 	// TODO add label "Ctrl-Space for <next provider name>" to the popup window

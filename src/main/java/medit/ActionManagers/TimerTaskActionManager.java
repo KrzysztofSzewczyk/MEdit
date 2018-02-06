@@ -13,7 +13,7 @@ import medit.MainFrame;
  * 60seconds, if amount of used memory is bigger or equal to 200mb. Please
  * remember that this also is using timer to update bottom label of main window
  * content.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -28,7 +28,7 @@ public class TimerTaskActionManager {
 
 	/**
 	 * This is constructor that we pass MainFrame instance to.
-	 * 
+	 *
 	 * @param instance
 	 */
 

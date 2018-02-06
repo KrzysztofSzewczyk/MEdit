@@ -20,7 +20,7 @@ import medit.Crash;
 
 /**
  * This class is loader of tools for the new tool system.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -32,7 +32,7 @@ public class NTSLoader {
 	/**
 	 * This function is loading all tools from specified file to ArrayList and is
 	 * returning constructed ArrayList to calling method.
-	 * 
+	 *
 	 * @param string
 	 * @return
 	 * @throws ParserConfigurationException

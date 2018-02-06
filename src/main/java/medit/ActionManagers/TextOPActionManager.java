@@ -14,7 +14,7 @@ import medit.MainFrame;
 /**
  * This class contains code, that is embedding items into Text Operations menu.
  * It's created on MEdit ActionManager template.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -28,7 +28,7 @@ public class TextOPActionManager {
 
 	/**
 	 * Creating TextOPActionManager, by passing MainFrame instance.
-	 * 
+	 *
 	 * @param instance
 	 */
 	public TextOPActionManager(final MainFrame instance) {
@@ -37,7 +37,7 @@ public class TextOPActionManager {
 
 	/**
 	 * Creating menu items for Text Operations menu.
-	 * 
+	 *
 	 * @param mnTextOperations
 	 */
 
@@ -49,24 +49,42 @@ public class TextOPActionManager {
 		 * Creating action listener for uppercasing menu item, which is creating new
 		 * thread to uppercase selected text.
 		 */
-		mntmThisWay.addActionListener(e -> new Thread(() -> {
-			try {
-				instance.textPane.replaceSelection(instance.textPane.getSelectedText().toUpperCase());
-			} catch (final Exception e2) {
+		mntmThisWay.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							TextOPActionManager.this.instance.textPane.replaceSelection(
+									TextOPActionManager.this.instance.textPane.getSelectedText().toUpperCase());
+						} catch (final Exception e2) {
+						}
+					}
+				}).start();
 			}
-		}).start());
+		});
 		mnCase.add(mntmThisWay);
 		final JMenuItem mntmThisWay_1 = new JMenuItem("this way");
 		/**
 		 * Creating action listener for lowercasing menu item, which is creating new
 		 * thread to lowercasing selected text.
 		 */
-		mntmThisWay_1.addActionListener(e -> new Thread(() -> {
-			try {
-				instance.textPane.replaceSelection(instance.textPane.getSelectedText().toLowerCase());
-			} catch (final Exception e2) {
+		mntmThisWay_1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							TextOPActionManager.this.instance.textPane.replaceSelection(
+									TextOPActionManager.this.instance.textPane.getSelectedText().toLowerCase());
+						} catch (final Exception e2) {
+						}
+					}
+				}).start();
 			}
-		}).start());
+		});
 		mnCase.add(mntmThisWay_1);
 		final JMenuItem mntmThisWay_2 = new JMenuItem("This Way");
 		/**
@@ -77,11 +95,15 @@ public class TextOPActionManager {
 		mntmThisWay_2.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(final ActionEvent e) {
-				new Thread(() -> {
-					try {
-						final String text = instance.textPane.getSelectedText();
-						instance.textPane.replaceSelection(this.toTitleCase(text));
-					} catch (final Exception e3) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final String text = TextOPActionManager.this.instance.textPane.getSelectedText();
+							TextOPActionManager.this.instance.textPane
+									.replaceSelection(toTitleCase(text));
+						} catch (final Exception e3) {
+						}
 					}
 				}).start();
 			}
@@ -102,18 +124,27 @@ public class TextOPActionManager {
 		 * item, which is creating new thread to uppercase letter, which index mod 2 = 0
 		 * of selected text.
 		 */
-		mntmThisWay_4.addActionListener(e -> new Thread(() -> {
-			try {
-				final char[] text = instance.textPane.getSelectedText().toCharArray();
-				for (int i = 0; i < text.length; i++)
-					if (i == text.length % 2)
-						text[i] = Character.toUpperCase(text[i]);
-					else
-						text[i] = Character.toLowerCase(text[i]);
-				instance.textPane.replaceSelection(new String(text));
-			} catch (final Exception e3) {
+		mntmThisWay_4.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final char[] text = TextOPActionManager.this.instance.textPane.getSelectedText()
+									.toCharArray();
+							for (int i = 0; i < text.length; i++)
+								if (i == text.length % 2)
+									text[i] = Character.toUpperCase(text[i]);
+								else
+									text[i] = Character.toLowerCase(text[i]);
+							TextOPActionManager.this.instance.textPane.replaceSelection(new String(text));
+						} catch (final Exception e3) {
+						}
+					}
+				}).start();
 			}
-		}).start());
+		});
 		mnCase.add(mntmThisWay_4);
 		final JMenuItem mntmRandom = new JMenuItem("RanDOm");
 		/**
@@ -121,18 +152,27 @@ public class TextOPActionManager {
 		 * menu item, which is creating new thread to uppercase and lowercase random
 		 * letters in selected text.
 		 */
-		mntmRandom.addActionListener(e -> new Thread(() -> {
-			try {
-				final char[] text = instance.textPane.getSelectedText().toCharArray();
-				for (int i = 0; i < text.length; i++)
-					if (new Random().nextInt(3) == 1)
-						text[i] = Character.toUpperCase(text[i]);
-					else
-						text[i] = Character.toLowerCase(text[i]);
-				instance.textPane.replaceSelection(new String(text));
-			} catch (final Exception e3) {
+		mntmRandom.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						try {
+							final char[] text = TextOPActionManager.this.instance.textPane.getSelectedText()
+									.toCharArray();
+							for (int i = 0; i < text.length; i++)
+								if (new Random().nextInt(3) == 1)
+									text[i] = Character.toUpperCase(text[i]);
+								else
+									text[i] = Character.toLowerCase(text[i]);
+							TextOPActionManager.this.instance.textPane.replaceSelection(new String(text));
+						} catch (final Exception e3) {
+						}
+					}
+				}).start();
 			}
-		}).start());
+		});
 		mnCase.add(mntmRandom);
 		final JMenu mnRow = new JMenu("Row");
 		mnTextOperations.add(mnRow);
@@ -140,10 +180,13 @@ public class TextOPActionManager {
 		/**
 		 * This is actionlistener which is creating 'Go to row ...' dialog.
 		 */
-		mntmGoToRow.addActionListener(e -> {
-			final GoToLine gtlDlg = new GoToLine(instance.instance);
-			gtlDlg.setVisible(true);
-			gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		mntmGoToRow.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final GoToLine gtlDlg = new GoToLine(TextOPActionManager.this.instance.instance);
+				gtlDlg.setVisible(true);
+				gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			}
 		});
 		mnRow.add(mntmGoToRow);
 	}

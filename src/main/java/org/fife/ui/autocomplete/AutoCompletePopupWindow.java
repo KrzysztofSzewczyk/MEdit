@@ -3,7 +3,7 @@
  *
  * AutoCompletePopupWindow.java - A window containing a list of auto-complete
  * choices.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -21,6 +21,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -31,6 +32,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -53,20 +55,304 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
  */
 class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSelectionListener, MouseListener {
 
+	class CopyAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			boolean doNormalCopy = false;
+			if (AutoCompletePopupWindow.this.descWindow != null && AutoCompletePopupWindow.this.descWindow.isVisible())
+				doNormalCopy = !AutoCompletePopupWindow.this.descWindow.copy();
+			if (doNormalCopy)
+				AutoCompletePopupWindow.this.ac.getTextComponent().copy();
+		}
+
+	}
+
+	class DownAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectNextItem();
+		}
+
+	}
+
+	class EndAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectLastItem();
+		}
+
+	}
+
+	class EnterAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.insertSelectedCompletion();
+		}
+
+	}
+
+	class EscapeAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.setVisible(false);
+		}
+
+	}
+
+	class HomeAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectFirstItem();
+		}
+
+	}
+
+	/**
+	 * A mapping from a key (an Object) to an Action.
+	 */
+	private static class KeyActionPair {
+
+		public Action action;
+		public Object key;
+
+		public KeyActionPair() {
+		}
+
+		public KeyActionPair(final Object key, final Action a) {
+			this.key = key;
+			this.action = a;
+		}
+
+	}
+
+	class LeftAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible()) {
+				final JTextComponent comp = AutoCompletePopupWindow.this.ac.getTextComponent();
+				final Caret c = comp.getCaret();
+				int dot = c.getDot();
+				if (dot > 0) {
+					c.setDot(--dot);
+					// Ensure moving left hasn't moved us up a line, thus
+					// hiding the popup window.
+					if (comp.isVisible())
+						if (AutoCompletePopupWindow.this.lastLine != -1)
+							AutoCompletePopupWindow.this.doAutocomplete();
+				}
+			}
+		}
+
+	}
+
+	class PageDownAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectPageDownItem();
+		}
+
+	}
+
+	class PageUpAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectPageUpItem();
+		}
+
+	}
+
+	/**
+	 * The actual list of completion choices in this popup window.
+	 */
+	private class PopupList extends JList {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public PopupList(final CompletionListModel model) {
+			super(model);
+		}
+
+		@Override
+		public void setUI(ListUI ui) {
+			if (Util.getUseSubstanceRenderers()
+					&& AutoCompletePopupWindow.SUBSTANCE_LIST_UI.equals(ui.getClass().getName())) {
+				// Substance requires its special ListUI be installed for
+				// its renderers to actually render (!), but long completion
+				// lists (e.g. PHPCompletionProvider in RSTALanguageSupport)
+				// will simply populate too slowly on initial display (when
+				// calculating preferred size of all items), so in this case
+				// we give a prototype cell value.
+				final CompletionProvider p = AutoCompletePopupWindow.this.ac.getCompletionProvider();
+				final BasicCompletion bc = new BasicCompletion(p, "Hello world");
+				this.setPrototypeCellValue(bc);
+			} else {
+				// Our custom UI that is faster for long HTML completion lists.
+				ui = new FastListUI();
+				this.setPrototypeCellValue(null);
+			}
+			super.setUI(ui);
+		}
+
+	}
+
+	class RightAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible()) {
+				final JTextComponent comp = AutoCompletePopupWindow.this.ac.getTextComponent();
+				final Caret c = comp.getCaret();
+				int dot = c.getDot();
+				if (dot < comp.getDocument().getLength()) {
+					c.setDot(++dot);
+					// Ensure moving right hasn't moved us up a line, thus
+					// hiding the popup window.
+					if (comp.isVisible())
+						if (AutoCompletePopupWindow.this.lastLine != -1)
+							AutoCompletePopupWindow.this.doAutocomplete();
+				}
+			}
+		}
+
+	}
+
+	class UpAction extends AbstractAction {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			if (AutoCompletePopupWindow.this.isVisible())
+				AutoCompletePopupWindow.this.selectPreviousItem();
+		}
+
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * The class name of the Substance List UI.
+	 */
+	private static final String SUBSTANCE_LIST_UI = "org.pushingpixels.substance.internal.ui.SubstanceListUI";
+	/**
+	 * The space between the caret and the completion popup.
+	 */
+	private static final int VERTICAL_SPACE = 1;
+
+	/**
+	 * Returns the copy keystroke to use for this platform.
+	 *
+	 * @return The copy keystroke.
+	 */
+	private static final KeyStroke getCopyKeyStroke() {
+		final int key = KeyEvent.VK_C;
+		final int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		return KeyStroke.getKeyStroke(key, mask);
+	}
+
+	/**
+	 * Whether the completion window and the optional description window should be
+	 * displayed above the current caret position (as opposed to underneath it,
+	 * which is preferred unless there is not enough space).
+	 */
+	private boolean aboveCaret;
 	/**
 	 * The parent AutoCompletion instance.
 	 */
-	private AutoCompletion ac;
-
+	private final AutoCompletion ac;
+	private KeyActionPair ctrlCKap;
 	/**
-	 * The list of completion choices.
+	 * Optional popup window containing a description of the currently selected
+	 * completion.
 	 */
-	private JList list;
+	private AutoCompleteDescWindow descWindow;
+	private KeyActionPair downKap;
 
-	/**
-	 * The contents of {@link #list()}.
-	 */
-	private CompletionListModel model;
+	private KeyActionPair endKap;
+
+	private KeyActionPair enterKap;
+
+	private KeyActionPair escapeKap;
+
+	private KeyActionPair homeKap;
+
+	private boolean keyBindingsInstalled;
+
+	private int lastLine;
 
 	/**
 	 * A hack to work around the fact that we clear our completion model (and our
@@ -75,11 +361,24 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	private Completion lastSelection;
 
+	private KeyActionPair leftKap;
+
 	/**
-	 * Optional popup window containing a description of the currently selected
-	 * completion.
+	 * The list of completion choices.
 	 */
-	private AutoCompleteDescWindow descWindow;
+	private final JList list;
+
+	/**
+	 * The contents of {@link #list()}.
+	 */
+	private final CompletionListModel model;
+
+	private KeyActionPair oldEscape, oldUp, oldDown, oldLeft, oldRight, oldEnter, oldTab, oldHome, oldEnd, oldPageUp,
+			oldPageDown, oldCtrlC;
+
+	private KeyActionPair pageDownKap;
+
+	private KeyActionPair pageUpKap;
 
 	/**
 	 * The preferred size of the optional description window. This field only exists
@@ -88,42 +387,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	private Dimension preferredDescWindowSize;
 
-	/**
-	 * Whether the completion window and the optional description window should be
-	 * displayed above the current caret position (as opposed to underneath it,
-	 * which is preferred unless there is not enough space).
-	 */
-	private boolean aboveCaret;
-
-	private int lastLine;
-
-	private boolean keyBindingsInstalled;
-
-	private KeyActionPair escapeKap;
-	private KeyActionPair upKap;
-	private KeyActionPair downKap;
-	private KeyActionPair leftKap;
 	private KeyActionPair rightKap;
-	private KeyActionPair enterKap;
+
 	private KeyActionPair tabKap;
-	private KeyActionPair homeKap;
-	private KeyActionPair endKap;
-	private KeyActionPair pageUpKap;
-	private KeyActionPair pageDownKap;
-	private KeyActionPair ctrlCKap;
 
-	private KeyActionPair oldEscape, oldUp, oldDown, oldLeft, oldRight, oldEnter, oldTab, oldHome, oldEnd, oldPageUp,
-			oldPageDown, oldCtrlC;
-
-	/**
-	 * The space between the caret and the completion popup.
-	 */
-	private static final int VERTICAL_SPACE = 1;
-
-	/**
-	 * The class name of the Substance List UI.
-	 */
-	private static final String SUBSTANCE_LIST_UI = "org.pushingpixels.substance.internal.ui.SubstanceListUI";
+	private KeyActionPair upKap;
 
 	/**
 	 * Constructor.
@@ -133,66 +401,64 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @param ac
 	 *            The auto-completion instance.
 	 */
-	public AutoCompletePopupWindow(Window parent, final AutoCompletion ac) {
+	public AutoCompletePopupWindow(final Window parent, final AutoCompletion ac) {
 
 		super(parent);
-		ComponentOrientation o = ac.getTextComponentOrientation();
+		final ComponentOrientation o = ac.getTextComponentOrientation();
 
 		this.ac = ac;
-		model = new CompletionListModel();
-		list = new PopupList(model);
+		this.model = new CompletionListModel();
+		this.list = new PopupList(this.model);
 
-		list.setCellRenderer(new DelegatingCellRenderer());
-		list.addListSelectionListener(this);
-		list.addMouseListener(this);
+		this.list.setCellRenderer(new DelegatingCellRenderer());
+		this.list.addListSelectionListener(this);
+		this.list.addMouseListener(this);
 
-		JPanel contentPane = new JPanel(new BorderLayout());
-		JScrollPane sp = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		final JPanel contentPane = new JPanel(new BorderLayout());
+		final JScrollPane sp = new JScrollPane(this.list, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		// In 1.4, JScrollPane.setCorner() has a bug where it won't accept
 		// JScrollPane.LOWER_TRAILING_CORNER, even though that constant is
 		// defined. So we have to put the logic added in 1.5 to handle it
 		// here.
-		JPanel corner = new SizeGrip();
+		final JPanel corner = new SizeGrip();
 		// sp.setCorner(JScrollPane.LOWER_TRAILING_CORNER, corner);
-		boolean isLeftToRight = o.isLeftToRight();
-		String str = isLeftToRight ? JScrollPane.LOWER_RIGHT_CORNER : JScrollPane.LOWER_LEFT_CORNER;
+		final boolean isLeftToRight = o.isLeftToRight();
+		final String str = isLeftToRight ? ScrollPaneConstants.LOWER_RIGHT_CORNER
+				: ScrollPaneConstants.LOWER_LEFT_CORNER;
 		sp.setCorner(str, corner);
 
 		contentPane.add(sp);
-		setContentPane(contentPane);
-		applyComponentOrientation(o);
+		this.setContentPane(contentPane);
+		this.applyComponentOrientation(o);
 
 		// Give apps a chance to decorate us with drop shadows, etc.
 		if (Util.getShouldAllowDecoratingMainAutoCompleteWindows()) {
-			PopupWindowDecorator decorator = PopupWindowDecorator.get();
-			if (decorator != null) {
+			final PopupWindowDecorator decorator = PopupWindowDecorator.get();
+			if (decorator != null)
 				decorator.decorate(this);
-			}
 		}
 
-		pack();
+		this.pack();
 
-		setFocusableWindowState(false);
+		this.setFocusableWindowState(false);
 
-		lastLine = -1;
+		this.lastLine = -1;
 
 	}
 
 	@Override
-	public void caretUpdate(CaretEvent e) {
-		if (isVisible()) { // Should always be true
-			int line = ac.getLineOfCaret();
-			if (line != lastLine) {
-				lastLine = -1;
-				setVisible(false);
-			} else {
-				doAutocomplete();
-			}
-		} else if (AutoCompletion.getDebug()) {
+	public void caretUpdate(final CaretEvent e) {
+		if (this.isVisible()) { // Should always be true
+			final int line = this.ac.getLineOfCaret();
+			if (line != this.lastLine) {
+				this.lastLine = -1;
+				this.setVisible(false);
+			} else
+				this.doAutocomplete();
+		} else if (AutoCompletion.getDebug())
 			Thread.dumpStack();
-		}
 	}
 
 	/**
@@ -201,12 +467,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @return The description window.
 	 */
 	private AutoCompleteDescWindow createDescriptionWindow() {
-		AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, ac);
-		dw.applyComponentOrientation(ac.getTextComponentOrientation());
-		Dimension size = preferredDescWindowSize;
-		if (size == null) {
-			size = getSize();
-		}
+		final AutoCompleteDescWindow dw = new AutoCompleteDescWindow(this, this.ac);
+		dw.applyComponentOrientation(this.ac.getTextComponentOrientation());
+		Dimension size = this.preferredDescWindowSize;
+		if (size == null)
+			size = this.getSize();
 		dw.setSize(size);
 		return dw;
 	}
@@ -218,49 +483,38 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	private void createKeyActionPairs() {
 
 		// Actions we'll install.
-		EnterAction enterAction = new EnterAction();
-		escapeKap = new KeyActionPair("Escape", new EscapeAction());
-		upKap = new KeyActionPair("Up", new UpAction());
-		downKap = new KeyActionPair("Down", new DownAction());
-		leftKap = new KeyActionPair("Left", new LeftAction());
-		rightKap = new KeyActionPair("Right", new RightAction());
-		enterKap = new KeyActionPair("Enter", enterAction);
-		tabKap = new KeyActionPair("Tab", enterAction);
-		homeKap = new KeyActionPair("Home", new HomeAction());
-		endKap = new KeyActionPair("End", new EndAction());
-		pageUpKap = new KeyActionPair("PageUp", new PageUpAction());
-		pageDownKap = new KeyActionPair("PageDown", new PageDownAction());
-		ctrlCKap = new KeyActionPair("CtrlC", new CopyAction());
+		final EnterAction enterAction = new EnterAction();
+		this.escapeKap = new KeyActionPair("Escape", new EscapeAction());
+		this.upKap = new KeyActionPair("Up", new UpAction());
+		this.downKap = new KeyActionPair("Down", new DownAction());
+		this.leftKap = new KeyActionPair("Left", new LeftAction());
+		this.rightKap = new KeyActionPair("Right", new RightAction());
+		this.enterKap = new KeyActionPair("Enter", enterAction);
+		this.tabKap = new KeyActionPair("Tab", enterAction);
+		this.homeKap = new KeyActionPair("Home", new HomeAction());
+		this.endKap = new KeyActionPair("End", new EndAction());
+		this.pageUpKap = new KeyActionPair("PageUp", new PageUpAction());
+		this.pageDownKap = new KeyActionPair("PageDown", new PageDownAction());
+		this.ctrlCKap = new KeyActionPair("CtrlC", new CopyAction());
 
 		// Buffers for the actions we replace.
-		oldEscape = new KeyActionPair();
-		oldUp = new KeyActionPair();
-		oldDown = new KeyActionPair();
-		oldLeft = new KeyActionPair();
-		oldRight = new KeyActionPair();
-		oldEnter = new KeyActionPair();
-		oldTab = new KeyActionPair();
-		oldHome = new KeyActionPair();
-		oldEnd = new KeyActionPair();
-		oldPageUp = new KeyActionPair();
-		oldPageDown = new KeyActionPair();
-		oldCtrlC = new KeyActionPair();
+		this.oldEscape = new KeyActionPair();
+		this.oldUp = new KeyActionPair();
+		this.oldDown = new KeyActionPair();
+		this.oldLeft = new KeyActionPair();
+		this.oldRight = new KeyActionPair();
+		this.oldEnter = new KeyActionPair();
+		this.oldTab = new KeyActionPair();
+		this.oldHome = new KeyActionPair();
+		this.oldEnd = new KeyActionPair();
+		this.oldPageUp = new KeyActionPair();
+		this.oldPageDown = new KeyActionPair();
+		this.oldCtrlC = new KeyActionPair();
 
 	}
 
 	protected void doAutocomplete() {
-		lastLine = ac.refreshPopupWindow();
-	}
-
-	/**
-	 * Returns the copy keystroke to use for this platform.
-	 *
-	 * @return The copy keystroke.
-	 */
-	private static final KeyStroke getCopyKeyStroke() {
-		int key = KeyEvent.VK_C;
-		int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
-		return KeyStroke.getKeyStroke(key, mask);
+		this.lastLine = this.ac.refreshPopupWindow();
 	}
 
 	/**
@@ -271,7 +525,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #setListCellRenderer(ListCellRenderer)
 	 */
 	public ListCellRenderer getListCellRenderer() {
-		DelegatingCellRenderer dcr = (DelegatingCellRenderer) list.getCellRenderer();
+		final DelegatingCellRenderer dcr = (DelegatingCellRenderer) this.list.getCellRenderer();
 		return dcr.getFallbackCellRenderer();
 	}
 
@@ -281,7 +535,7 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @return The selected value.
 	 */
 	public Completion getSelection() {
-		return isShowing() ? (Completion) list.getSelectedValue() : lastSelection;
+		return this.isShowing() ? (Completion) this.list.getSelectedValue() : this.lastSelection;
 	}
 
 	/**
@@ -290,8 +544,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #getSelection()
 	 */
 	private void insertSelectedCompletion() {
-		Completion comp = getSelection();
-		ac.insertCompletion(comp);
+		final Completion comp = this.getSelection();
+		this.ac.insertCompletion(comp);
 	}
 
 	/**
@@ -301,74 +555,70 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	private void installKeyBindings() {
 
-		if (AutoCompletion.getDebug()) {
+		if (AutoCompletion.getDebug())
 			System.out.println("PopupWindow: Installing keybindings");
-		}
-		if (keyBindingsInstalled) {
+		if (this.keyBindingsInstalled) {
 			System.err.println("Error: key bindings were already installed");
 			Thread.dumpStack();
 			return;
 		}
 
-		if (escapeKap == null) { // Lazily create actions.
-			createKeyActionPairs();
-		}
+		if (this.escapeKap == null)
+			this.createKeyActionPairs();
 
-		JTextComponent comp = ac.getTextComponent();
-		InputMap im = comp.getInputMap();
-		ActionMap am = comp.getActionMap();
+		final JTextComponent comp = this.ac.getTextComponent();
+		final InputMap im = comp.getInputMap();
+		final ActionMap am = comp.getActionMap();
 
-		replaceAction(im, am, KeyEvent.VK_ESCAPE, escapeKap, oldEscape);
-		if (AutoCompletion.getDebug() && oldEscape.action == escapeKap.action) {
+		this.replaceAction(im, am, KeyEvent.VK_ESCAPE, this.escapeKap, this.oldEscape);
+		if (AutoCompletion.getDebug() && this.oldEscape.action == this.escapeKap.action)
 			Thread.dumpStack();
-		}
-		replaceAction(im, am, KeyEvent.VK_UP, upKap, oldUp);
-		replaceAction(im, am, KeyEvent.VK_LEFT, leftKap, oldLeft);
-		replaceAction(im, am, KeyEvent.VK_DOWN, downKap, oldDown);
-		replaceAction(im, am, KeyEvent.VK_RIGHT, rightKap, oldRight);
-		replaceAction(im, am, KeyEvent.VK_ENTER, enterKap, oldEnter);
-		replaceAction(im, am, KeyEvent.VK_TAB, tabKap, oldTab);
-		replaceAction(im, am, KeyEvent.VK_HOME, homeKap, oldHome);
-		replaceAction(im, am, KeyEvent.VK_END, endKap, oldEnd);
-		replaceAction(im, am, KeyEvent.VK_PAGE_UP, pageUpKap, oldPageUp);
-		replaceAction(im, am, KeyEvent.VK_PAGE_DOWN, pageDownKap, oldPageDown);
+		this.replaceAction(im, am, KeyEvent.VK_UP, this.upKap, this.oldUp);
+		this.replaceAction(im, am, KeyEvent.VK_LEFT, this.leftKap, this.oldLeft);
+		this.replaceAction(im, am, KeyEvent.VK_DOWN, this.downKap, this.oldDown);
+		this.replaceAction(im, am, KeyEvent.VK_RIGHT, this.rightKap, this.oldRight);
+		this.replaceAction(im, am, KeyEvent.VK_ENTER, this.enterKap, this.oldEnter);
+		this.replaceAction(im, am, KeyEvent.VK_TAB, this.tabKap, this.oldTab);
+		this.replaceAction(im, am, KeyEvent.VK_HOME, this.homeKap, this.oldHome);
+		this.replaceAction(im, am, KeyEvent.VK_END, this.endKap, this.oldEnd);
+		this.replaceAction(im, am, KeyEvent.VK_PAGE_UP, this.pageUpKap, this.oldPageUp);
+		this.replaceAction(im, am, KeyEvent.VK_PAGE_DOWN, this.pageDownKap, this.oldPageDown);
 
 		// Make Ctrl+C copy from description window. This isn't done
 		// automagically because the desc. window is not focusable, and copying
 		// from text components can only be done from focused components.
-		KeyStroke ks = getCopyKeyStroke();
-		oldCtrlC.key = im.get(ks);
-		im.put(ks, ctrlCKap.key);
-		oldCtrlC.action = am.get(ctrlCKap.key);
-		am.put(ctrlCKap.key, ctrlCKap.action);
+		final KeyStroke ks = AutoCompletePopupWindow.getCopyKeyStroke();
+		this.oldCtrlC.key = im.get(ks);
+		im.put(ks, this.ctrlCKap.key);
+		this.oldCtrlC.action = am.get(this.ctrlCKap.key);
+		am.put(this.ctrlCKap.key, this.ctrlCKap.action);
 
 		comp.addCaretListener(this);
 
-		keyBindingsInstalled = true;
+		this.keyBindingsInstalled = true;
 
 	}
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		if (e.getClickCount() == 2) {
-			insertSelectedCompletion();
-		}
+	public void mouseClicked(final MouseEvent e) {
+		if (e.getClickCount() == 2)
+			this.insertSelectedCompletion();
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent e) {
+	public void mouseEntered(final MouseEvent e) {
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
+	public void mouseExited(final MouseEvent e) {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(final MouseEvent e) {
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
+	public void mouseReleased(final MouseEvent e) {
 	}
 
 	/**
@@ -378,41 +628,36 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	private void positionDescWindow() {
 
-		boolean showDescWindow = descWindow != null && ac.getShowDescWindow();
-		if (!showDescWindow) {
+		final boolean showDescWindow = this.descWindow != null && this.ac.getShowDescWindow();
+		if (!showDescWindow)
 			return;
-		}
 
 		// Don't use getLocationOnScreen() as this throws an exception if
 		// window isn't visible yet, but getLocation() doesn't, and is in
 		// screen coordinates!
-		Point p = getLocation();
-		Rectangle screenBounds = Util.getScreenBoundsForPoint(p.x, p.y);
+		final Point p = this.getLocation();
+		final Rectangle screenBounds = Util.getScreenBoundsForPoint(p.x, p.y);
 		// Dimension screenSize = getToolkit().getScreenSize();
 		// int totalH = Math.max(getHeight(), descWindow.getHeight());
 
 		// Try to position to the right first (LTR)
 		int x;
-		if (ac.getTextComponentOrientation().isLeftToRight()) {
-			x = getX() + getWidth() + 5;
-			if (x + descWindow.getWidth() > screenBounds.x + screenBounds.width) { // doesn't fit
-				x = getX() - 5 - descWindow.getWidth();
-			}
+		if (this.ac.getTextComponentOrientation().isLeftToRight()) {
+			x = this.getX() + this.getWidth() + 5;
+			if (x + this.descWindow.getWidth() > screenBounds.x + screenBounds.width)
+				x = this.getX() - 5 - this.descWindow.getWidth();
 		} else { // RTL
-			x = getX() - 5 - descWindow.getWidth();
-			if (x < screenBounds.x) { // Doesn't fit
-				x = getX() + getWidth() + 5;
-			}
+			x = this.getX() - 5 - this.descWindow.getWidth();
+			if (x < screenBounds.x)
+				x = this.getX() + this.getWidth() + 5;
 		}
 
-		int y = getY();
-		if (aboveCaret) {
-			y = y + getHeight() - descWindow.getHeight();
-		}
+		int y = this.getY();
+		if (this.aboveCaret)
+			y = y + this.getHeight() - this.descWindow.getHeight();
 
-		if (x != descWindow.getX() || y != descWindow.getY()) {
-			descWindow.setLocation(x, y);
-		}
+		if (x != this.descWindow.getX() || y != this.descWindow.getY())
+			this.descWindow.setLocation(x, y);
 
 	}
 
@@ -430,8 +675,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 *            The (original) key/Action pair.
 	 * @see #replaceAction(InputMap, ActionMap, int, KeyActionPair, KeyActionPair)
 	 */
-	private void putBackAction(InputMap im, ActionMap am, int key, KeyActionPair kap) {
-		KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
+	private void putBackAction(final InputMap im, final ActionMap am, final int key, final KeyActionPair kap) {
+		final KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
 		am.put(im.get(ks), kap.action); // Original action for the "new" key
 		im.put(ks, kap.key); // Original key for the keystroke.
 	}
@@ -451,8 +696,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 *            A buffer in which to place the old key/Action pair.
 	 * @see #putBackAction(InputMap, ActionMap, int, KeyActionPair)
 	 */
-	private void replaceAction(InputMap im, ActionMap am, int key, KeyActionPair kap, KeyActionPair old) {
-		KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
+	private void replaceAction(final InputMap im, final ActionMap am, final int key, final KeyActionPair kap,
+			final KeyActionPair old) {
+		final KeyStroke ks = KeyStroke.getKeyStroke(key, 0);
 		old.key = im.get(ks);
 		im.put(ks, kap.key);
 		old.action = am.get(kap.key);
@@ -465,9 +711,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectLastItem()
 	 */
 	private void selectFirstItem() {
-		if (model.getSize() > 0) {
-			list.setSelectedIndex(0);
-			list.ensureIndexIsVisible(0);
+		if (this.model.getSize() > 0) {
+			this.list.setSelectedIndex(0);
+			this.list.ensureIndexIsVisible(0);
 		}
 	}
 
@@ -477,10 +723,10 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectFirstItem()
 	 */
 	private void selectLastItem() {
-		int index = model.getSize() - 1;
+		final int index = this.model.getSize() - 1;
 		if (index > -1) {
-			list.setSelectedIndex(index);
-			list.ensureIndexIsVisible(index);
+			this.list.setSelectedIndex(index);
+			this.list.ensureIndexIsVisible(index);
 		}
 	}
 
@@ -490,11 +736,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectPreviousItem()
 	 */
 	private void selectNextItem() {
-		int index = list.getSelectedIndex();
+		int index = this.list.getSelectedIndex();
 		if (index > -1) {
-			index = (index + 1) % model.getSize();
-			list.setSelectedIndex(index);
-			list.ensureIndexIsVisible(index);
+			index = (index + 1) % this.model.getSize();
+			this.list.setSelectedIndex(index);
+			this.list.ensureIndexIsVisible(index);
 		}
 	}
 
@@ -504,10 +750,10 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectPageUpItem()
 	 */
 	private void selectPageDownItem() {
-		int visibleRowCount = list.getVisibleRowCount();
-		int i = Math.min(list.getModel().getSize() - 1, list.getSelectedIndex() + visibleRowCount);
-		list.setSelectedIndex(i);
-		list.ensureIndexIsVisible(i);
+		final int visibleRowCount = this.list.getVisibleRowCount();
+		final int i = Math.min(this.list.getModel().getSize() - 1, this.list.getSelectedIndex() + visibleRowCount);
+		this.list.setSelectedIndex(i);
+		this.list.ensureIndexIsVisible(i);
 	}
 
 	/**
@@ -516,10 +762,10 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectPageDownItem()
 	 */
 	private void selectPageUpItem() {
-		int visibleRowCount = list.getVisibleRowCount();
-		int i = Math.max(0, list.getSelectedIndex() - visibleRowCount);
-		list.setSelectedIndex(i);
-		list.ensureIndexIsVisible(i);
+		final int visibleRowCount = this.list.getVisibleRowCount();
+		final int i = Math.max(0, this.list.getSelectedIndex() - visibleRowCount);
+		this.list.setSelectedIndex(i);
+		this.list.ensureIndexIsVisible(i);
 	}
 
 	/**
@@ -528,23 +774,22 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @see #selectNextItem()
 	 */
 	private void selectPreviousItem() {
-		int index = list.getSelectedIndex();
+		int index = this.list.getSelectedIndex();
 		switch (index) {
 		case 0:
-			index = list.getModel().getSize() - 1;
+			index = this.list.getModel().getSize() - 1;
 			break;
 		case -1: // Check for an empty list (would be an error)
-			index = list.getModel().getSize() - 1;
-			if (index == -1) {
+			index = this.list.getModel().getSize() - 1;
+			if (index == -1)
 				return;
-			}
 			break;
 		default:
 			index = index - 1;
 			break;
 		}
-		list.setSelectedIndex(index);
-		list.ensureIndexIsVisible(index);
+		this.list.setSelectedIndex(index);
+		this.list.ensureIndexIsVisible(index);
 	}
 
 	/**
@@ -554,9 +799,9 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @param completions
 	 *            The completions to display.
 	 */
-	public void setCompletions(List<Completion> completions) {
-		model.setContents(completions);
-		selectFirstItem();
+	public void setCompletions(final List<Completion> completions) {
+		this.model.setContents(completions);
+		this.selectFirstItem();
 	}
 
 	/**
@@ -565,12 +810,11 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @param size
 	 *            The new size. This cannot be <code>null</code>.
 	 */
-	public void setDescriptionWindowSize(Dimension size) {
-		if (descWindow != null) {
-			descWindow.setSize(size);
-		} else {
-			preferredDescWindowSize = size;
-		}
+	public void setDescriptionWindowSize(final Dimension size) {
+		if (this.descWindow != null)
+			this.descWindow.setSize(size);
+		else
+			this.preferredDescWindowSize = size;
 	}
 
 	/**
@@ -582,8 +826,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 *            renderer is used.
 	 * @see #getListCellRenderer()
 	 */
-	public void setListCellRenderer(ListCellRenderer renderer) {
-		DelegatingCellRenderer dcr = (DelegatingCellRenderer) list.getCellRenderer();
+	public void setListCellRenderer(final ListCellRenderer renderer) {
+		final DelegatingCellRenderer dcr = (DelegatingCellRenderer) this.list.getCellRenderer();
 		dcr.setFallbackCellRenderer(renderer);
 	}
 
@@ -595,49 +839,45 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 * @param r
 	 *            The text component's caret position, in screen coordinates.
 	 */
-	public void setLocationRelativeTo(Rectangle r) {
+	public void setLocationRelativeTo(final Rectangle r) {
 
 		// Multi-monitor support - make sure the completion window (and
 		// description window, if applicable) both fit in the same window in
 		// a multi-monitor environment. To do this, we decide which monitor
 		// the rectangle "r" is in, and use that one (just pick top-left corner
 		// as the defining point).
-		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
+		final Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
 		// Dimension screenSize = getToolkit().getScreenSize();
 
-		boolean showDescWindow = descWindow != null && ac.getShowDescWindow();
-		int totalH = getHeight();
-		if (showDescWindow) {
-			totalH = Math.max(totalH, descWindow.getHeight());
-		}
+		final boolean showDescWindow = this.descWindow != null && this.ac.getShowDescWindow();
+		int totalH = this.getHeight();
+		if (showDescWindow)
+			totalH = Math.max(totalH, this.descWindow.getHeight());
 
 		// Try putting our stuff "below" the caret first. We assume that the
 		// entire height of our stuff fits on the screen one way or the other.
-		aboveCaret = false;
-		int y = r.y + r.height + VERTICAL_SPACE;
+		this.aboveCaret = false;
+		int y = r.y + r.height + AutoCompletePopupWindow.VERTICAL_SPACE;
 		if (y + totalH > screenBounds.height) {
-			y = r.y - VERTICAL_SPACE - getHeight();
-			aboveCaret = true;
+			y = r.y - AutoCompletePopupWindow.VERTICAL_SPACE - this.getHeight();
+			this.aboveCaret = true;
 		}
 
 		// Get x-coordinate of completions. Try to align left edge with the
 		// caret first.
 		int x = r.x;
-		if (!ac.getTextComponentOrientation().isLeftToRight()) {
-			x -= getWidth(); // RTL => align right edge
-		}
-		if (x < screenBounds.x) {
+		if (!this.ac.getTextComponentOrientation().isLeftToRight())
+			x -= this.getWidth(); // RTL => align right edge
+		if (x < screenBounds.x)
 			x = screenBounds.x;
-		} else if (x + getWidth() > screenBounds.x + screenBounds.width) { // completions don't fit
-			x = screenBounds.x + screenBounds.width - getWidth();
-		}
+		else if (x + this.getWidth() > screenBounds.x + screenBounds.width)
+			x = screenBounds.x + screenBounds.width - this.getWidth();
 
-		setLocation(x, y);
+		this.setLocation(x, y);
 
 		// Position the description window, if necessary.
-		if (showDescWindow) {
-			positionDescWindow();
-		}
+		if (showDescWindow)
+			this.positionDescWindow();
 
 	}
 
@@ -648,30 +888,28 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 *            Whether this window should be visible.
 	 */
 	@Override
-	public void setVisible(boolean visible) {
+	public void setVisible(final boolean visible) {
 
-		if (visible != isVisible()) {
+		if (visible != this.isVisible()) {
 
 			if (visible) {
-				installKeyBindings();
-				lastLine = ac.getLineOfCaret();
-				selectFirstItem();
-				if (descWindow == null && ac.getShowDescWindow()) {
-					descWindow = createDescriptionWindow();
-					positionDescWindow();
+				this.installKeyBindings();
+				this.lastLine = this.ac.getLineOfCaret();
+				this.selectFirstItem();
+				if (this.descWindow == null && this.ac.getShowDescWindow()) {
+					this.descWindow = this.createDescriptionWindow();
+					this.positionDescWindow();
 				}
 				// descWindow needs a kick-start the first time it's displayed.
 				// Also, the newly-selected item in the choices list is
 				// probably different from the previous one anyway.
-				if (descWindow != null) {
-					Completion c = (Completion) list.getSelectedValue();
-					if (c != null) {
-						descWindow.setDescriptionFor(c);
-					}
+				if (this.descWindow != null) {
+					final Completion c = (Completion) this.list.getSelectedValue();
+					if (c != null)
+						this.descWindow.setDescriptionFor(c);
 				}
-			} else {
-				uninstallKeyBindings();
-			}
+			} else
+				this.uninstallKeyBindings();
 
 			super.setVisible(visible);
 
@@ -686,16 +924,15 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 			// you're getting roughly 2x the necessary Completions in memory
 			// until the Completions are actually passed to this window.
 			if (!visible) { // Do after super.setVisible(false)
-				lastSelection = (Completion) list.getSelectedValue();
-				model.clear();
+				this.lastSelection = (Completion) this.list.getSelectedValue();
+				this.model.clear();
 			}
 
 			// Must set descWindow's visibility one way or the other each time,
 			// because of the way child JWindows' visibility is handled - in
 			// some ways it's dependent on the parent, in other ways it's not.
-			if (descWindow != null) {
-				descWindow.setVisible(visible && ac.getShowDescWindow());
-			}
+			if (this.descWindow != null)
+				this.descWindow.setVisible(visible && this.ac.getShowDescWindow());
 
 		}
 
@@ -708,37 +945,35 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	private void uninstallKeyBindings() {
 
-		if (AutoCompletion.getDebug()) {
+		if (AutoCompletion.getDebug())
 			System.out.println("PopupWindow: Removing keybindings");
-		}
-		if (!keyBindingsInstalled) {
+		if (!this.keyBindingsInstalled)
 			return;
-		}
 
-		JTextComponent comp = ac.getTextComponent();
-		InputMap im = comp.getInputMap();
-		ActionMap am = comp.getActionMap();
+		final JTextComponent comp = this.ac.getTextComponent();
+		final InputMap im = comp.getInputMap();
+		final ActionMap am = comp.getActionMap();
 
-		putBackAction(im, am, KeyEvent.VK_ESCAPE, oldEscape);
-		putBackAction(im, am, KeyEvent.VK_UP, oldUp);
-		putBackAction(im, am, KeyEvent.VK_DOWN, oldDown);
-		putBackAction(im, am, KeyEvent.VK_LEFT, oldLeft);
-		putBackAction(im, am, KeyEvent.VK_RIGHT, oldRight);
-		putBackAction(im, am, KeyEvent.VK_ENTER, oldEnter);
-		putBackAction(im, am, KeyEvent.VK_TAB, oldTab);
-		putBackAction(im, am, KeyEvent.VK_HOME, oldHome);
-		putBackAction(im, am, KeyEvent.VK_END, oldEnd);
-		putBackAction(im, am, KeyEvent.VK_PAGE_UP, oldPageUp);
-		putBackAction(im, am, KeyEvent.VK_PAGE_DOWN, oldPageDown);
+		this.putBackAction(im, am, KeyEvent.VK_ESCAPE, this.oldEscape);
+		this.putBackAction(im, am, KeyEvent.VK_UP, this.oldUp);
+		this.putBackAction(im, am, KeyEvent.VK_DOWN, this.oldDown);
+		this.putBackAction(im, am, KeyEvent.VK_LEFT, this.oldLeft);
+		this.putBackAction(im, am, KeyEvent.VK_RIGHT, this.oldRight);
+		this.putBackAction(im, am, KeyEvent.VK_ENTER, this.oldEnter);
+		this.putBackAction(im, am, KeyEvent.VK_TAB, this.oldTab);
+		this.putBackAction(im, am, KeyEvent.VK_HOME, this.oldHome);
+		this.putBackAction(im, am, KeyEvent.VK_END, this.oldEnd);
+		this.putBackAction(im, am, KeyEvent.VK_PAGE_UP, this.oldPageUp);
+		this.putBackAction(im, am, KeyEvent.VK_PAGE_DOWN, this.oldPageDown);
 
 		// Ctrl+C
-		KeyStroke ks = getCopyKeyStroke();
-		am.put(im.get(ks), oldCtrlC.action); // Original action
-		im.put(ks, oldCtrlC.key); // Original key
+		final KeyStroke ks = AutoCompletePopupWindow.getCopyKeyStroke();
+		am.put(im.get(ks), this.oldCtrlC.action); // Original action
+		im.put(ks, this.oldCtrlC.key); // Original key
 
 		comp.removeCaretListener(this);
 
-		keyBindingsInstalled = false;
+		this.keyBindingsInstalled = false;
 
 	}
 
@@ -747,9 +982,8 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 */
 	public void updateUI() {
 		SwingUtilities.updateComponentTreeUI(this);
-		if (descWindow != null) {
-			descWindow.updateUI();
-		}
+		if (this.descWindow != null)
+			this.descWindow.updateUI();
 	}
 
 	/**
@@ -759,212 +993,14 @@ class AutoCompletePopupWindow extends JWindow implements CaretListener, ListSele
 	 *            The event.
 	 */
 	@Override
-	public void valueChanged(ListSelectionEvent e) {
+	public void valueChanged(final ListSelectionEvent e) {
 		if (!e.getValueIsAdjusting()) {
-			Object value = list.getSelectedValue();
-			if (value != null && descWindow != null) {
-				descWindow.setDescriptionFor((Completion) value);
-				positionDescWindow();
+			final Object value = this.list.getSelectedValue();
+			if (value != null && this.descWindow != null) {
+				this.descWindow.setDescriptionFor((Completion) value);
+				this.positionDescWindow();
 			}
 		}
-	}
-
-	class CopyAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean doNormalCopy = false;
-			if (descWindow != null && descWindow.isVisible()) {
-				doNormalCopy = !descWindow.copy();
-			}
-			if (doNormalCopy) {
-				ac.getTextComponent().copy();
-			}
-		}
-
-	}
-
-	class DownAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectNextItem();
-			}
-		}
-
-	}
-
-	class EndAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectLastItem();
-			}
-		}
-
-	}
-
-	class EnterAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				insertSelectedCompletion();
-			}
-		}
-
-	}
-
-	class EscapeAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				setVisible(false);
-			}
-		}
-
-	}
-
-	class HomeAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectFirstItem();
-			}
-		}
-
-	}
-
-	/**
-	 * A mapping from a key (an Object) to an Action.
-	 */
-	private static class KeyActionPair {
-
-		public Object key;
-		public Action action;
-
-		public KeyActionPair() {
-		}
-
-		public KeyActionPair(Object key, Action a) {
-			this.key = key;
-			this.action = a;
-		}
-
-	}
-
-	class LeftAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				JTextComponent comp = ac.getTextComponent();
-				Caret c = comp.getCaret();
-				int dot = c.getDot();
-				if (dot > 0) {
-					c.setDot(--dot);
-					// Ensure moving left hasn't moved us up a line, thus
-					// hiding the popup window.
-					if (comp.isVisible()) {
-						if (lastLine != -1) {
-							doAutocomplete();
-						}
-					}
-				}
-			}
-		}
-
-	}
-
-	class PageDownAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectPageDownItem();
-			}
-		}
-
-	}
-
-	class PageUpAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectPageUpItem();
-			}
-		}
-
-	}
-
-	/**
-	 * The actual list of completion choices in this popup window.
-	 */
-	private class PopupList extends JList {
-
-		public PopupList(CompletionListModel model) {
-			super(model);
-		}
-
-		@Override
-		public void setUI(ListUI ui) {
-			if (Util.getUseSubstanceRenderers() && SUBSTANCE_LIST_UI.equals(ui.getClass().getName())) {
-				// Substance requires its special ListUI be installed for
-				// its renderers to actually render (!), but long completion
-				// lists (e.g. PHPCompletionProvider in RSTALanguageSupport)
-				// will simply populate too slowly on initial display (when
-				// calculating preferred size of all items), so in this case
-				// we give a prototype cell value.
-				CompletionProvider p = ac.getCompletionProvider();
-				BasicCompletion bc = new BasicCompletion(p, "Hello world");
-				setPrototypeCellValue(bc);
-			} else {
-				// Our custom UI that is faster for long HTML completion lists.
-				ui = new FastListUI();
-				setPrototypeCellValue(null);
-			}
-			super.setUI(ui);
-		}
-
-	}
-
-	class RightAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				JTextComponent comp = ac.getTextComponent();
-				Caret c = comp.getCaret();
-				int dot = c.getDot();
-				if (dot < comp.getDocument().getLength()) {
-					c.setDot(++dot);
-					// Ensure moving right hasn't moved us up a line, thus
-					// hiding the popup window.
-					if (comp.isVisible()) {
-						if (lastLine != -1) {
-							doAutocomplete();
-						}
-					}
-				}
-			}
-		}
-
-	}
-
-	class UpAction extends AbstractAction {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (isVisible()) {
-				selectPreviousItem();
-			}
-		}
-
 	}
 
 }

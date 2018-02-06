@@ -3,7 +3,7 @@
  *
  * ParameterizedCompletionInsertionInfo.java - Used internally to track the
  * changes required for a specific parameterized completion.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -11,6 +11,7 @@ package org.fife.ui.autocomplete;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.text.Position;
 
 import org.fife.ui.rsyntaxtextarea.DocumentRange;
@@ -24,24 +25,50 @@ import org.fife.ui.rsyntaxtextarea.DocumentRange;
  */
 class ParameterizedCompletionInsertionInfo {
 
-	private int minOffs;
-	private Position maxOffs;
-	private int defaultEnd;
-	private int selStart;
-	private int selEnd;
-	private String textToInsert;
-	private List<DocumentRange> replacementLocations;
-	private List<ReplacementCopy> replacementCopies;
+	public static class ReplacementCopy {
 
-	public ParameterizedCompletionInsertionInfo() {
-		defaultEnd = -1;
+		private final int end;
+		private final String id;
+		private final int start;
+
+		public ReplacementCopy(final String id, final int start, final int end) {
+			this.id = id;
+			this.start = start;
+			this.end = end;
+		}
+
+		public int getEnd() {
+			return this.end;
+		}
+
+		public String getId() {
+			return this.id;
+		}
+
+		public int getStart() {
+			return this.start;
+		}
+
 	}
 
-	public void addReplacementCopy(String id, int start, int end) {
-		if (replacementCopies == null) {
-			replacementCopies = new ArrayList<ReplacementCopy>(1);
-		}
-		replacementCopies.add(new ReplacementCopy(id, start, end));
+	private int defaultEnd;
+	private Position maxOffs;
+	private int minOffs;
+	private List<ReplacementCopy> replacementCopies;
+	private List<DocumentRange> replacementLocations;
+	private int selEnd;
+	private int selStart;
+
+	private String textToInsert;
+
+	public ParameterizedCompletionInsertionInfo() {
+		this.defaultEnd = -1;
+	}
+
+	public void addReplacementCopy(final String id, final int start, final int end) {
+		if (this.replacementCopies == null)
+			this.replacementCopies = new ArrayList<>(1);
+		this.replacementCopies.add(new ReplacementCopy(id, start, end));
 	}
 
 	/**
@@ -55,15 +82,14 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getReplacementCount()
 	 * @see #getReplacementLocation(int)
 	 */
-	public void addReplacementLocation(int start, int end) {
-		if (replacementLocations == null) {
-			replacementLocations = new ArrayList<DocumentRange>(1);
-		}
-		replacementLocations.add(new DocumentRange(start, end));
+	public void addReplacementLocation(final int start, final int end) {
+		if (this.replacementLocations == null)
+			this.replacementLocations = new ArrayList<>(1);
+		this.replacementLocations.add(new DocumentRange(start, end));
 	}
 
 	public int getDefaultEndOffs() {
-		return defaultEnd > -1 ? defaultEnd : getMaxOffset().getOffset();
+		return this.defaultEnd > -1 ? this.defaultEnd : this.getMaxOffset().getOffset();
 	}
 
 	/**
@@ -74,7 +100,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getMinOffset()
 	 */
 	public Position getMaxOffset() {
-		return maxOffs;
+		return this.maxOffs;
 	}
 
 	/**
@@ -85,11 +111,15 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getMaxOffset()
 	 */
 	public int getMinOffset() {
-		return minOffs;
+		return this.minOffs;
+	}
+
+	public ReplacementCopy getReplacementCopy(final int index) {
+		return this.replacementCopies.get(index);
 	}
 
 	public int getReplacementCopyCount() {
-		return replacementCopies == null ? 0 : replacementCopies.size();
+		return this.replacementCopies == null ? 0 : this.replacementCopies.size();
 	}
 
 	/**
@@ -98,11 +128,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @return The number of replacements in the completion.
 	 */
 	public int getReplacementCount() {
-		return replacementLocations == null ? 0 : replacementLocations.size();
-	}
-
-	public ReplacementCopy getReplacementCopy(int index) {
-		return replacementCopies.get(index);
+		return this.replacementLocations == null ? 0 : this.replacementLocations.size();
 	}
 
 	/**
@@ -114,8 +140,8 @@ class ParameterizedCompletionInsertionInfo {
 	 * @return The range in the document of that replacement region.
 	 * @see #getReplacementCount()
 	 */
-	public DocumentRange getReplacementLocation(int index) {
-		return replacementLocations.get(index);
+	public DocumentRange getReplacementLocation(final int index) {
+		return this.replacementLocations.get(index);
 	}
 
 	/**
@@ -127,7 +153,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getSelectionStart()
 	 */
 	public int getSelectionEnd() {
-		return selEnd;
+		return this.selEnd;
 	}
 
 	/**
@@ -139,7 +165,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getSelectionEnd()
 	 */
 	public int getSelectionStart() {
-		return selStart;
+		return this.selStart;
 	}
 
 	/**
@@ -149,7 +175,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #setTextToInsert(String)
 	 */
 	public String getTextToInsert() {
-		return textToInsert;
+		return this.textToInsert;
 	}
 
 	/**
@@ -159,22 +185,7 @@ class ParameterizedCompletionInsertionInfo {
 	 * @return Whether there is a region to initially select for the completion.
 	 */
 	public boolean hasSelection() {
-		return selEnd != selStart;
-	}
-
-	/**
-	 * Sets the initially selected region for the completion.
-	 *
-	 * @param selStart
-	 *            The selection start.
-	 * @param selEnd
-	 *            The selection end.
-	 * @see #getSelectionEnd()
-	 * @see #getSelectionStart()
-	 */
-	public void setInitialSelection(int selStart, int selEnd) {
-		this.selStart = selStart;
-		this.selEnd = selEnd;
+		return this.selEnd != this.selStart;
 	}
 
 	/**
@@ -189,13 +200,28 @@ class ParameterizedCompletionInsertionInfo {
 	 * @see #getMinOffset()
 	 * @see #getMaxOffset()
 	 */
-	public void setCaretRange(int minOffs, Position maxOffs) {
+	public void setCaretRange(final int minOffs, final Position maxOffs) {
 		this.minOffs = minOffs;
 		this.maxOffs = maxOffs;
 	}
 
-	public void setDefaultEndOffs(int end) {
-		defaultEnd = end;
+	public void setDefaultEndOffs(final int end) {
+		this.defaultEnd = end;
+	}
+
+	/**
+	 * Sets the initially selected region for the completion.
+	 *
+	 * @param selStart
+	 *            The selection start.
+	 * @param selEnd
+	 *            The selection end.
+	 * @see #getSelectionEnd()
+	 * @see #getSelectionStart()
+	 */
+	public void setInitialSelection(final int selStart, final int selEnd) {
+		this.selStart = selStart;
+		this.selEnd = selEnd;
 	}
 
 	/**
@@ -205,34 +231,8 @@ class ParameterizedCompletionInsertionInfo {
 	 *            The text to insert.
 	 * @see #getTextToInsert()
 	 */
-	public void setTextToInsert(String text) {
+	public void setTextToInsert(final String text) {
 		this.textToInsert = text;
-	}
-
-	public static class ReplacementCopy {
-
-		private String id;
-		private int start;
-		private int end;
-
-		public ReplacementCopy(String id, int start, int end) {
-			this.id = id;
-			this.start = start;
-			this.end = end;
-		}
-
-		public int getEnd() {
-			return end;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public int getStart() {
-			return start;
-		}
-
 	}
 
 }

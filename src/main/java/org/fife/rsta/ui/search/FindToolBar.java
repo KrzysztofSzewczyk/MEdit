@@ -60,19 +60,201 @@ import org.fife.ui.rtextarea.SearchContext;
  */
 public class FindToolBar extends JPanel {
 
+	/**
+	 * Listens for events in the Find (and Replace, in the subclass) search field.
+	 */
+	protected class FindFieldListener extends KeyAdapter implements DocumentListener, FocusListener {
+
+		protected boolean selectAll;
+
+		@Override
+		public void changedUpdate(final DocumentEvent e) {
+		}
+
+		@Override
+		public void focusGained(final FocusEvent e) {
+			final JTextField field = (JTextField) e.getComponent();
+			if (this.selectAll)
+				field.selectAll();
+			this.selectAll = true;
+		}
+
+		@Override
+		public void focusLost(final FocusEvent e) {
+		}
+
+		protected void handleDocumentEvent(final DocumentEvent e) {
+			FindToolBar.this.handleToggleButtons();
+			if (!FindToolBar.this.settingFindTextFromEvent) {
+				final JTextComponent findField = UIUtil.getTextComponent(FindToolBar.this.findCombo);
+				if (e.getDocument() == findField.getDocument()) {
+					FindToolBar.this.context.setSearchFor(findField.getText());
+					if (FindToolBar.this.context.getMarkAll())
+						FindToolBar.this.doMarkAll(true);
+				} else { // Replace field's document
+					final JTextComponent replaceField = UIUtil.getTextComponent(FindToolBar.this.replaceCombo);
+					FindToolBar.this.context.setReplaceWith(replaceField.getText());
+					// Don't re-fire "mark all" events for "replace" text edits
+				}
+			}
+		}
+
+		@Override
+		public void insertUpdate(final DocumentEvent e) {
+			this.handleDocumentEvent(e);
+		}
+
+		public void install(final JTextComponent field) {
+			field.getDocument().addDocumentListener(this);
+			field.addKeyListener(this);
+			field.addFocusListener(this);
+		}
+
+		@Override
+		public void keyTyped(final KeyEvent e) {
+			if (e.getKeyChar() == '\n') {
+				final int mod = e.getModifiers();
+				final int ctrlShift = InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK;
+				final boolean forward = (mod & ctrlShift) == 0;
+				FindToolBar.this.doSearch(forward);
+			}
+		}
+
+		@Override
+		public void removeUpdate(final DocumentEvent e) {
+			this.handleDocumentEvent(e);
+		}
+
+	}
+
+	/**
+	 * Called when the user edits the "Find" field's contents, after a slight delay.
+	 * Fires a "mark all" search event for applications that want to display "mark
+	 * all" results on the fly.
+	 */
+	private class MarkAllEventNotifier implements ActionListener {
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+			FindToolBar.this.fireMarkAllEvent();
+		}
+
+	}
+
+	/**
+	 * Listens for events in this tool bar. Keeps the UI in sync with the search
+	 * context and vice versa.
+	 */
+	private class ToolBarListener extends MouseAdapter implements ActionListener, PropertyChangeListener {
+
+		@Override
+		public void actionPerformed(final ActionEvent e) {
+
+			final Object source = e.getSource();
+
+			if (source == FindToolBar.this.matchCaseCheckBox) {
+				FindToolBar.this.context.setMatchCase(FindToolBar.this.matchCaseCheckBox.isSelected());
+				if (FindToolBar.this.markAllCheckBox.isSelected())
+					FindToolBar.this.doMarkAll(false);
+			} else if (source == FindToolBar.this.wholeWordCheckBox) {
+				FindToolBar.this.context.setWholeWord(FindToolBar.this.wholeWordCheckBox.isSelected());
+				if (FindToolBar.this.markAllCheckBox.isSelected())
+					FindToolBar.this.doMarkAll(false);
+			} else if (source == FindToolBar.this.regexCheckBox) {
+				FindToolBar.this.context.setRegularExpression(FindToolBar.this.regexCheckBox.isSelected());
+				if (FindToolBar.this.markAllCheckBox.isSelected())
+					FindToolBar.this.doMarkAll(false);
+			} else if (source == FindToolBar.this.markAllCheckBox) {
+				FindToolBar.this.context.setMarkAll(FindToolBar.this.markAllCheckBox.isSelected());
+				FindToolBar.this.fireMarkAllEvent(); // Force an event to be fired
+			} else
+				FindToolBar.this.handleSearchAction(e);
+
+		}
+
+		@Override
+		public void mouseClicked(final MouseEvent e) {
+			if (e.getSource() instanceof JCheckBox) { // Always true
+				FindToolBar.this.findFieldListener.selectAll = false;
+				FindToolBar.this.findCombo.requestFocusInWindow();
+			}
+		}
+
+		@Override
+		public void propertyChange(final PropertyChangeEvent e) {
+
+			// A property changed on the context itself.
+			final String prop = e.getPropertyName();
+
+			if (SearchContext.PROPERTY_MATCH_CASE.equals(prop)) {
+				final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+				FindToolBar.this.matchCaseCheckBox.setSelected(newValue);
+			} else if (SearchContext.PROPERTY_MATCH_WHOLE_WORD.equals(prop)) {
+				final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+				FindToolBar.this.wholeWordCheckBox.setSelected(newValue);
+			}
+			// else if (SearchContext.PROPERTY_SEARCH_FORWARD.equals(prop)) {
+			// boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
+			// ...
+			// }
+			// else if (SearchContext.PROPERTY_SELECTION_ONLY.equals(prop)) {
+			// boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
+			// ...
+			// }
+			else if (SearchContext.PROPERTY_USE_REGEX.equals(prop)) {
+				final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+				FindToolBar.this.regexCheckBox.setSelected(newValue);
+				FindToolBar.this.handleRegExCheckBoxClicked();
+			} else if (SearchContext.PROPERTY_MARK_ALL.equals(prop)) {
+				final boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
+				FindToolBar.this.markAllCheckBox.setSelected(newValue);
+				// firing event handled in ActionListener, to prevent "other"
+				// tool bar from firing a second event
+			} else if (SearchContext.PROPERTY_SEARCH_FOR.equals(prop)) {
+				final String newValue = (String) e.getNewValue();
+				final String oldValue = FindToolBar.this.getFindText();
+				// Prevents IllegalStateExceptions
+				if (!newValue.equals(oldValue)) {
+					FindToolBar.this.settingFindTextFromEvent = true;
+					FindToolBar.this.setFindText(newValue);
+					FindToolBar.this.settingFindTextFromEvent = false;
+				}
+			} else if (SearchContext.PROPERTY_REPLACE_WITH.equals(prop)) {
+				final String newValue = (String) e.getNewValue();
+				final String oldValue = FindToolBar.this.getReplaceText();
+				// Prevents IllegalStateExceptions
+				if (!newValue.equals(oldValue)) {
+					FindToolBar.this.settingFindTextFromEvent = true;
+					FindToolBar.this.setReplaceText(newValue);
+					FindToolBar.this.settingFindTextFromEvent = false;
+				}
+			}
+
+		}
+
+	}
+
+	protected static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.search.SearchToolBar");
+	protected static final ResourceBundle searchMsg = ResourceBundle.getBundle("org.fife.rsta.ui.search.Search");
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private SearchContext context;
-	protected ToolBarListener listener;
-	protected FindFieldListener findFieldListener;
-	protected SearchComboBox findCombo;
-	protected SearchComboBox replaceCombo;
 	protected JButton findButton;
+	protected SearchComboBox findCombo;
+	protected FindFieldListener findFieldListener;
 	protected JButton findPrevButton;
-	protected JCheckBox matchCaseCheckBox;
-	protected JCheckBox wholeWordCheckBox;
-	protected JCheckBox regexCheckBox;
+	private final JLabel infoLabel;
+	protected ToolBarListener listener;
 	protected JCheckBox markAllCheckBox;
-	private JLabel infoLabel;
-	private Timer markAllTimer;
+
+	private final Timer markAllTimer;
+
+	protected JCheckBox matchCaseCheckBox;
+	protected JCheckBox regexCheckBox;
+
+	protected SearchComboBox replaceCombo;
 
 	/**
 	 * Flag to prevent double-modification of SearchContext when e.g. a FindToolBar
@@ -80,8 +262,7 @@ public class FindToolBar extends JPanel {
 	 */
 	private boolean settingFindTextFromEvent;
 
-	protected static final ResourceBundle searchMsg = ResourceBundle.getBundle("org.fife.rsta.ui.search.Search");
-	protected static final ResourceBundle msg = ResourceBundle.getBundle("org.fife.rsta.ui.search.SearchToolBar");
+	protected JCheckBox wholeWordCheckBox;
 
 	/**
 	 * Creates the tool bar.
@@ -89,44 +270,44 @@ public class FindToolBar extends JPanel {
 	 * @param listener
 	 *            An entity listening for search events.
 	 */
-	public FindToolBar(SearchListener listener) {
+	public FindToolBar(final SearchListener listener) {
 
 		// Keep focus in this component when tabbing through search controls
-		setFocusCycleRoot(true);
-		installKeyboardShortcuts();
+		this.setFocusCycleRoot(true);
+		this.installKeyboardShortcuts();
 
-		markAllTimer = new Timer(300, new MarkAllEventNotifier());
-		markAllTimer.setRepeats(false);
+		this.markAllTimer = new Timer(300, new MarkAllEventNotifier());
+		this.markAllTimer.setRepeats(false);
 
-		setLayout(new BorderLayout());
-		setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
-		addSearchListener(listener);
+		this.setLayout(new BorderLayout());
+		this.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
+		this.addSearchListener(listener);
 		this.listener = new ToolBarListener();
 
 		// The user should set a shared instance between all subclass
 		// instances, but to be safe we set individual ones.
-		setSearchContext(new SearchContext());
+		this.setSearchContext(new SearchContext());
 
-		ComponentOrientation orientation = ComponentOrientation.getOrientation(getLocale());
+		final ComponentOrientation orientation = ComponentOrientation.getOrientation(this.getLocale());
 
-		add(Box.createHorizontalStrut(5));
+		this.add(Box.createHorizontalStrut(5));
 
-		add(createFieldPanel());
+		this.add(this.createFieldPanel());
 
-		Box rest = new Box(BoxLayout.LINE_AXIS);
-		add(rest, BorderLayout.LINE_END);
+		final Box rest = new Box(BoxLayout.LINE_AXIS);
+		this.add(rest, BorderLayout.LINE_END);
 
 		rest.add(Box.createHorizontalStrut(5));
-		rest.add(createButtonPanel());
+		rest.add(this.createButtonPanel());
 		rest.add(Box.createHorizontalStrut(15));
 
-		infoLabel = new JLabel();
-		rest.add(infoLabel);
+		this.infoLabel = new JLabel();
+		rest.add(this.infoLabel);
 
 		rest.add(Box.createHorizontalGlue());
 
 		// Get ready to go.
-		applyComponentOrientation(orientation);
+		this.applyComponentOrientation(orientation);
 
 	}
 
@@ -138,43 +319,43 @@ public class FindToolBar extends JPanel {
 	 *            The listener to add.
 	 * @see #removeSearchListener(SearchListener)
 	 */
-	public void addSearchListener(SearchListener l) {
-		listenerList.add(SearchListener.class, l);
+	public void addSearchListener(final SearchListener l) {
+		this.listenerList.add(SearchListener.class, l);
 	}
 
 	protected Container createButtonPanel() {
 
-		Box panel = new Box(BoxLayout.LINE_AXIS);
-		createFindButtons();
+		final Box panel = new Box(BoxLayout.LINE_AXIS);
+		this.createFindButtons();
 
 		// JPanel bp = new JPanel(new GridLayout(1,2, 5,0));
 		// bp.add(findButton); bp.add(findPrevButton);
-		JPanel filler = new JPanel(new BorderLayout());
+		final JPanel filler = new JPanel(new BorderLayout());
 		filler.setBorder(BorderFactory.createEmptyBorder());
-		filler.add(findButton);// bp);
+		filler.add(this.findButton);// bp);
 		panel.add(filler);
 		panel.add(Box.createHorizontalStrut(5));
 
-		matchCaseCheckBox = createCB("MatchCase");
-		panel.add(matchCaseCheckBox);
+		this.matchCaseCheckBox = this.createCB("MatchCase");
+		panel.add(this.matchCaseCheckBox);
 
-		regexCheckBox = createCB("RegEx");
-		panel.add(regexCheckBox);
+		this.regexCheckBox = this.createCB("RegEx");
+		panel.add(this.regexCheckBox);
 
-		wholeWordCheckBox = createCB("WholeWord");
-		panel.add(wholeWordCheckBox);
+		this.wholeWordCheckBox = this.createCB("WholeWord");
+		panel.add(this.wholeWordCheckBox);
 
-		markAllCheckBox = createCB("MarkAll");
-		panel.add(markAllCheckBox);
+		this.markAllCheckBox = this.createCB("MarkAll");
+		panel.add(this.markAllCheckBox);
 
 		return panel;
 
 	}
 
-	protected JCheckBox createCB(String key) {
-		JCheckBox cb = new JCheckBox(searchMsg.getString(key));
-		cb.addActionListener(listener);
-		cb.addMouseListener(listener);
+	protected JCheckBox createCB(final String key) {
+		final JCheckBox cb = new JCheckBox(FindToolBar.searchMsg.getString(key));
+		cb.addActionListener(this.listener);
+		cb.addMouseListener(this.listener);
 		return cb;
 	}
 
@@ -186,23 +367,23 @@ public class FindToolBar extends JPanel {
 	 *            The component with content assist.
 	 * @return The wrapper panel.
 	 */
-	protected Container createContentAssistablePanel(JComponent comp) {
-		JPanel temp = new JPanel(new BorderLayout());
+	protected Container createContentAssistablePanel(final JComponent comp) {
+		final JPanel temp = new JPanel(new BorderLayout());
 		temp.add(comp);
-		AssistanceIconPanel aip = new AssistanceIconPanel(comp);
+		final AssistanceIconPanel aip = new AssistanceIconPanel(comp);
 		temp.add(aip, BorderLayout.LINE_START);
 		return temp;
 	}
 
 	protected Container createFieldPanel() {
 
-		findFieldListener = new FindFieldListener();
-		JPanel temp = new JPanel(new BorderLayout());
+		this.findFieldListener = new FindFieldListener();
+		final JPanel temp = new JPanel(new BorderLayout());
 
-		findCombo = new SearchComboBox(this, false);
-		JTextComponent findField = UIUtil.getTextComponent(findCombo);
-		findFieldListener.install(findField);
-		temp.add(createContentAssistablePanel(findCombo));
+		this.findCombo = new SearchComboBox(this, false);
+		final JTextComponent findField = UIUtil.getTextComponent(this.findCombo);
+		this.findFieldListener.install(findField);
+		temp.add(this.createContentAssistablePanel(this.findCombo));
 
 		return temp;
 	}
@@ -212,23 +393,28 @@ public class FindToolBar extends JPanel {
 	 */
 	protected void createFindButtons() {
 
-		findPrevButton = new JButton(msg.getString("FindPrev"));
-		makeEnterActivateButton(findPrevButton);
-		findPrevButton.setActionCommand("FindPrevious");
-		findPrevButton.addActionListener(listener);
-		findPrevButton.setEnabled(false);
+		this.findPrevButton = new JButton(FindToolBar.msg.getString("FindPrev"));
+		this.makeEnterActivateButton(this.findPrevButton);
+		this.findPrevButton.setActionCommand("FindPrevious");
+		this.findPrevButton.addActionListener(this.listener);
+		this.findPrevButton.setEnabled(false);
 
-		findButton = new JButton(searchMsg.getString("Find")) {
+		this.findButton = new JButton(FindToolBar.searchMsg.getString("Find")) {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Dimension getPreferredSize() {
-				return findPrevButton.getPreferredSize(); // Always bigger
+				return FindToolBar.this.findPrevButton.getPreferredSize(); // Always bigger
 			}
 		};
-		makeEnterActivateButton(findButton);
-		findButton.setToolTipText(msg.getString("Find.ToolTip"));
-		findButton.setActionCommand("FindNext");
-		findButton.addActionListener(listener);
-		findButton.setEnabled(false);
+		this.makeEnterActivateButton(this.findButton);
+		this.findButton.setToolTipText(FindToolBar.msg.getString("Find.ToolTip"));
+		this.findButton.setActionCommand("FindNext");
+		this.findButton.addActionListener(this.listener);
+		this.findButton.setEnabled(false);
 
 	}
 
@@ -238,30 +424,27 @@ public class FindToolBar extends JPanel {
 	 * @param delay
 	 *            If the delay should be honored.
 	 */
-	protected void doMarkAll(boolean delay) {
-		if (context.getMarkAll() && !settingFindTextFromEvent) {
-			if (delay) {
-				markAllTimer.restart();
-			} else {
-				fireMarkAllEvent();
-			}
-		}
+	protected void doMarkAll(final boolean delay) {
+		if (this.context.getMarkAll() && !this.settingFindTextFromEvent)
+			if (delay)
+				this.markAllTimer.restart();
+			else
+				this.fireMarkAllEvent();
 	}
 
-	void doSearch(boolean forward) {
-		if (forward) {
-			findButton.doClick(0);
-		} else {
-			findPrevButton.doClick(0);
-		}
+	void doSearch(final boolean forward) {
+		if (forward)
+			this.findButton.doClick(0);
+		else
+			this.findPrevButton.doClick(0);
 	}
 
 	/**
 	 * Fires a "mark all" search event.
 	 */
 	private void fireMarkAllEvent() {
-		SearchEvent se = new SearchEvent(this, SearchEvent.Type.MARK_ALL, context);
-		fireSearchEvent(se);
+		final SearchEvent se = new SearchEvent(this, SearchEvent.Type.MARK_ALL, this.context);
+		this.fireSearchEvent(se);
 	}
 
 	/**
@@ -272,18 +455,17 @@ public class FindToolBar extends JPanel {
 	 * @param e
 	 *            The <code>ActionEvent</code> object coming from a child component.
 	 */
-	protected void fireSearchEvent(SearchEvent e) {
+	protected void fireSearchEvent(final SearchEvent e) {
 		// Process the listeners last to first, notifying
 		// those that are interested in this event
-		SearchListener[] listeners = listenerList.getListeners(SearchListener.class);
-		int count = listeners == null ? 0 : listeners.length;
-		for (int i = count - 1; i >= 0; i--) {
+		final SearchListener[] listeners = this.listenerList.getListeners(SearchListener.class);
+		final int count = listeners == null ? 0 : listeners.length;
+		for (int i = count - 1; i >= 0; i--)
 			listeners[i].searchEvent(e);
-		}
 	}
 
 	protected String getFindText() {
-		return UIUtil.getTextComponent(findCombo).getText();
+		return UIUtil.getTextComponent(this.findCombo).getText();
 	}
 
 	/**
@@ -294,14 +476,13 @@ public class FindToolBar extends JPanel {
 	 * @see #setMarkAllDelay(int)
 	 */
 	public int getMarkAllDelay() {
-		return markAllTimer.getInitialDelay();
+		return this.markAllTimer.getInitialDelay();
 	}
 
 	protected String getReplaceText() {
-		if (replaceCombo == null) {
+		if (this.replaceCombo == null)
 			return null;
-		}
-		return UIUtil.getTextComponent(replaceCombo).getText();
+		return UIUtil.getTextComponent(this.replaceCombo).getText();
 	}
 
 	/**
@@ -311,7 +492,7 @@ public class FindToolBar extends JPanel {
 	 * @see #setSearchContext(SearchContext)
 	 */
 	public SearchContext getSearchContext() {
-		return context;
+		return this.context;
 	}
 
 	/**
@@ -320,10 +501,10 @@ public class FindToolBar extends JPanel {
 	 * behavior, but should call the super implementation.
 	 */
 	protected void handleRegExCheckBoxClicked() {
-		handleToggleButtons();
+		this.handleToggleButtons();
 		// "Content assist" support
-		boolean b = regexCheckBox.isSelected();
-		findCombo.setAutoCompleteEnabled(b);
+		final boolean b = this.regexCheckBox.isSelected();
+		this.findCombo.setAutoCompleteEnabled(b);
 	}
 
 	/**
@@ -332,60 +513,59 @@ public class FindToolBar extends JPanel {
 	 * @param e
 	 *            The event.
 	 */
-	protected void handleSearchAction(ActionEvent e) {
+	protected void handleSearchAction(final ActionEvent e) {
 
 		SearchEvent.Type type = null;
 		boolean forward = true;
-		String action = e.getActionCommand();
+		final String action = e.getActionCommand();
 		// JTextField returns *_DOWN_* modifiers, JButton returns the others (!)
-		int allowedModifiers = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | // field
+		final int allowedModifiers = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | // field
 				InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK; // JButton
 
 		if ("FindNext".equals(action)) {
 			type = SearchEvent.Type.FIND;
-			int mods = e.getModifiers();
+			final int mods = e.getModifiers();
 			forward = (mods & allowedModifiers) == 0;
 			// Add the item to the combo box's list, if it isn't already there.
-			JTextComponent tc = UIUtil.getTextComponent(findCombo);
-			findCombo.addItem(tc.getText());
+			final JTextComponent tc = UIUtil.getTextComponent(this.findCombo);
+			this.findCombo.addItem(tc.getText());
 		} else if ("FindPrevious".equals(action)) {
 			type = SearchEvent.Type.FIND;
 			forward = false;
 			// Add the item to the combo box's list, if it isn't already there.
-			JTextComponent tc = UIUtil.getTextComponent(findCombo);
-			findCombo.addItem(tc.getText());
+			final JTextComponent tc = UIUtil.getTextComponent(this.findCombo);
+			this.findCombo.addItem(tc.getText());
 		} else if ("Replace".equals(action)) {
 			type = SearchEvent.Type.REPLACE;
-			int mods = e.getModifiers();
+			final int mods = e.getModifiers();
 			forward = (mods & allowedModifiers) == 0;
 			// Add the item to the combo box's list, if it isn't already there.
-			JTextComponent tc = UIUtil.getTextComponent(findCombo);
-			findCombo.addItem(tc.getText());
-			tc = UIUtil.getTextComponent(replaceCombo);
-			replaceCombo.addItem(tc.getText());
+			JTextComponent tc = UIUtil.getTextComponent(this.findCombo);
+			this.findCombo.addItem(tc.getText());
+			tc = UIUtil.getTextComponent(this.replaceCombo);
+			this.replaceCombo.addItem(tc.getText());
 		} else if ("ReplaceAll".equals(action)) {
 			type = SearchEvent.Type.REPLACE_ALL;
 			// Add the item to the combo box's list, if it isn't already there.
-			JTextComponent tc = UIUtil.getTextComponent(findCombo);
-			findCombo.addItem(tc.getText());
-			tc = UIUtil.getTextComponent(replaceCombo);
-			replaceCombo.addItem(tc.getText());
+			JTextComponent tc = UIUtil.getTextComponent(this.findCombo);
+			this.findCombo.addItem(tc.getText());
+			tc = UIUtil.getTextComponent(this.replaceCombo);
+			this.replaceCombo.addItem(tc.getText());
 		}
 
-		context.setSearchFor(getFindText());
-		if (replaceCombo != null) {
-			context.setReplaceWith(replaceCombo.getSelectedString());
-		}
+		this.context.setSearchFor(this.getFindText());
+		if (this.replaceCombo != null)
+			this.context.setReplaceWith(this.replaceCombo.getSelectedString());
 
 		// Note: This will toggle the "search forward" radio buttons in the
 		// Find/Replace dialogs if the application is using them AND these tool
 		// bars, but that is a rare occurrence. Cloning the context is out
 		// since that may cause problems for the application if it caches it.
-		context.setSearchForward(forward);
+		this.context.setSearchForward(forward);
 
-		SearchEvent se = new SearchEvent(this, type, context);
-		fireSearchEvent(se);
-		handleToggleButtons(); // Replace button could toggle state
+		final SearchEvent se = new SearchEvent(this, type, this.context);
+		this.fireSearchEvent(se);
+		this.handleToggleButtons(); // Replace button could toggle state
 
 	}
 
@@ -401,28 +581,27 @@ public class FindToolBar extends JPanel {
 
 		FindReplaceButtonsEnableResult result = new FindReplaceButtonsEnableResult(true, null);
 
-		String text = getFindText();
-		if (text.length() == 0) {
+		final String text = this.getFindText();
+		if (text.length() == 0)
 			result = new FindReplaceButtonsEnableResult(false, null);
-		} else if (regexCheckBox.isSelected()) {
+		else if (this.regexCheckBox.isSelected())
 			try {
 				Pattern.compile(text);
-			} catch (PatternSyntaxException pse) {
+			} catch (final PatternSyntaxException pse) {
 				result = new FindReplaceButtonsEnableResult(false, pse.getMessage());
 			}
-		}
 
-		boolean enable = result.getEnable();
-		findButton.setEnabled(enable);
-		findPrevButton.setEnabled(enable);
+		final boolean enable = result.getEnable();
+		this.findButton.setEnabled(enable);
+		this.findPrevButton.setEnabled(enable);
 
 		// setBackground doesn't show up with XP Look and Feel!
 		// findTextComboBox.setBackground(enable ?
 		// UIManager.getColor("ComboBox.background") : Color.PINK);
-		JTextComponent tc = UIUtil.getTextComponent(findCombo);
+		final JTextComponent tc = UIUtil.getTextComponent(this.findCombo);
 		tc.setForeground(enable ? UIManager.getColor("TextField.foreground") : UIUtil.getErrorTextForeground());
 
-		String tooltip = SearchUtil.getToolTip(result);
+		final String tooltip = SearchUtil.getToolTip(result);
 		tc.setToolTipText(tooltip); // Always set, even if null
 
 		return result;
@@ -435,46 +614,53 @@ public class FindToolBar extends JPanel {
 	 * practically be never).
 	 */
 	protected void initUIFromContext() {
-		if (findCombo == null) { // First time through, stuff not initialized yet
+		if (this.findCombo == null)
 			return;
-		}
-		setFindText(context.getSearchFor());
-		if (replaceCombo != null) {
-			setReplaceText(context.getReplaceWith());
-		}
-		matchCaseCheckBox.setSelected(context.getMatchCase());
-		wholeWordCheckBox.setSelected(context.getWholeWord());
-		regexCheckBox.setSelected(context.isRegularExpression());
-		markAllCheckBox.setSelected(context.getMarkAll());
+		this.setFindText(this.context.getSearchFor());
+		if (this.replaceCombo != null)
+			this.setReplaceText(this.context.getReplaceWith());
+		this.matchCaseCheckBox.setSelected(this.context.getMatchCase());
+		this.wholeWordCheckBox.setSelected(this.context.getWholeWord());
+		this.regexCheckBox.setSelected(this.context.isRegularExpression());
+		this.markAllCheckBox.setSelected(this.context.getMarkAll());
 	}
 
 	private void installKeyboardShortcuts() {
 
-		InputMap im = getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-		ActionMap am = getActionMap();
+		final InputMap im = this.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		final ActionMap am = this.getActionMap();
 
 		KeyStroke ks = KeyStroke.getKeyStroke("ENTER");
 		im.put(ks, "searchForward");
 		am.put("searchForward", new AbstractAction() {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				doSearch(true);
+			public void actionPerformed(final ActionEvent e) {
+				FindToolBar.this.doSearch(true);
 			}
 		});
 
-		int shift = InputEvent.SHIFT_MASK;
+		final int shift = InputEvent.SHIFT_MASK;
 		int ctrl = InputEvent.CTRL_MASK;
-		if (System.getProperty("os.name").toLowerCase().contains("os x")) {
+		if (System.getProperty("os.name").toLowerCase().contains("os x"))
 			ctrl = InputEvent.META_MASK;
-		}
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, shift);
 		im.put(ks, "searchBackward");
 		ks = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, ctrl);
 		im.put(ks, "searchBackward");
 		am.put("searchForward", new AbstractAction() {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				doSearch(false);
+			public void actionPerformed(final ActionEvent e) {
+				FindToolBar.this.doSearch(false);
 			}
 		});
 
@@ -491,9 +677,9 @@ public class FindToolBar extends JPanel {
 	 * @param button
 	 *            The button that should respond to the Enter key.
 	 */
-	protected void makeEnterActivateButton(JButton button) {
+	protected void makeEnterActivateButton(final JButton button) {
 
-		InputMap im = button.getInputMap();
+		final InputMap im = button.getInputMap();
 
 		// Make "enter" being typed simulate clicking
 		im.put(KeyStroke.getKeyStroke("ENTER"), "pressed");
@@ -516,8 +702,8 @@ public class FindToolBar extends JPanel {
 	 *            The listener to remove
 	 * @see #addSearchListener(SearchListener)
 	 */
-	public void removeSearchListener(SearchListener l) {
-		listenerList.remove(SearchListener.class, l);
+	public void removeSearchListener(final SearchListener l) {
+		this.listenerList.remove(SearchListener.class, l);
 	}
 
 	/**
@@ -526,7 +712,7 @@ public class FindToolBar extends JPanel {
 	 */
 	@Override
 	public boolean requestFocusInWindow() {
-		JTextComponent findField = UIUtil.getTextComponent(findCombo);
+		final JTextComponent findField = UIUtil.getTextComponent(this.findCombo);
 		findField.selectAll();
 		return findField.requestFocusInWindow();
 	}
@@ -538,12 +724,12 @@ public class FindToolBar extends JPanel {
 	 * @param combo
 	 *            The combo box.
 	 */
-	void searchComboUpdateUICallback(SearchComboBox combo) {
-		findFieldListener.install(UIUtil.getTextComponent(combo));
+	void searchComboUpdateUICallback(final SearchComboBox combo) {
+		this.findFieldListener.install(UIUtil.getTextComponent(combo));
 	}
 
-	protected void setFindText(String text) {
-		UIUtil.getTextComponent(findCombo).setText(text);
+	protected void setFindText(final String text) {
+		UIUtil.getTextComponent(this.findCombo).setText(text);
 		// findCombo.setSelectedItem(text);
 	}
 
@@ -555,15 +741,14 @@ public class FindToolBar extends JPanel {
 	 *            The new delay. This should be &gt;= zero.
 	 * @see #getMarkAllDelay()
 	 */
-	public void setMarkAllDelay(int millis) {
-		markAllTimer.setInitialDelay(millis);
+	public void setMarkAllDelay(final int millis) {
+		this.markAllTimer.setInitialDelay(millis);
 	}
 
-	protected void setReplaceText(String text) {
-		if (replaceCombo != null) {
-			UIUtil.getTextComponent(replaceCombo).setText(text);
-			// replaceCombo.setSelectedItem(text);
-		}
+	protected void setReplaceText(final String text) {
+		if (this.replaceCombo != null)
+			UIUtil.getTextComponent(this.replaceCombo).setText(text);
+		// replaceCombo.setSelectedItem(text);
 	}
 
 	/**
@@ -575,193 +760,12 @@ public class FindToolBar extends JPanel {
 	 *            The new search context. This cannot be <code>null</code>.
 	 * @see #getSearchContext()
 	 */
-	public void setSearchContext(SearchContext context) {
-		if (this.context != null) {
-			this.context.removePropertyChangeListener(listener);
-		}
+	public void setSearchContext(final SearchContext context) {
+		if (this.context != null)
+			this.context.removePropertyChangeListener(this.listener);
 		this.context = context;
-		this.context.addPropertyChangeListener(listener);
-		initUIFromContext();
-	}
-
-	/**
-	 * Listens for events in this tool bar. Keeps the UI in sync with the search
-	 * context and vice versa.
-	 */
-	private class ToolBarListener extends MouseAdapter implements ActionListener, PropertyChangeListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-
-			Object source = e.getSource();
-
-			if (source == matchCaseCheckBox) {
-				context.setMatchCase(matchCaseCheckBox.isSelected());
-				if (markAllCheckBox.isSelected()) {
-					doMarkAll(false);
-				}
-			} else if (source == wholeWordCheckBox) {
-				context.setWholeWord(wholeWordCheckBox.isSelected());
-				if (markAllCheckBox.isSelected()) {
-					doMarkAll(false);
-				}
-			} else if (source == regexCheckBox) {
-				context.setRegularExpression(regexCheckBox.isSelected());
-				if (markAllCheckBox.isSelected()) {
-					doMarkAll(false);
-				}
-			} else if (source == markAllCheckBox) {
-				context.setMarkAll(markAllCheckBox.isSelected());
-				fireMarkAllEvent(); // Force an event to be fired
-			} else {
-				handleSearchAction(e);
-			}
-
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			if (e.getSource() instanceof JCheckBox) { // Always true
-				findFieldListener.selectAll = false;
-				findCombo.requestFocusInWindow();
-			}
-		}
-
-		@Override
-		public void propertyChange(PropertyChangeEvent e) {
-
-			// A property changed on the context itself.
-			String prop = e.getPropertyName();
-
-			if (SearchContext.PROPERTY_MATCH_CASE.equals(prop)) {
-				boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-				matchCaseCheckBox.setSelected(newValue);
-			} else if (SearchContext.PROPERTY_MATCH_WHOLE_WORD.equals(prop)) {
-				boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-				wholeWordCheckBox.setSelected(newValue);
-			}
-			// else if (SearchContext.PROPERTY_SEARCH_FORWARD.equals(prop)) {
-			// boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
-			// ...
-			// }
-			// else if (SearchContext.PROPERTY_SELECTION_ONLY.equals(prop)) {
-			// boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
-			// ...
-			// }
-			else if (SearchContext.PROPERTY_USE_REGEX.equals(prop)) {
-				boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-				regexCheckBox.setSelected(newValue);
-				handleRegExCheckBoxClicked();
-			} else if (SearchContext.PROPERTY_MARK_ALL.equals(prop)) {
-				boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
-				markAllCheckBox.setSelected(newValue);
-				// firing event handled in ActionListener, to prevent "other"
-				// tool bar from firing a second event
-			} else if (SearchContext.PROPERTY_SEARCH_FOR.equals(prop)) {
-				String newValue = (String) e.getNewValue();
-				String oldValue = getFindText();
-				// Prevents IllegalStateExceptions
-				if (!newValue.equals(oldValue)) {
-					settingFindTextFromEvent = true;
-					setFindText(newValue);
-					settingFindTextFromEvent = false;
-				}
-			} else if (SearchContext.PROPERTY_REPLACE_WITH.equals(prop)) {
-				String newValue = (String) e.getNewValue();
-				String oldValue = getReplaceText();
-				// Prevents IllegalStateExceptions
-				if (!newValue.equals(oldValue)) {
-					settingFindTextFromEvent = true;
-					setReplaceText(newValue);
-					settingFindTextFromEvent = false;
-				}
-			}
-
-		}
-
-	}
-
-	/**
-	 * Listens for events in the Find (and Replace, in the subclass) search field.
-	 */
-	protected class FindFieldListener extends KeyAdapter implements DocumentListener, FocusListener {
-
-		protected boolean selectAll;
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-		}
-
-		@Override
-		public void focusGained(FocusEvent e) {
-			JTextField field = (JTextField) e.getComponent();
-			if (selectAll) {
-				field.selectAll();
-			}
-			selectAll = true;
-		}
-
-		@Override
-		public void focusLost(FocusEvent e) {
-		}
-
-		protected void handleDocumentEvent(DocumentEvent e) {
-			handleToggleButtons();
-			if (!settingFindTextFromEvent) {
-				JTextComponent findField = UIUtil.getTextComponent(findCombo);
-				if (e.getDocument() == findField.getDocument()) {
-					context.setSearchFor(findField.getText());
-					if (context.getMarkAll()) {
-						doMarkAll(true);
-					}
-				} else { // Replace field's document
-					JTextComponent replaceField = UIUtil.getTextComponent(replaceCombo);
-					context.setReplaceWith(replaceField.getText());
-					// Don't re-fire "mark all" events for "replace" text edits
-				}
-			}
-		}
-
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			handleDocumentEvent(e);
-		}
-
-		public void install(JTextComponent field) {
-			field.getDocument().addDocumentListener(this);
-			field.addKeyListener(this);
-			field.addFocusListener(this);
-		}
-
-		@Override
-		public void keyTyped(KeyEvent e) {
-			if (e.getKeyChar() == '\n') {
-				int mod = e.getModifiers();
-				int ctrlShift = InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK;
-				boolean forward = (mod & ctrlShift) == 0;
-				doSearch(forward);
-			}
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			handleDocumentEvent(e);
-		}
-
-	}
-
-	/**
-	 * Called when the user edits the "Find" field's contents, after a slight delay.
-	 * Fires a "mark all" search event for applications that want to display "mark
-	 * all" results on the fly.
-	 */
-	private class MarkAllEventNotifier implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			fireMarkAllEvent();
-		}
-
+		this.context.addPropertyChangeListener(this.listener);
+		this.initUIFromContext();
 	}
 
 }

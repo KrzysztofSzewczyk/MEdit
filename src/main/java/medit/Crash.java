@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -65,13 +67,23 @@ public class Crash extends JDialog {
 			this.getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				final JButton okButton = new JButton("Exit");
-				okButton.addActionListener(e -> System.exit(0));
+				okButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						System.exit(0);
+					}
+				});
 				buttonPane.add(okButton);
 				this.getRootPane().setDefaultButton(okButton);
 			}
 			{
 				final JButton cancelButton = new JButton("Continue");
-				cancelButton.addActionListener(e -> Crash.this.dispose());
+				cancelButton.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						Crash.this.dispose();
+					}
+				});
 				buttonPane.add(cancelButton);
 			}
 		}

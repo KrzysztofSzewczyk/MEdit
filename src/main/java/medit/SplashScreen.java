@@ -16,25 +16,22 @@ import javax.swing.border.EmptyBorder;
 public class SplashScreen extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	public SplashScreen instance;
-	public JLabel lblLogo = new JLabel("");
-	public JProgressBar progressBar = new JProgressBar();
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		EventQueue.invokeLater(new Runnable() {
+			@Override
 			public void run() {
 				try {
 					// System.setProperty("sun.java2d.ddscale", "true");
 					// UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-					SplashScreen frame = new SplashScreen();
+					final SplashScreen frame = new SplashScreen();
 					frame.setVisible(true);
 					frame.dispose();
-				} catch (Exception e) {
+				} catch (final Exception e) {
 					e.printStackTrace();
 					System.exit(0); // Fixing #4
 				}
@@ -42,35 +39,41 @@ public class SplashScreen extends JFrame {
 		});
 	}
 
+	private final JPanel contentPane;
+	public SplashScreen instance;
+	public JLabel lblLogo = new JLabel("");
+
+	public JProgressBar progressBar = new JProgressBar();
+
 	/**
 	 * Create the frame.
 	 */
 	public SplashScreen() {
-		instance = this;
-		addWindowListener(new WindowAdapter() {
+		this.instance = this;
+		this.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowOpened(WindowEvent arg0) {
-				new MainFrame(instance);
+			public void windowOpened(final WindowEvent arg0) {
+				new MainFrame(SplashScreen.this.instance);
 			}
 		});
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 612, 300);
-		setUndecorated(true);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
-		setContentPane(contentPane);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setBounds(100, 100, 612, 300);
+		this.setUndecorated(true);
+		this.contentPane = new JPanel();
+		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		this.contentPane.setLayout(new BorderLayout(0, 0));
+		this.setContentPane(this.contentPane);
 
-		lblLogo.setIcon(new ImageIcon(SplashScreen.class.getResource("/medit/assets/logo/MEdit.png")));
-		contentPane.add(lblLogo, BorderLayout.CENTER);
+		this.lblLogo.setIcon(new ImageIcon(SplashScreen.class.getResource("/medit/assets/logo/MEdit.png")));
+		this.contentPane.add(this.lblLogo, BorderLayout.CENTER);
 
-		JPanel panel = new JPanel();
-		contentPane.add(panel, BorderLayout.SOUTH);
+		final JPanel panel = new JPanel();
+		this.contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new BorderLayout(0, 0));
-		progressBar.setStringPainted(true);
+		this.progressBar.setStringPainted(true);
 
-		panel.add(progressBar);
-		progressBar.setMaximum(21);
+		panel.add(this.progressBar);
+		this.progressBar.setMaximum(21);
 	}
 
 }

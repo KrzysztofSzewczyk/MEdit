@@ -2,7 +2,7 @@
  * 09/20/2013
  *
  * SearchEvent - The event fired for find/replace/mark all operations.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * RSyntaxTextArea.License.txt file for details.
  */
@@ -21,37 +21,20 @@ import org.fife.ui.rtextarea.SearchContext;
  */
 public class SearchEvent extends EventObject {
 
-	private SearchContext context;
-	private Type type;
-
-	public SearchEvent(Object source, Type type, SearchContext context) {
-		super(source);
-		this.type = type;
-		this.context = context;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public SearchContext getSearchContext() {
-		return context;
-	}
-
 	/**
 	 * Types of search events.
 	 */
 	public static enum Type {
 
 		/**
-		 * The event fired when the text to "mark all" has changed.
-		 */
-		MARK_ALL,
-
-		/**
 		 * The event fired when the user wants to find text in the editor.
 		 */
 		FIND,
+
+		/**
+		 * The event fired when the text to "mark all" has changed.
+		 */
+		MARK_ALL,
 
 		/**
 		 * The event fired when the user wants to replace text in the editor.
@@ -64,6 +47,28 @@ public class SearchEvent extends EventObject {
 		 */
 		REPLACE_ALL;
 
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final SearchContext context;
+
+	private final Type type;
+
+	public SearchEvent(final Object source, final Type type, final SearchContext context) {
+		super(source);
+		this.type = type;
+		this.context = context;
+	}
+
+	public SearchContext getSearchContext() {
+		return this.context;
+	}
+
+	public Type getType() {
+		return this.type;
 	}
 
 }

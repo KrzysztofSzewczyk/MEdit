@@ -2,7 +2,7 @@
  * 09/20/2013
  *
  * SearchUtil - Utility methods for this package.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * RSyntaxTextArea.License.txt file for details.
  */
@@ -26,7 +26,7 @@ class SearchUtil {
 	 * @return The tool tip, or <code>null</code> if no error message was specified
 	 *         in <code>res</code>.
 	 */
-	public static final String getToolTip(FindReplaceButtonsEnableResult res) {
+	public static final String getToolTip(final FindReplaceButtonsEnableResult res) {
 		String tooltip = res.getError();
 		if (tooltip != null && tooltip.indexOf('\n') > -1) {
 			tooltip = tooltip.replaceFirst("\\\n", "</b><br><pre>");

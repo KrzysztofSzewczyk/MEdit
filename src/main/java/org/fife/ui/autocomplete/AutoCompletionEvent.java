@@ -19,9 +19,21 @@ import java.util.EventObject;
 public class AutoCompletionEvent extends EventObject {
 
 	/**
+	 * Enumeration of the various types of this event.
+	 */
+	public static enum Type {
+		POPUP_HIDDEN, POPUP_SHOWN
+	}
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The type of this event.
 	 */
-	private Type type;
+	private final Type type;
 
 	/**
 	 * Constructor.
@@ -31,7 +43,7 @@ public class AutoCompletionEvent extends EventObject {
 	 * @param type
 	 *            The event type.
 	 */
-	public AutoCompletionEvent(AutoCompletion source, Type type) {
+	public AutoCompletionEvent(final AutoCompletion source, final Type type) {
 		super(source);
 		this.type = type;
 	}
@@ -43,7 +55,7 @@ public class AutoCompletionEvent extends EventObject {
 	 * @return The source <code>AutoCompletion</code> instance.
 	 */
 	public AutoCompletion getAutoCompletion() {
-		return (AutoCompletion) getSource();
+		return (AutoCompletion) this.getSource();
 	}
 
 	/**
@@ -52,14 +64,7 @@ public class AutoCompletionEvent extends EventObject {
 	 * @return The type of this event.
 	 */
 	public Type getEventType() {
-		return type;
-	}
-
-	/**
-	 * Enumeration of the various types of this event.
-	 */
-	public static enum Type {
-		POPUP_SHOWN, POPUP_HIDDEN
+		return this.type;
 	}
 
 }

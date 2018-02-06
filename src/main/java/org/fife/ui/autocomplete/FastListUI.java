@@ -4,7 +4,7 @@
  * FastListUI.java - A JList UI implementation that computes the preferred size
  * of all cells really fast, to facilitate lists of possibly thousands of items
  * rendered with HTML, which is slow with BasicListUI extensions.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -13,6 +13,7 @@ package org.fife.ui.autocomplete;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.SystemColor;
+
 import javax.swing.JViewport;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
@@ -36,6 +37,13 @@ import javax.swing.plaf.basic.BasicListUI;
 class FastListUI extends BasicListUI {
 
 	/**
+	 * If there are more than this many completions in a single list, this UI will
+	 * estimate the cell width and height needed for each item instead of computing
+	 * it, for performance reasons.
+	 */
+	private static final int ESTIMATION_THRESHOLD = 200;
+
+	/**
 	 * Whether the selection background was overridden (usually because of Nimbus)
 	 * so we know to manually uninstall the color we installed.
 	 */
@@ -47,22 +55,14 @@ class FastListUI extends BasicListUI {
 	 */
 	private boolean overriddenForeground;
 
-	/**
-	 * If there are more than this many completions in a single list, this UI will
-	 * estimate the cell width and height needed for each item instead of computing
-	 * it, for performance reasons.
-	 */
-	private static final int ESTIMATION_THRESHOLD = 200;
-
 	private Color determineSelectionBackground() {
 		Color c = UIManager.getColor("List.selectionBackground");
 		if (c == null) {
 			c = UIManager.getColor("nimbusSelectionBackground");
 			if (c == null) { // Not Nimbus, but still need a value - fallback
 				c = UIManager.getColor("textHighlight");
-				if (c == null) {
+				if (c == null)
 					c = SystemColor.textHighlight;
-				}
 			}
 		}
 
@@ -80,9 +80,8 @@ class FastListUI extends BasicListUI {
 			c = UIManager.getColor("nimbusSelectedText");
 			if (c == null) { // Not Nimbus, but still need a value - fallback
 				c = UIManager.getColor("textHighlightText");
-				if (c == null) {
+				if (c == null)
 					c = SystemColor.textHighlightText;
-				}
 			}
 		}
 		// Nimbus unfortunately requires Color, not ColorUIResource, and "c"
@@ -100,14 +99,14 @@ class FastListUI extends BasicListUI {
 
 		super.installDefaults();
 
-		if (list.getSelectionBackground() == null) {
-			list.setSelectionBackground(determineSelectionBackground());
-			overriddenBackground = true;
+		if (this.list.getSelectionBackground() == null) {
+			this.list.setSelectionBackground(this.determineSelectionBackground());
+			this.overriddenBackground = true;
 		}
 
-		if (list.getSelectionForeground() == null) {
-			list.setSelectionForeground(determineSelectionForeground());
-			overriddenForeground = true;
+		if (this.list.getSelectionForeground() == null) {
+			this.list.setSelectionForeground(this.determineSelectionForeground());
+			this.overriddenForeground = true;
 		}
 	}
 
@@ -119,13 +118,11 @@ class FastListUI extends BasicListUI {
 
 		super.uninstallDefaults();
 
-		if (overriddenBackground) {
-			list.setSelectionBackground(null);
-		}
+		if (this.overriddenBackground)
+			this.list.setSelectionBackground(null);
 
-		if (overriddenForeground) {
-			list.setSelectionForeground(null);
-		}
+		if (this.overriddenForeground)
+			this.list.setSelectionForeground(null);
 
 	}
 
@@ -137,13 +134,13 @@ class FastListUI extends BasicListUI {
 	@Override
 	protected void updateLayoutState() {
 
-		ListModel model = list.getModel();
-		int itemCount = model.getSize();
+		final ListModel model = this.list.getModel();
+		final int itemCount = model.getSize();
 
 		// If the item count is small enough to run fast on practically all
 		// machines, go ahead and use the super implementation to determine
 		// the optimal cell sizes.
-		if (itemCount < ESTIMATION_THRESHOLD) {
+		if (itemCount < FastListUI.ESTIMATION_THRESHOLD) {
 			super.updateLayoutState();
 			return;
 		}
@@ -151,27 +148,24 @@ class FastListUI extends BasicListUI {
 		// Otherwise, assume all cells are the same height as the first cell,
 		// and estimate the necessary width.
 
-		ListCellRenderer renderer = list.getCellRenderer();
+		final ListCellRenderer renderer = this.list.getCellRenderer();
 
-		cellWidth = list.getWidth();
-		if (list.getParent() instanceof JViewport) { // Always true for us
-			cellWidth = list.getParent().getWidth();
-		}
-		// System.out.println(cellWidth);
+		this.cellWidth = this.list.getWidth();
+		if (this.list.getParent() instanceof JViewport)
+			this.cellWidth = this.list.getParent().getWidth();
 
 		// We're getting a fixed cell height for all cells
-		cellHeights = null;
+		this.cellHeights = null;
 
 		if (renderer != null && itemCount > 0) {
-			Object value = model.getElementAt(0);
-			java.awt.Component c = renderer.getListCellRendererComponent(list, value, 0, false, false);
-			rendererPane.add(c);
-			Dimension cellSize = c.getPreferredSize();
-			cellHeight = cellSize.height;
-			cellWidth = Math.max(cellWidth, cellSize.width);
-		} else {
-			cellHeight = 20;
-		}
+			final Object value = model.getElementAt(0);
+			final java.awt.Component c = renderer.getListCellRendererComponent(this.list, value, 0, false, false);
+			this.rendererPane.add(c);
+			final Dimension cellSize = c.getPreferredSize();
+			this.cellHeight = cellSize.height;
+			this.cellWidth = Math.max(this.cellWidth, cellSize.width);
+		} else
+			this.cellHeight = 20;
 
 	}
 

@@ -2,7 +2,7 @@
  * 04/29/2010
  *
  * EmptyIcon.java - The canonical icon that paints nothing.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -11,6 +11,7 @@ package org.fife.ui.autocomplete;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.io.Serializable;
+
 import javax.swing.Icon;
 
 /**
@@ -23,24 +24,28 @@ import javax.swing.Icon;
  */
 public class EmptyIcon implements Icon, Serializable {
 
-	private int size;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private final int size;
 
-	public EmptyIcon(int size) {
+	public EmptyIcon(final int size) {
 		this.size = size;
 	}
 
 	@Override
 	public int getIconHeight() {
-		return size;
+		return this.size;
 	}
 
 	@Override
 	public int getIconWidth() {
-		return size;
+		return this.size;
 	}
 
 	@Override
-	public void paintIcon(Component c, Graphics g, int x, int y) {
+	public void paintIcon(final Component c, final Graphics g, final int x, final int y) {
 	}
 
 }

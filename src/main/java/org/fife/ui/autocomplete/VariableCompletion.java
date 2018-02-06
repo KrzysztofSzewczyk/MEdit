@@ -2,7 +2,7 @@
  * 12/22/2008
  *
  * VariableCompletion.java - A completion for a variable.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -26,14 +26,14 @@ import javax.swing.text.JTextComponent;
 public class VariableCompletion extends BasicCompletion {
 
 	/**
-	 * The variable's type.
-	 */
-	private String type;
-
-	/**
 	 * What library (for example) this variable is defined in.
 	 */
 	private String definedIn;
+
+	/**
+	 * The variable's type.
+	 */
+	private final String type;
 
 	/**
 	 * Constructor.
@@ -46,29 +46,13 @@ public class VariableCompletion extends BasicCompletion {
 	 *            The type of this variable (e.g. "<code>int</code>",
 	 *            "<code>String</code>", etc.).
 	 */
-	public VariableCompletion(CompletionProvider provider, String name, String type) {
+	public VariableCompletion(final CompletionProvider provider, final String name, final String type) {
 		super(provider, name);
 		this.type = type;
 	}
 
-	protected void addDefinitionString(StringBuilder sb) {
-		sb.append("<html><b>").append(getDefinitionString()).append("</b>");
-	}
-
-	public String getDefinitionString() {
-
-		StringBuilder sb = new StringBuilder();
-
-		// Add the return type if applicable (C macros like NULL have no type).
-		if (type != null) {
-			sb.append(type).append(' ');
-		}
-
-		// Add the item being described's name.
-		sb.append(getName());
-
-		return sb.toString();
-
+	protected void addDefinitionString(final StringBuilder sb) {
+		sb.append("<html><b>").append(this.getDefinitionString()).append("</b>");
 	}
 
 	/**
@@ -78,7 +62,22 @@ public class VariableCompletion extends BasicCompletion {
 	 * @see #setDefinedIn(String)
 	 */
 	public String getDefinedIn() {
-		return definedIn;
+		return this.definedIn;
+	}
+
+	public String getDefinitionString() {
+
+		final StringBuilder sb = new StringBuilder();
+
+		// Add the return type if applicable (C macros like NULL have no type).
+		if (this.type != null)
+			sb.append(this.type).append(' ');
+
+		// Add the item being described's name.
+		sb.append(this.getName());
+
+		return sb.toString();
+
 	}
 
 	/**
@@ -87,7 +86,7 @@ public class VariableCompletion extends BasicCompletion {
 	 * @return The name.
 	 */
 	public String getName() {
-		return getReplacementText();
+		return this.getReplacementText();
 	}
 
 	/**
@@ -95,10 +94,10 @@ public class VariableCompletion extends BasicCompletion {
 	 */
 	@Override
 	public String getSummary() {
-		StringBuilder sb = new StringBuilder();
-		addDefinitionString(sb);
-		possiblyAddDescription(sb);
-		possiblyAddDefinedIn(sb);
+		final StringBuilder sb = new StringBuilder();
+		this.addDefinitionString(sb);
+		this.possiblyAddDescription(sb);
+		this.possiblyAddDefinedIn(sb);
 		return sb.toString();
 	}
 
@@ -117,7 +116,7 @@ public class VariableCompletion extends BasicCompletion {
 	 */
 	@Override
 	public String getToolTipText() {
-		return getDefinitionString();
+		return this.getDefinitionString();
 	}
 
 	/**
@@ -126,7 +125,7 @@ public class VariableCompletion extends BasicCompletion {
 	 * @return The type.
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	/**
@@ -136,10 +135,10 @@ public class VariableCompletion extends BasicCompletion {
 	 * @param sb
 	 *            The buffer to append to.
 	 */
-	protected void possiblyAddDefinedIn(StringBuilder sb) {
-		if (definedIn != null) {
+	protected void possiblyAddDefinedIn(final StringBuilder sb) {
+		if (this.definedIn != null) {
 			sb.append("<hr>Defined in:"); // TODO: Localize me
-			sb.append(" <em>").append(definedIn).append("</em>");
+			sb.append(" <em>").append(this.definedIn).append("</em>");
 		}
 	}
 
@@ -150,10 +149,10 @@ public class VariableCompletion extends BasicCompletion {
 	 *            The buffer to append to.
 	 * @return Whether there was a description to add.
 	 */
-	protected boolean possiblyAddDescription(StringBuilder sb) {
-		if (getShortDescription() != null) {
+	protected boolean possiblyAddDescription(final StringBuilder sb) {
+		if (this.getShortDescription() != null) {
 			sb.append("<hr><br>");
-			sb.append(getShortDescription());
+			sb.append(this.getShortDescription());
 			sb.append("<br><br><br>");
 			return true;
 		}
@@ -167,7 +166,7 @@ public class VariableCompletion extends BasicCompletion {
 	 *            Where this variable is defined.
 	 * @see #getDefinedIn()
 	 */
-	public void setDefinedIn(String definedIn) {
+	public void setDefinedIn(final String definedIn) {
 		this.definedIn = definedIn;
 	}
 
@@ -178,7 +177,7 @@ public class VariableCompletion extends BasicCompletion {
 	 */
 	@Override
 	public String toString() {
-		return getName();
+		return this.getName();
 	}
 
 }

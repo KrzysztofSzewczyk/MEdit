@@ -69,42 +69,42 @@ public class MainFrame extends JFrame implements SearchListener {
 	public static int instances = 1;
 	public static final long serialVersionUID = 1L;
 	public JPanel contentPane;
+	public CollapsibleSectionPanel csp;
 	public File currentFile = null;
+	public FindDialog findDialog;
+	public FindToolBar findToolBar;
+
 	public MainFrame instance;
 	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
-	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
-
-	public final JMenu mnFile = new JMenu("File");
+	private int LoadValue = 1;
+	public final JMenu mnAbout = new JMenu("About");
 	public final JMenu mnEdit = new JMenu("Edit");
+	public final JMenu mnFile = new JMenu("File");
 	public final JMenu mnLanguage = new JMenu("Language");
+	public final JMenu mnScripts = new JMenu("Scripts");
 	public final JMenu mnSyntaxHighlighting = new JMenu("Syntax Highlighting");
+
+	public final JMenu mnTextOperations = new JMenu("Text Operations");
 	public final JMenu mnThemes = new JMenu("Themes");
 	public final JMenu mnTools = new JMenu("Tools");
-	public final JMenu mnScripts = new JMenu("Scripts");
-	public final JMenu mnAbout = new JMenu("About");
-	public final JMenu mnTextOperations = new JMenu("Text Operations");
-
-	public CollapsibleSectionPanel csp;
-	public FindDialog findDialog;
+	private final JPanel panel = new JPanel();
 	public ReplaceDialog replaceDialog;
-	public FindToolBar findToolBar;
-	public ReplaceToolBar replaceToolBar;
 
-	private int LoadValue = 1;
-	private String[] sLoadValues = { "Loading classes", "Menubar setup", "Menu items setup", "Window AM setup",
+	public ReplaceToolBar replaceToolBar;
+	private final String[] sLoadValues = { "Loading classes", "Menubar setup", "Menu items setup", "Window AM setup",
 			"File AM setup", "Text OP AM setup", "About AM setup", "Code Completion AM setup", "Language AM setup",
 			"Themes AM setup", "Timer task AM setup", "Bottombar setup", "Tool AM setup", "Script AM setup",
 			"Language AM setup", "Toolbar setup", "Editor look setup", "Editor functionality setup", "Gutter setup",
 			"Default theme setup", "Starting editor", "Done loading." };
-	private final JPanel panel = new JPanel();
+	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
 
 	/**
 	 * Create the frame.
-	 * 
+	 *
 	 * @param instance2
 	 */
-	public MainFrame(SplashScreen splashScreen) {
+	public MainFrame(final SplashScreen splashScreen) {
 
 		/**
 		 * SplashScreen state updater.
@@ -116,9 +116,10 @@ public class MainFrame extends JFrame implements SearchListener {
 			public void run() {
 				if (splashScreen == null)
 					return;
-				splashScreen.progressBar.setValue(LoadValue);
-				splashScreen.progressBar.setString("Current Task (Done): " + sLoadValues[LoadValue] + " (" + LoadValue
-						+ "/" + sLoadValues.length + ")");
+				splashScreen.progressBar.setValue(MainFrame.this.LoadValue);
+				splashScreen.progressBar
+						.setString("Current Task (Done): " + MainFrame.this.sLoadValues[MainFrame.this.LoadValue] + " ("
+								+ MainFrame.this.LoadValue + "/" + MainFrame.this.sLoadValues.length + ")");
 			}
 		}, 0, 1);
 
@@ -136,87 +137,87 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.setContentPane(this.contentPane);
 		this.contentPane.setLayout(new BorderLayout(0, 0));
-		LoadValue++;
+		this.LoadValue++;
 		/**
 		 * Menu bar Setup
 		 */
 		final JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
-		LoadValue++;
+		this.LoadValue++;
 		/**
 		 * Menus setup
 		 */
-		menuBar.add(mnFile);
-		menuBar.add(mnEdit);
-		menuBar.add(mnLanguage);
-		menuBar.add(mnSyntaxHighlighting);
-		menuBar.add(mnThemes);
-		menuBar.add(mnTools);
-		menuBar.add(mnScripts);
-		menuBar.add(mnAbout);
-		menuBar.add(mnTextOperations);
-		LoadValue++;
+		menuBar.add(this.mnFile);
+		menuBar.add(this.mnEdit);
+		menuBar.add(this.mnLanguage);
+		menuBar.add(this.mnSyntaxHighlighting);
+		menuBar.add(this.mnThemes);
+		menuBar.add(this.mnTools);
+		menuBar.add(this.mnScripts);
+		menuBar.add(this.mnAbout);
+		menuBar.add(this.mnTextOperations);
+		this.LoadValue++;
 		/**
 		 * Menu action managers setup.
 		 */
 
 		final WindowActionManager wam = new WindowActionManager(this);
 		wam.Closing();
-		LoadValue++;
+		this.LoadValue++;
 		final FileActionManager fam = new FileActionManager(this);
-		fam.New(mnFile);
-		fam.Open(mnFile);
-		fam.Save(mnFile);
-		fam.SaveAs(mnFile);
-		fam.Print(mnFile);
-		fam.Separator(mnFile);
-		fam.ReloadFromDisk(mnFile);
-		fam.OpenDir(mnFile);
-		fam.RemoveFromDisk(mnFile);
-		fam.Separator(mnFile);
-		fam.Exit(mnFile);
-		LoadValue++;
+		fam.New(this.mnFile);
+		fam.Open(this.mnFile);
+		fam.Save(this.mnFile);
+		fam.SaveAs(this.mnFile);
+		fam.Print(this.mnFile);
+		fam.Separator(this.mnFile);
+		fam.ReloadFromDisk(this.mnFile);
+		fam.OpenDir(this.mnFile);
+		fam.RemoveFromDisk(this.mnFile);
+		fam.Separator(this.mnFile);
+		fam.Exit(this.mnFile);
+		this.LoadValue++;
 		final EditActionManager eam = new EditActionManager(this);
-		eam.Cut(mnEdit);
-		eam.Copy(mnEdit);
-		eam.Paste(mnEdit);
-		eam.Delete(mnEdit);
-		eam.Separator(mnEdit);
-		eam.Undo(mnEdit);
-		eam.Redo(mnEdit);
-		eam.Separator(mnEdit);
-		eam.Search(mnEdit);
-		LoadValue++;
+		eam.Cut(this.mnEdit);
+		eam.Copy(this.mnEdit);
+		eam.Paste(this.mnEdit);
+		eam.Delete(this.mnEdit);
+		eam.Separator(this.mnEdit);
+		eam.Undo(this.mnEdit);
+		eam.Redo(this.mnEdit);
+		eam.Separator(this.mnEdit);
+		eam.Search(this.mnEdit);
+		this.LoadValue++;
 		final TextOPActionManager topam = new TextOPActionManager(this);
-		topam.SetupTextOP(mnTextOperations);
-		LoadValue++;
+		topam.SetupTextOP(this.mnTextOperations);
+		this.LoadValue++;
 		final AboutActionManager aam = new AboutActionManager();
-		aam.About(mnAbout);
+		aam.About(this.mnAbout);
 		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
 		ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NONE);
-		LoadValue++;
+		this.LoadValue++;
 		final LanguageActionManager lam = new LanguageActionManager(this);
-		lam.SetUp(mnSyntaxHighlighting, ccam);
-		LoadValue++;
+		lam.SetUp(this.mnSyntaxHighlighting, ccam);
+		this.LoadValue++;
 		final ThemesActionManager tam = new ThemesActionManager(this);
-		tam.RegisterThemes(mnThemes);
-		LoadValue++;
+		tam.RegisterThemes(this.mnThemes);
+		this.LoadValue++;
 		final TimerTaskActionManager ttam = new TimerTaskActionManager(this);
 		ttam.SetUpTimers();
-		LoadValue++;
+		this.LoadValue++;
 		final BottombarActionManager bbam = new BottombarActionManager(this);
 		bbam.SetUpBottombar();
-		LoadValue++;
+		this.LoadValue++;
 		final ToolActionManager toolam = new ToolActionManager(this);
-		toolam.SetupTools(mnTools);
-		LoadValue++;
+		toolam.SetupTools(this.mnTools);
+		this.LoadValue++;
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
-		sam.SetupScripts(mnScripts);
-		LoadValue++;
+		sam.SetupScripts(this.mnScripts);
+		this.LoadValue++;
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
-		mnLanguage.add(rdbtnmntmEnglish);
-		LoadValue++;
+		this.mnLanguage.add(rdbtnmntmEnglish);
+		this.LoadValue++;
 
 		/**
 		 * Editor setup
@@ -226,7 +227,7 @@ public class MainFrame extends JFrame implements SearchListener {
 
 		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		scrollPane.setViewportView(this.textPane);
-		LoadValue++;
+		this.LoadValue++;
 
 		this.textPane.clearParsers();
 		this.textPane.setParserDelay(1);
@@ -241,38 +242,38 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.textPane.setHyperlinksEnabled(true);
 		this.textPane.setPaintMatchedBracketPair(true);
 		this.textPane.setPaintTabLines(true);
-		LoadValue++;
+		this.LoadValue++;
 
 		scrollPane.setIconRowHeaderEnabled(true);
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
-		LoadValue++;
+		this.LoadValue++;
 
-		ErrorStrip errorStrip = new ErrorStrip(textPane);
-		contentPane.add(errorStrip, BorderLayout.LINE_END);
+		final ErrorStrip errorStrip = new ErrorStrip(this.textPane);
+		this.contentPane.add(errorStrip, BorderLayout.LINE_END);
 
-		findDialog = new FindDialog(this, this);
-		replaceDialog = new ReplaceDialog(this, this);
+		this.findDialog = new FindDialog(this, this);
+		this.replaceDialog = new ReplaceDialog(this, this);
 
-		SearchContext context = findDialog.getSearchContext();
-		replaceDialog.setSearchContext(context);
-		findToolBar = new FindToolBar(this);
-		findToolBar.setSearchContext(context);
-		replaceToolBar = new ReplaceToolBar(this);
-		replaceToolBar.setSearchContext(context);
+		final SearchContext context = this.findDialog.getSearchContext();
+		this.replaceDialog.setSearchContext(context);
+		this.findToolBar = new FindToolBar(this);
+		this.findToolBar.setSearchContext(context);
+		this.replaceToolBar = new ReplaceToolBar(this);
+		this.replaceToolBar.setSearchContext(context);
 
 		try {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
 			theme.apply(this.textPane);
 
-			contentPane.add(panel, BorderLayout.NORTH);
-			panel.setLayout(new BorderLayout(0, 0));
+			this.contentPane.add(this.panel, BorderLayout.NORTH);
+			this.panel.setLayout(new BorderLayout(0, 0));
 			/**
 			 * Toolbar setup.
 			 */
 			final JToolBar toolBar = new JToolBar();
-			panel.add(toolBar, BorderLayout.WEST);
+			this.panel.add(toolBar, BorderLayout.WEST);
 			toolBar.setFloatable(false);
 
 			fam.New(toolBar);
@@ -291,59 +292,55 @@ public class MainFrame extends JFrame implements SearchListener {
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
-		LoadValue++;
+		this.LoadValue++;
 
-		setVisible(true);
+		this.setVisible(true);
 		gctimer.cancel();
-	}
-
-	@Override
-	public void searchEvent(SearchEvent e) {
-		SearchEvent.Type type = e.getType();
-		SearchContext context = e.getSearchContext();
-		SearchResult result = null;
-
-		switch (type) {
-		default:
-		case MARK_ALL:
-			result = SearchEngine.markAll(textPane, context);
-			break;
-		case FIND:
-			result = SearchEngine.find(textPane, context);
-			if (!result.wasFound()) {
-				UIManager.getLookAndFeel().provideErrorFeedback(textPane);
-			}
-			break;
-		case REPLACE:
-			result = SearchEngine.replace(textPane, context);
-			if (!result.wasFound()) {
-				UIManager.getLookAndFeel().provideErrorFeedback(textPane);
-			}
-			break;
-		case REPLACE_ALL:
-			result = SearchEngine.replaceAll(textPane, context);
-			JOptionPane.showMessageDialog(this, result.getCount() + " occurrences replaced.");
-			break;
-		}
-
-		String text = null;
-		if (result.wasFound()) {
-			text = "Text found; occurrences marked: " + result.getMarkedCount();
-		} else if (type == SearchEvent.Type.MARK_ALL) {
-			if (result.getMarkedCount() > 0) {
-				text = "Occurrences marked: " + result.getMarkedCount();
-			} else {
-				text = "";
-			}
-		} else {
-			text = "Text not found";
-		}
-		JOptionPane.showMessageDialog(this, text);
 	}
 
 	@Override
 	public String getSelectedText() {
 		return null;
+	}
+
+	@Override
+	public void searchEvent(final SearchEvent e) {
+		final SearchEvent.Type type = e.getType();
+		final SearchContext context = e.getSearchContext();
+		SearchResult result = null;
+
+		switch (type) {
+		default:
+		case MARK_ALL:
+			result = SearchEngine.markAll(this.textPane, context);
+			break;
+		case FIND:
+			result = SearchEngine.find(this.textPane, context);
+			if (!result.wasFound())
+				UIManager.getLookAndFeel().provideErrorFeedback(this.textPane);
+			break;
+		case REPLACE:
+			result = SearchEngine.replace(this.textPane, context);
+			if (!result.wasFound())
+				UIManager.getLookAndFeel().provideErrorFeedback(this.textPane);
+			break;
+		case REPLACE_ALL:
+			result = SearchEngine.replaceAll(this.textPane, context);
+			JOptionPane.showMessageDialog(this, result.getCount() + " occurrences replaced.");
+			break;
+		}
+
+		String text = null;
+		if (result.wasFound())
+			text = "Text found; occurrences marked: " + result.getMarkedCount();
+		else if (type == SearchEvent.Type.MARK_ALL) {
+			if (result.getMarkedCount() > 0)
+				text = "Occurrences marked: " + result.getMarkedCount();
+			else
+				text = "";
+		} else
+			text = "Text not found";
+		JOptionPane.showMessageDialog(this, text);
 	}
 
 }

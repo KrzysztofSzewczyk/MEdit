@@ -2,7 +2,7 @@
  * 01/03/2009
  *
  * BasicCompletion.java - A straightforward Completion implementation.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -23,7 +23,7 @@ package org.fife.ui.autocomplete;
  */
 public class BasicCompletion extends AbstractCompletion {
 
-	private String replacementText;
+	private final String replacementText;
 	private String shortDesc;
 	private String summary;
 
@@ -35,7 +35,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 * @param replacementText
 	 *            The text to replace.
 	 */
-	public BasicCompletion(CompletionProvider provider, String replacementText) {
+	public BasicCompletion(final CompletionProvider provider, final String replacementText) {
 		this(provider, replacementText, null);
 	}
 
@@ -50,7 +50,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 *            A short description of the completion. This will be displayed in
 	 *            the completion list. This may be <code>null</code>.
 	 */
-	public BasicCompletion(CompletionProvider provider, String replacementText, String shortDesc) {
+	public BasicCompletion(final CompletionProvider provider, final String replacementText, final String shortDesc) {
 		this(provider, replacementText, shortDesc, null);
 	}
 
@@ -68,7 +68,8 @@ public class BasicCompletion extends AbstractCompletion {
 	 *            The summary of this completion. This should be HTML. This may be
 	 *            <code>null</code>.
 	 */
-	public BasicCompletion(CompletionProvider provider, String replacementText, String shortDesc, String summary) {
+	public BasicCompletion(final CompletionProvider provider, final String replacementText, final String shortDesc,
+			final String summary) {
 		super(provider);
 		this.replacementText = replacementText;
 		this.shortDesc = shortDesc;
@@ -80,7 +81,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 */
 	@Override
 	public String getReplacementText() {
-		return replacementText;
+		return this.replacementText;
 	}
 
 	/**
@@ -91,7 +92,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 * @see #setShortDescription(String)
 	 */
 	public String getShortDescription() {
-		return shortDesc;
+		return this.shortDesc;
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 */
 	@Override
 	public String getSummary() {
-		return summary;
+		return this.summary;
 	}
 
 	/**
@@ -109,7 +110,7 @@ public class BasicCompletion extends AbstractCompletion {
 	 *            The short description of this completion.
 	 * @see #getShortDescription()
 	 */
-	public void setShortDescription(String shortDesc) {
+	public void setShortDescription(final String shortDesc) {
 		this.shortDesc = shortDesc;
 	}
 
@@ -120,26 +121,25 @@ public class BasicCompletion extends AbstractCompletion {
 	 *            The summary for this completion.
 	 * @see #getSummary()
 	 */
-	public void setSummary(String summary) {
+	public void setSummary(final String summary) {
 		this.summary = summary;
 	}
 
 	/**
 	 * Returns a string representation of this completion. If the short description
 	 * is not <code>null</code>, this method will return:
-	 * 
+	 *
 	 * <code>getInputText() + " - " + shortDesc</code>
-	 * 
+	 *
 	 * otherwise, it will return <tt>getInputText()</tt>.
 	 *
 	 * @return A string representation of this completion.
 	 */
 	@Override
 	public String toString() {
-		if (shortDesc == null) {
-			return getInputText();
-		}
-		return getInputText() + " - " + shortDesc;
+		if (this.shortDesc == null)
+			return this.getInputText();
+		return this.getInputText() + " - " + this.shortDesc;
 	}
 
 }

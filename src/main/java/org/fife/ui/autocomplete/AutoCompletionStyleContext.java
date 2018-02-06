@@ -2,7 +2,7 @@
  * 06/24/2012
  *
  * AutoCompletionStyleContext.java - Manages styles related to auto-completion.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -19,16 +19,16 @@ import java.awt.Color;
 public class AutoCompletionStyleContext {
 
 	/**
-	 * The color used to denote the ending caret position for parameterized
-	 * completions.
-	 */
-	private Color parameterizedCompletionCursorPositionColor;
-
-	/**
 	 * The color used to highlight copies of editable parameters in parameterized
 	 * completions.
 	 */
 	private Color parameterCopyColor;
+
+	/**
+	 * The color used to denote the ending caret position for parameterized
+	 * completions.
+	 */
+	private Color parameterizedCompletionCursorPositionColor;
 
 	/**
 	 * The color of the outline highlight used to denote editable parameters in
@@ -37,9 +37,9 @@ public class AutoCompletionStyleContext {
 	private Color parameterOutlineColor;
 
 	public AutoCompletionStyleContext() {
-		setParameterOutlineColor(Color.gray);
-		setParameterCopyColor(new Color(0xb4d7ff));
-		setParameterizedCompletionCursorPositionColor(new Color(0x00b400));
+		this.setParameterOutlineColor(Color.gray);
+		this.setParameterCopyColor(new Color(0xb4d7ff));
+		this.setParameterizedCompletionCursorPositionColor(new Color(0x00b400));
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class AutoCompletionStyleContext {
 	 * @see #setParameterCopyColor(Color)
 	 */
 	public Color getParameterCopyColor() {
-		return parameterCopyColor;
+		return this.parameterCopyColor;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class AutoCompletionStyleContext {
 	 * @see #setParameterizedCompletionCursorPositionColor(Color)
 	 */
 	public Color getParameterizedCompletionCursorPositionColor() {
-		return parameterizedCompletionCursorPositionColor;
+		return this.parameterizedCompletionCursorPositionColor;
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class AutoCompletionStyleContext {
 	 * @see #setParameterOutlineColor(Color)
 	 */
 	public Color getParameterOutlineColor() {
-		return parameterOutlineColor;
+		return this.parameterOutlineColor;
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class AutoCompletionStyleContext {
 	 *            The color to use.
 	 * @see #setParameterCopyColor(Color)
 	 */
-	public void setParameterCopyColor(Color color) {
+	public void setParameterCopyColor(final Color color) {
 		this.parameterCopyColor = color;
 	}
 
@@ -95,7 +95,7 @@ public class AutoCompletionStyleContext {
 	 *            The color to use.
 	 * @see #getParameterizedCompletionCursorPositionColor()
 	 */
-	public void setParameterizedCompletionCursorPositionColor(Color color) {
+	public void setParameterizedCompletionCursorPositionColor(final Color color) {
 		this.parameterizedCompletionCursorPositionColor = color;
 	}
 
@@ -107,7 +107,7 @@ public class AutoCompletionStyleContext {
 	 *            The color to use.
 	 * @see #getParameterOutlineColor()
 	 */
-	public void setParameterOutlineColor(Color color) {
+	public void setParameterOutlineColor(final Color color) {
 		this.parameterOutlineColor = color;
 	}
 

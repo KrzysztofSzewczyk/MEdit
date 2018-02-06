@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 /**
  * This is MenuActionListener class that is allowing NSS to use various
  * variables inside ActionListeners.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -17,7 +17,7 @@ public abstract class MenuActionListener implements ActionListener {
 
 	/**
 	 * This constructor is assigning data to this class' variables.
-	 * 
+	 *
 	 * @param nCodeFN
 	 * @param nName
 	 */

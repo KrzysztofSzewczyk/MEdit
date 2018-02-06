@@ -2,7 +2,7 @@
  * 12/11/2010
  *
  * ParameterizedCompletion.java - A completion option.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -19,51 +19,14 @@ import javax.swing.text.JTextComponent;
 public interface ParameterizedCompletion extends Completion {
 
 	/**
-	 * Returns the "definition string" for this completion. For example, for the C
-	 * "<code>printf</code>" function, this would return
-	 * "<code>int printf(const char *, ...)</code>".
-	 * 
-	 * @return The definition string.
-	 */
-	public String getDefinitionString();
-
-	/**
-	 * Returns the specified {@link Parameter}.
-	 *
-	 * @param index
-	 *            The index of the parameter to retrieve.
-	 * @return The parameter.
-	 * @see #getParamCount()
-	 */
-	public Parameter getParam(int index);
-
-	/**
-	 * Returns the number of parameters this completion takes.
-	 *
-	 * @return The number of parameters this completion takes.
-	 * @see #getParam(int)
-	 */
-	public int getParamCount();
-
-	public ParameterizedCompletionInsertionInfo getInsertionInfo(JTextComponent tc, boolean replaceTabsWithSpaces);
-
-	/**
-	 * Returns whether a tool tip displaying assistance for each parameter while it
-	 * is being edited is appropriate for this completion.
-	 *
-	 * @return Whether the tool tip is appropriate to display.
-	 */
-	public boolean getShowParameterToolTip();
-
-	/**
 	 * A parameter passed to a parameterized {@link Completion}.
 	 */
 	public static class Parameter {
 
-		private String name;
-		private Object type;
 		private String desc;
-		private boolean isEndParam;
+		private final boolean isEndParam;
+		private final String name;
+		private final Object type;
 
 		/**
 		 * Constructor.
@@ -78,7 +41,7 @@ public interface ParameterizedCompletion extends Completion {
 		 * @param name
 		 *            The name of the parameter.
 		 */
-		public Parameter(Object type, String name) {
+		public Parameter(final Object type, final String name) {
 			this(type, name, false);
 		}
 
@@ -102,18 +65,18 @@ public interface ParameterizedCompletion extends Completion {
 		 *            <code>true</code> for a trailing parameter after a function call's
 		 *            closing ')', for example.
 		 */
-		public Parameter(Object type, String name, boolean endParam) {
+		public Parameter(final Object type, final String name, final boolean endParam) {
 			this.name = name;
 			this.type = type;
 			this.isEndParam = endParam;
 		}
 
 		public String getDescription() {
-			return desc;
+			return this.desc;
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		/**
@@ -122,7 +85,7 @@ public interface ParameterizedCompletion extends Completion {
 		 * @return The type of the parameter, or <code>null</code> for none.
 		 */
 		public String getType() {
-			return type == null ? null : type.toString();
+			return this.type == null ? null : this.type.toString();
 		}
 
 		/**
@@ -131,7 +94,7 @@ public interface ParameterizedCompletion extends Completion {
 		 * @return The type object, or <code>null</code> for none.
 		 */
 		public Object getTypeObject() {
-			return type;
+			return this.type;
 		}
 
 		/**
@@ -141,28 +104,63 @@ public interface ParameterizedCompletion extends Completion {
 		 *         completion mode terminates.
 		 */
 		public boolean isEndParam() {
-			return isEndParam;
+			return this.isEndParam;
 		}
 
-		public void setDescription(String desc) {
+		public void setDescription(final String desc) {
 			this.desc = desc;
 		}
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			if (getType() != null) {
-				sb.append(getType());
-			}
-			if (getName() != null) {
-				if (getType() != null) {
+			final StringBuilder sb = new StringBuilder();
+			if (this.getType() != null)
+				sb.append(this.getType());
+			if (this.getName() != null) {
+				if (this.getType() != null)
 					sb.append(' ');
-				}
-				sb.append(getName());
+				sb.append(this.getName());
 			}
 			return sb.toString();
 		}
 
 	}
+
+	/**
+	 * Returns the "definition string" for this completion. For example, for the C
+	 * "<code>printf</code>" function, this would return
+	 * "<code>int printf(const char *, ...)</code>".
+	 *
+	 * @return The definition string.
+	 */
+	public String getDefinitionString();
+
+	public ParameterizedCompletionInsertionInfo getInsertionInfo(JTextComponent tc, boolean replaceTabsWithSpaces);
+
+	/**
+	 * Returns the specified {@link Parameter}.
+	 *
+	 * @param index
+	 *            The index of the parameter to retrieve.
+	 * @return The parameter.
+	 * @see #getParamCount()
+	 */
+	public Parameter getParam(int index);
+
+	/**
+	 * Returns the number of parameters this completion takes.
+	 *
+	 * @return The number of parameters this completion takes.
+	 * @see #getParam(int)
+	 */
+	public int getParamCount();
+
+	/**
+	 * Returns whether a tool tip displaying assistance for each parameter while it
+	 * is being edited is appropriate for this completion.
+	 *
+	 * @return Whether the tool tip is appropriate to display.
+	 */
+	public boolean getShowParameterToolTip();
 
 }

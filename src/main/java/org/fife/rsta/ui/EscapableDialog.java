@@ -31,6 +31,10 @@ import javax.swing.KeyStroke;
 public abstract class EscapableDialog extends JDialog {
 
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
 	 * The key in an <code>InputMap</code> for the Escape key action.
 	 */
 	private static final String ESCAPE_KEY = "OnEsc";
@@ -39,7 +43,7 @@ public abstract class EscapableDialog extends JDialog {
 	 * Constructor.
 	 */
 	public EscapableDialog() {
-		init();
+		this.init();
 	}
 
 	/**
@@ -48,9 +52,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param owner
 	 *            The parent dialog.
 	 */
-	public EscapableDialog(Dialog owner) {
+	public EscapableDialog(final Dialog owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
@@ -61,9 +65,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param modal
 	 *            Whether this dialog is modal.
 	 */
-	public EscapableDialog(Dialog owner, boolean modal) {
+	public EscapableDialog(final Dialog owner, final boolean modal) {
 		super(owner, modal);
-		init();
+		this.init();
 	}
 
 	/**
@@ -74,9 +78,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param title
 	 *            The title of this dialog.
 	 */
-	public EscapableDialog(Dialog owner, String title) {
+	public EscapableDialog(final Dialog owner, final String title) {
 		super(owner, title);
-		init();
+		this.init();
 	}
 
 	/**
@@ -89,9 +93,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param modal
 	 *            Whether this dialog is modal.
 	 */
-	public EscapableDialog(Dialog owner, String title, boolean modal) {
+	public EscapableDialog(final Dialog owner, final String title, final boolean modal) {
 		super(owner, title, modal);
-		init();
+		this.init();
 	}
 
 	/**
@@ -100,9 +104,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param owner
 	 *            The parent frame.
 	 */
-	public EscapableDialog(Frame owner) {
+	public EscapableDialog(final Frame owner) {
 		super(owner);
-		init();
+		this.init();
 	}
 
 	/**
@@ -113,9 +117,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param modal
 	 *            Whether this dialog is modal.
 	 */
-	public EscapableDialog(Frame owner, boolean modal) {
+	public EscapableDialog(final Frame owner, final boolean modal) {
 		super(owner, modal);
-		init();
+		this.init();
 	}
 
 	/**
@@ -126,9 +130,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param title
 	 *            The title of this dialog.
 	 */
-	public EscapableDialog(Frame owner, String title) {
+	public EscapableDialog(final Frame owner, final String title) {
 		super(owner, title);
-		init();
+		this.init();
 	}
 
 	/**
@@ -141,9 +145,9 @@ public abstract class EscapableDialog extends JDialog {
 	 * @param modal
 	 *            Whether this dialog is modal.
 	 */
-	public EscapableDialog(Frame owner, String title, boolean modal) {
+	public EscapableDialog(final Frame owner, final String title, final boolean modal) {
 		super(owner, title, modal);
-		init();
+		this.init();
 	}
 
 	/**
@@ -152,14 +156,14 @@ public abstract class EscapableDialog extends JDialog {
 	 * dialog (via <code>setVisible(false);</code>).
 	 */
 	protected void escapePressed() {
-		setVisible(false);
+		this.setVisible(false);
 	}
 
 	/**
 	 * Initializes this dialog.
 	 */
 	private void init() {
-		setEscapeClosesDialog(true);
+		this.setEscapeClosesDialog(true);
 	}
 
 	/**
@@ -169,24 +173,29 @@ public abstract class EscapableDialog extends JDialog {
 	 *            Whether Escape should close this dialog (actually, whether
 	 *            {@link #escapePressed()} should be called when Escape is pressed).
 	 */
-	public void setEscapeClosesDialog(boolean closes) {
+	public void setEscapeClosesDialog(final boolean closes) {
 
-		JRootPane rootPane = getRootPane();
-		InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-		ActionMap actionMap = rootPane.getActionMap();
-		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+		final JRootPane rootPane = this.getRootPane();
+		final InputMap im = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		final ActionMap actionMap = rootPane.getActionMap();
+		final KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
 
 		if (closes) {
-			im.put(ks, ESCAPE_KEY);
-			actionMap.put(ESCAPE_KEY, new AbstractAction() {
+			im.put(ks, EscapableDialog.ESCAPE_KEY);
+			actionMap.put(EscapableDialog.ESCAPE_KEY, new AbstractAction() {
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 1L;
+
 				@Override
-				public void actionPerformed(ActionEvent e) {
-					escapePressed();
+				public void actionPerformed(final ActionEvent e) {
+					EscapableDialog.this.escapePressed();
 				}
 			});
 		} else {
 			im.remove(ks);
-			actionMap.remove(ESCAPE_KEY);
+			actionMap.remove(EscapableDialog.ESCAPE_KEY);
 		}
 
 	}

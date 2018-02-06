@@ -3,13 +3,14 @@
  *
  * ParameterChoicesProvider.java - Provides completions for a
  * ParameterizedCompletion's parameters.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
 package org.fife.ui.autocomplete;
 
 import java.util.List;
+
 import javax.swing.text.JTextComponent;
 
 /**

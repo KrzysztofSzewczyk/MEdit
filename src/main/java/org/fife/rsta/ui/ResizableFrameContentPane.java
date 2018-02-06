@@ -8,8 +8,10 @@
  */
 package org.fife.rsta.ui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Graphics;
+import java.awt.LayoutManager;
+
+import javax.swing.JPanel;
 
 /**
  * A panel to be used as the content pane for <code>JDialog</code>s and
@@ -24,13 +26,13 @@ public class ResizableFrameContentPane extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private SizeGripIcon gripIcon;
+	private final SizeGripIcon gripIcon;
 
 	/**
 	 * Constructor.
 	 */
 	public ResizableFrameContentPane() {
-		gripIcon = new SizeGripIcon();
+		this.gripIcon = new SizeGripIcon();
 	}
 
 	/**
@@ -39,9 +41,9 @@ public class ResizableFrameContentPane extends JPanel {
 	 * @param layout
 	 *            The layout manager.
 	 */
-	public ResizableFrameContentPane(LayoutManager layout) {
+	public ResizableFrameContentPane(final LayoutManager layout) {
 		super(layout);
-		gripIcon = new SizeGripIcon();
+		this.gripIcon = new SizeGripIcon();
 	}
 
 	/**
@@ -56,9 +58,9 @@ public class ResizableFrameContentPane extends JPanel {
 	 * invisible.
 	 */
 	@Override
-	public void paint(Graphics g) {
+	public void paint(final Graphics g) {
 		super.paint(g);
-		gripIcon.paintIcon(this, g, this.getX(), this.getY());
+		this.gripIcon.paintIcon(this, g, this.getX(), this.getY());
 	}
 
 }

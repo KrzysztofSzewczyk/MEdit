@@ -3,7 +3,7 @@
  *
  * ShorhandCompletion.java - A completion that is shorthand for some other
  * text.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -23,7 +23,7 @@ public class ShorthandCompletion extends BasicCompletion {
 	/**
 	 * The text the user can start typing that will match this completion.
 	 */
-	private String inputText;
+	private final String inputText;
 
 	/**
 	 * Constructor.
@@ -35,7 +35,8 @@ public class ShorthandCompletion extends BasicCompletion {
 	 * @param replacementText
 	 *            The replacement text of the completion.
 	 */
-	public ShorthandCompletion(CompletionProvider provider, String inputText, String replacementText) {
+	public ShorthandCompletion(final CompletionProvider provider, final String inputText,
+			final String replacementText) {
 		super(provider, replacementText);
 		this.inputText = inputText;
 	}
@@ -53,8 +54,8 @@ public class ShorthandCompletion extends BasicCompletion {
 	 *            A short description of the completion. This will be displayed in
 	 *            the completion list. This may be <code>null</code>.
 	 */
-	public ShorthandCompletion(CompletionProvider provider, String inputText, String replacementText,
-			String shortDesc) {
+	public ShorthandCompletion(final CompletionProvider provider, final String inputText, final String replacementText,
+			final String shortDesc) {
 		super(provider, replacementText, shortDesc);
 		this.inputText = inputText;
 	}
@@ -75,8 +76,8 @@ public class ShorthandCompletion extends BasicCompletion {
 	 *            The summary of this completion. This should be HTML. This may be
 	 *            <code>null</code>.
 	 */
-	public ShorthandCompletion(CompletionProvider provider, String inputText, String replacementText, String shortDesc,
-			String summary) {
+	public ShorthandCompletion(final CompletionProvider provider, final String inputText, final String replacementText,
+			final String shortDesc, final String summary) {
 		super(provider, replacementText, shortDesc, summary);
 		this.inputText = inputText;
 	}
@@ -88,7 +89,7 @@ public class ShorthandCompletion extends BasicCompletion {
 	 */
 	@Override
 	public String getInputText() {
-		return inputText;
+		return this.inputText;
 	}
 
 	/**
@@ -100,8 +101,8 @@ public class ShorthandCompletion extends BasicCompletion {
 	 */
 	@Override
 	public String getSummary() {
-		String summary = super.getSummary();
-		return summary != null ? summary : ("<html><body>" + getSummaryBody());
+		final String summary = super.getSummary();
+		return summary != null ? summary : "<html><body>" + this.getSummaryBody();
 	}
 
 	/**
@@ -113,7 +114,7 @@ public class ShorthandCompletion extends BasicCompletion {
 	 * @see #getReplacementText()
 	 */
 	protected String getSummaryBody() {
-		return "<code>" + getReplacementText();
+		return "<code>" + this.getReplacementText();
 	}
 
 }

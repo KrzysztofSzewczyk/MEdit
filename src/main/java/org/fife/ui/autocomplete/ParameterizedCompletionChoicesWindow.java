@@ -3,7 +3,7 @@
  *
  * ParameterizedCompletionChoicesWindow.java - A list of likely choices for a
  * parameter.
- * 
+ *
  * This library is distributed under a modified BSD license.  See the included
  * AutoComplete.License.txt file for details.
  */
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
@@ -41,19 +42,20 @@ import org.fife.ui.rsyntaxtextarea.PopupWindowDecorator;
 public class ParameterizedCompletionChoicesWindow extends JWindow {
 
 	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Comparator used to sort completions by their relevance before sorting them
+	 * lexicographically.
+	 */
+	private static final Comparator<Completion> sortByRelevanceComparator = new SortByRelevanceComparator();
+
+	/**
 	 * The parent AutoCompletion instance.
 	 */
-	private AutoCompletion ac;
-
-	/**
-	 * The list of completion choices.
-	 */
-	private JList list;
-
-	/**
-	 * The currently displayed completion choices.
-	 */
-	private DefaultListModel model;
+	private final AutoCompletion ac;
 
 	/**
 	 * A list of lists of choices for each parameter.
@@ -61,15 +63,19 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	private List<List<Completion>> choicesListList;
 
 	/**
-	 * The scroll pane containing the list.
+	 * The list of completion choices.
 	 */
-	private JScrollPane sp;
+	private final JList list;
 
 	/**
-	 * Comparator used to sort completions by their relevance before sorting them
-	 * lexicographically.
+	 * The currently displayed completion choices.
 	 */
-	private static final Comparator<Completion> sortByRelevanceComparator = new SortByRelevanceComparator();
+	private final DefaultListModel model;
+
+	/**
+	 * The scroll pane containing the list.
+	 */
+	private final JScrollPane sp;
 
 	/**
 	 * Constructor.
@@ -81,37 +87,34 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param context
 	 *            The completion context.
 	 */
-	public ParameterizedCompletionChoicesWindow(Window parent, AutoCompletion ac,
+	public ParameterizedCompletionChoicesWindow(final Window parent, final AutoCompletion ac,
 			final ParameterizedCompletionContext context) {
 
 		super(parent);
 		this.ac = ac;
-		ComponentOrientation o = ac.getTextComponentOrientation();
+		final ComponentOrientation o = ac.getTextComponentOrientation();
 
-		model = new DefaultListModel();
-		list = new JList(model);
-		if (ac.getParamChoicesRenderer() != null) {
-			list.setCellRenderer(ac.getParamChoicesRenderer());
-		}
-		list.addMouseListener(new MouseAdapter() {
+		this.model = new DefaultListModel();
+		this.list = new JList(this.model);
+		if (ac.getParamChoicesRenderer() != null)
+			this.list.setCellRenderer(ac.getParamChoicesRenderer());
+		this.list.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+			public void mouseClicked(final MouseEvent e) {
+				if (e.getClickCount() == 2)
 					context.insertSelectedChoice();
-				}
 			}
 		});
-		sp = new JScrollPane(list);
+		this.sp = new JScrollPane(this.list);
 
-		setContentPane(sp);
-		applyComponentOrientation(o);
-		setFocusableWindowState(false);
+		this.setContentPane(this.sp);
+		this.applyComponentOrientation(o);
+		this.setFocusableWindowState(false);
 
 		// Give apps a chance to decorate us with drop shadows, etc.
-		PopupWindowDecorator decorator = PopupWindowDecorator.get();
-		if (decorator != null) {
+		final PopupWindowDecorator decorator = PopupWindowDecorator.get();
+		if (decorator != null)
 			decorator.decorate(this);
-		}
 
 	}
 
@@ -121,7 +124,7 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @return The selected value, or <code>null</code> if nothing is selected.
 	 */
 	public String getSelectedChoice() {
-		Completion c = (Completion) list.getSelectedValue();
+		final Completion c = (Completion) this.list.getSelectedValue();
 		return c == null ? null : c.toString();
 	}
 
@@ -131,17 +134,16 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param amount
 	 *            The amount by which to change the selected index.
 	 */
-	public void incSelection(int amount) {
-		int selection = list.getSelectedIndex();
+	public void incSelection(final int amount) {
+		int selection = this.list.getSelectedIndex();
 		selection += amount;
-		if (selection < 0) {
+		if (selection < 0)
 			// Account for nothing selected yet
-			selection = model.getSize() - 1;// += model.getSize();
-		} else {
-			selection %= model.getSize();
-		}
-		list.setSelectedIndex(selection);
-		list.ensureIndexIsVisible(selection);
+			selection = this.model.getSize() - 1;// += model.getSize();
+		else
+			selection %= this.model.getSize();
+		this.list.setSelectedIndex(selection);
+		this.list.ensureIndexIsVisible(selection);
 	}
 
 	/**
@@ -151,23 +153,23 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param pc
 	 *            The completion whose parameters we should offer suggestions for.
 	 */
-	public void initialize(ParameterizedCompletion pc) {
+	public void initialize(final ParameterizedCompletion pc) {
 
-		CompletionProvider provider = pc.getProvider();
-		ParameterChoicesProvider pcp = provider.getParameterChoicesProvider();
+		final CompletionProvider provider = pc.getProvider();
+		final ParameterChoicesProvider pcp = provider.getParameterChoicesProvider();
 		if (pcp == null) {
-			choicesListList = null;
+			this.choicesListList = null;
 			return;
 		}
 
-		int paramCount = pc.getParamCount();
-		choicesListList = new ArrayList<List<Completion>>(paramCount);
-		JTextComponent tc = ac.getTextComponent();
+		final int paramCount = pc.getParamCount();
+		this.choicesListList = new ArrayList<>(paramCount);
+		final JTextComponent tc = this.ac.getTextComponent();
 
 		for (int i = 0; i < paramCount; i++) {
-			ParameterizedCompletion.Parameter param = pc.getParam(i);
-			List<Completion> choices = pcp.getParameterChoices(tc, param);
-			choicesListList.add(choices);
+			final ParameterizedCompletion.Parameter param = pc.getParam(i);
+			final List<Completion> choices = pcp.getParameterChoices(tc, param);
+			this.choicesListList.add(choices);
 		}
 
 	}
@@ -178,29 +180,28 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 * @param r
 	 *            The visual position of the caret (in screen coordinates).
 	 */
-	public void setLocationRelativeTo(Rectangle r) {
+	public void setLocationRelativeTo(final Rectangle r) {
 
 		// Multi-monitor support - make sure the completion window (and
 		// description window, if applicable) both fit in the same window in
 		// a multi-monitor environment. To do this, we decide which monitor
 		// the rectangle "r" is in, and use that one (just pick top-left corner
 		// as the defining point).
-		Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
+		final Rectangle screenBounds = Util.getScreenBoundsForPoint(r.x, r.y);
 		// Dimension screenSize = tooltip.getToolkit().getScreenSize();
 
 		// Try putting our stuff "below" the caret first.
-		int y = r.y + r.height + 5;
+		final int y = r.y + r.height + 5;
 
 		// Get x-coordinate of completions. Try to align left edge with the
 		// caret first.
 		int x = r.x;
-		if (x < screenBounds.x) {
+		if (x < screenBounds.x)
 			x = screenBounds.x;
-		} else if (x + getWidth() > screenBounds.x + screenBounds.width) { // completions don't fit
-			x = screenBounds.x + screenBounds.width - getWidth();
-		}
+		else if (x + this.getWidth() > screenBounds.x + screenBounds.width)
+			x = screenBounds.x + screenBounds.width - this.getWidth();
 
-		setLocation(x, y);
+		this.setLocation(x, y);
 
 	}
 
@@ -216,64 +217,55 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *            Text in the parameter before the dot. This may be
 	 *            <code>null</code> to represent the empty string.
 	 */
-	public void setParameter(int param, String prefix) {
+	public void setParameter(final int param, final String prefix) {
 
-		model.clear();
-		List<Completion> temp = new ArrayList<Completion>();
+		this.model.clear();
+		final List<Completion> temp = new ArrayList<>();
 
-		if (choicesListList != null && param >= 0 && param < choicesListList.size()) {
+		if (this.choicesListList != null && param >= 0 && param < this.choicesListList.size()) {
 
-			List<Completion> choices = choicesListList.get(param);
-			if (choices != null) {
-				for (Completion c : choices) {
-					String choice = c.getReplacementText();
-					if (prefix == null || Util.startsWithIgnoreCase(choice, prefix)) {
+			final List<Completion> choices = this.choicesListList.get(param);
+			if (choices != null)
+				for (final Completion c : choices) {
+					final String choice = c.getReplacementText();
+					if (prefix == null || Util.startsWithIgnoreCase(choice, prefix))
 						temp.add(c);
-					}
 				}
-			}
 
 			// Sort completions appropriately.
 			Comparator<Completion> c = null;
-			if (/* sortByRelevance */true) {
-				c = sortByRelevanceComparator;
-			}
+			if (/* sortByRelevance */true)
+				c = ParameterizedCompletionChoicesWindow.sortByRelevanceComparator;
 			Collections.sort(temp, c);
-			for (int i = 0; i < temp.size(); i++) {
-				model.addElement(temp.get(i));
-			}
+			for (int i = 0; i < temp.size(); i++)
+				this.model.addElement(temp.get(i));
 
-			int visibleRowCount = Math.min(model.size(), 10);
-			list.setVisibleRowCount(visibleRowCount);
+			final int visibleRowCount = Math.min(this.model.size(), 10);
+			this.list.setVisibleRowCount(visibleRowCount);
 
 			// Toggle visibility, if necessary.
-			if (visibleRowCount == 0 && isVisible()) {
-				setVisible(false);
-			} else if (visibleRowCount > 0) {
-				Dimension size = getPreferredSize();
-				if (size.width < 150) {
-					setSize(150, size.height);
-				} else {
-					pack();
-				}
+			if (visibleRowCount == 0 && this.isVisible())
+				this.setVisible(false);
+			else if (visibleRowCount > 0) {
+				Dimension size = this.getPreferredSize();
+				if (size.width < 150)
+					this.setSize(150, size.height);
+				else
+					this.pack();
 				// Make sure nothing is ever obscured by vertical scroll bar.
-				if (sp.getVerticalScrollBar() != null && sp.getVerticalScrollBar().isVisible()) {
-					size = getSize();
-					int w = size.width + sp.getVerticalScrollBar().getWidth() + 5;
-					setSize(w, size.height);
+				if (this.sp.getVerticalScrollBar() != null && this.sp.getVerticalScrollBar().isVisible()) {
+					size = this.getSize();
+					final int w = size.width + this.sp.getVerticalScrollBar().getWidth() + 5;
+					this.setSize(w, size.height);
 				}
-				list.setSelectedIndex(0);
-				list.ensureIndexIsVisible(0);
-				if (!isVisible()) {
-					setVisible(true);
-				}
+				this.list.setSelectedIndex(0);
+				this.list.ensureIndexIsVisible(0);
+				if (!this.isVisible())
+					this.setVisible(true);
 			}
 
-		}
-
-		else {
-			setVisible(false);
-		}
+		} else
+			this.setVisible(false);
 
 	}
 
@@ -284,12 +276,11 @@ public class ParameterizedCompletionChoicesWindow extends JWindow {
 	 *            Whether this window should be visible.
 	 */
 	@Override
-	public void setVisible(boolean visible) {
-		if (visible != isVisible()) {
+	public void setVisible(final boolean visible) {
+		if (visible != this.isVisible()) {
 			// i.e. if no possibilities matched what's been typed
-			if (visible && model.size() == 0) {// list.getVisibleRowCount()==0) {
+			if (visible && this.model.size() == 0)
 				return;
-			}
 			super.setVisible(visible);
 		}
 	}

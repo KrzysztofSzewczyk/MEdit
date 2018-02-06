@@ -6,7 +6,7 @@ import java.awt.event.ActionListener;
 /**
  * This is MenuActionListener class that is allowing NTS to use various
  * variables inside ActionListeners.
- * 
+ *
  * @author Krzysztof Szewczyk
  *
  */
@@ -17,7 +17,7 @@ public abstract class MenuActionListener implements ActionListener {
 
 	/**
 	 * This function is assigning parameters to their internal copies.
-	 * 
+	 *
 	 * @param nCode
 	 * @param nName
 	 * @param nExename
