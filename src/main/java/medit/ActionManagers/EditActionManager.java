@@ -10,7 +10,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
 
 import medit.MainFrame;
 
