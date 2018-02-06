@@ -9,10 +9,27 @@
 
 [![wercker status](https://app.wercker.com/status/91d3762acc455ca396941f6a1ab63f5d/m/master "wercker status")](https://app.wercker.com/project/byKey/91d3762acc455ca396941f6a1ab63f5d)
 
-This project is my attempt to create useful and full-featured java editor.
-Im thinking about it as editor focused on programming, but I might add something
-like Eclipse workspaces. GUI library that will be used for development is Java
-Swing. 
+MEdit is propably the most advanced Java Swing code editor that is in existence and continous development.
+You can check out project javadoc [there](https://krzysztofszewczyk.github.io/MEdit/).
+Also, you can check out project wiki [there](https://github.com/KrzysztofSzewczyk/MEdit/wiki)
+To check out progress of creating new release, check [there](https://github.com/KrzysztofSzewczyk/MEdit/projects)
+To browse list of issues or submit your own, please check [this](https://github.com/KrzysztofSzewczyk/MEdit/issues) place.
+
+## Features
+
+One of the most important things in text editor are features.
+What does MEdit feature? Here's the list:
+
+* Scripting possibility using B++ (You can setup autobuild).
+* Own tools using NTS (You can use your favourite compiler with MEdit).
+* 100% Pure Java
+* Featuring 90 Programming Languages
+* Eight color themes
+* Unique syntax highlighing for every language.
+* One document per window, multiple windows avaliable to open
+* Code folding, bracket matching, animated editing, hyperlink colors, tab lines, matching tags
+* Code completion (You can set up code completion for any language).
+* And MANY MORE!
 
 ## Setup
 
@@ -31,10 +48,6 @@ There are no depedencies for actually building this project (JDK, Eclipse and JR
 should be installed, but it's rather obvious). To make changes to form, you are
 recommended to use Eclipse WindowBuilder. If you'd prefer to build it using ANT,
 you have to install JDK, JRE, and ANT only.
-
-## Documentation
-
-You can find documentation [here](https://krzysztofszewczyk.github.io/MEdit/). Be sure to check our wiki [there](https://github.com/KrzysztofSzewczyk/MEdit/wiki)!
 
 ## Why not GPL?
 
@@ -81,3 +94,17 @@ Internet: fight.subjugation@gmail.com
 
 Actually, in my opinion GPL can be used to non-reference code - that
 means, useless code that author meant to be not-free.
+
+## Misc
+
+This project is my attempt to create useful and full-featured java editor.
+Im thinking about it as editor focused on programming, but I might add something
+like Eclipse workspaces. GUI library that will be used for development is Java
+Swing. 
+
+## New features?
+
+If you would want to create your own feature in MEdit. Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information.
+If you'd want to add your language support, just follow instructions from the wiki. Be sure
+to create a pull request! Please remember, I'm not going to merge PR's that is adding support for language
+that has basically no users (is unpopular).
