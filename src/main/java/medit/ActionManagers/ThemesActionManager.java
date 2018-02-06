@@ -172,41 +172,6 @@ public class ThemesActionManager {
 		final JSeparator separator = new JSeparator();
 		parent.add(separator);
 		
-		final JMenuItem mntmDefLF = new JMenuItem("MEdit L&F");
-		mntmDefLF.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				System.setProperty("sun.java2d.ddscale", "true");
-				try {
-					UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-						| UnsupportedLookAndFeelException e1) {
-					final Crash dialog = new Crash(e1);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-				SwingUtilities.updateComponentTreeUI(instance);
-			}
-		});
-		parent.add(mntmDefLF);
-		
-		final JMenuItem mntmSysLF = new JMenuItem("Default L&F");
-		mntmSysLF.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				//System.setProperty("sun.java2d.ddscale", "false");
-				try {
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-						| UnsupportedLookAndFeelException e1) {
-					final Crash dialog = new Crash(e1);
-					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					dialog.setVisible(true);
-				}
-				SwingUtilities.updateComponentTreeUI(instance);
-			}
-		});
-		parent.add(mntmSysLF);
 	}
 
 }

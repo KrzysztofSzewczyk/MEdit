@@ -14,16 +14,29 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JToolBar;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EmptyBorder;
 
+import org.fife.rsta.ui.CollapsibleSectionPanel;
+import org.fife.rsta.ui.search.FindDialog;
+import org.fife.rsta.ui.search.FindToolBar;
+import org.fife.rsta.ui.search.ReplaceDialog;
+import org.fife.rsta.ui.search.ReplaceToolBar;
+import org.fife.rsta.ui.search.SearchEvent;
+import org.fife.rsta.ui.search.SearchListener;
+import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.fife.ui.rtextarea.SearchContext;
+import org.fife.ui.rtextarea.SearchEngine;
+import org.fife.ui.rtextarea.SearchResult;
 
 import medit.ActionManagers.AboutActionManager;
 import medit.ActionManagers.BottombarActionManager;
@@ -45,7 +58,7 @@ import medit.ActionManagers.WindowActionManager;
  * @author Krzysztof Szewczyk
  */
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements SearchListener {
 
 	/**
 	 * Many public variables, that were privatized before. They are public, because
@@ -71,6 +84,12 @@ public class MainFrame extends JFrame {
 	public final JMenu mnScripts = new JMenu("Scripts");
 	public final JMenu mnAbout = new JMenu("About");
 	public final JMenu mnTextOperations = new JMenu("Text Operations");
+	
+	public CollapsibleSectionPanel csp;
+	public FindDialog findDialog;
+	public ReplaceDialog replaceDialog;
+	public FindToolBar findToolBar;
+	public ReplaceToolBar replaceToolBar;
 	
 	private int LoadValue = 1;
 	private String[] sLoadValues = {
@@ -214,7 +233,6 @@ public class MainFrame extends JFrame {
 		rdbtnmntmEnglish.setSelected(true);
 		mnLanguage.add(rdbtnmntmEnglish);
 		LoadValue++;
-		LoadValue++;
 
 		/**
 		 * Editor setup
@@ -245,6 +263,23 @@ public class MainFrame extends JFrame {
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
 		LoadValue++;
+		
+		ErrorStrip errorStrip = new ErrorStrip(textPane);
+		contentPane.add(errorStrip, BorderLayout.LINE_END);
+		
+		findDialog = new FindDialog(this, this);
+		replaceDialog = new ReplaceDialog(this, this);
+
+		// This ties the properties of the two dialogs together (match case,
+		// regex, etc.).
+		SearchContext context = findDialog.getSearchContext();
+		replaceDialog.setSearchContext(context);
+
+		// Create tool bars and tie their search contexts together also.
+		findToolBar = new FindToolBar(this);
+		findToolBar.setSearchContext(context);
+		replaceToolBar = new ReplaceToolBar(this);
+		replaceToolBar.setSearchContext(context);
 		
 		try {
 			final Theme theme = Theme
@@ -280,6 +315,60 @@ public class MainFrame extends JFrame {
 		
 		setVisible(true);
 		gctimer.cancel();
+	}
+
+	@Override
+	public void searchEvent(SearchEvent e) {
+		SearchEvent.Type type = e.getType();
+		SearchContext context = e.getSearchContext();
+		SearchResult result = null;
+
+		switch (type) {
+			default: // Prevent FindBugs warning later
+			case MARK_ALL:
+				result = SearchEngine.markAll(textPane, context);
+				break;
+			case FIND:
+				result = SearchEngine.find(textPane, context);
+				if (!result.wasFound()) {
+					UIManager.getLookAndFeel().provideErrorFeedback(textPane);
+				}
+				break;
+			case REPLACE:
+				result = SearchEngine.replace(textPane, context);
+				if (!result.wasFound()) {
+					UIManager.getLookAndFeel().provideErrorFeedback(textPane);
+				}
+				break;
+			case REPLACE_ALL:
+				result = SearchEngine.replaceAll(textPane, context);
+				JOptionPane.showMessageDialog(this, result.getCount() +
+						" occurrences replaced.");
+				break;
+		}
+
+		String text = null;
+		if (result.wasFound()) {
+			text = "Text found; occurrences marked: " + result.getMarkedCount();
+		}
+		else if (type==SearchEvent.Type.MARK_ALL) {
+			if (result.getMarkedCount()>0) {
+				text = "Occurrences marked: " + result.getMarkedCount();
+			}
+			else {
+				text = "";
+			}
+		}
+		else {
+			text = "Text not found";
+		}
+		JOptionPane.showMessageDialog(this, text);
+	}
+
+	@Override
+	public String getSelectedText() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

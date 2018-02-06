@@ -13,7 +13,6 @@ import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import medit.MainFrame;
-import medit.SearchWindow;
 
 /**
  * This big class is a bit different from other ActionManagers, because it's
@@ -194,14 +193,19 @@ public class EditActionManager {
 	 */
 
 	public void Search(final JMenu parent) {
-		final JMenuItem mntmUndo = new JMenuItem("Find/Replace/Count Occurences");
+		final JMenuItem mntmUndo = new JMenuItem("Find");
 		mntmUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK));
 		mntmUndo.addActionListener(e -> new Thread(() -> {
-			final SearchWindow dialog = new SearchWindow(EditActionManager.this.instance);
-			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
+			instance.findDialog.setVisible(true);
 		}).start());
 		parent.add(mntmUndo);
+		
+		final JMenuItem mntmUndo2 = new JMenuItem("Replace");
+		mntmUndo2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
+		mntmUndo2.addActionListener(e -> new Thread(() -> {
+			instance.replaceDialog.setVisible(true);
+		}).start());
+		parent.add(mntmUndo2);
 	}
 
 	/**
