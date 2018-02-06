@@ -254,12 +254,8 @@ public class MainFrame extends JFrame implements SearchListener {
 		findDialog = new FindDialog(this, this);
 		replaceDialog = new ReplaceDialog(this, this);
 
-		// This ties the properties of the two dialogs together (match case,
-		// regex, etc.).
 		SearchContext context = findDialog.getSearchContext();
 		replaceDialog.setSearchContext(context);
-
-		// Create tool bars and tie their search contexts together also.
 		findToolBar = new FindToolBar(this);
 		findToolBar.setSearchContext(context);
 		replaceToolBar = new ReplaceToolBar(this);
@@ -308,7 +304,7 @@ public class MainFrame extends JFrame implements SearchListener {
 		SearchResult result = null;
 
 		switch (type) {
-		default: // Prevent FindBugs warning later
+		default:
 		case MARK_ALL:
 			result = SearchEngine.markAll(textPane, context);
 			break;
@@ -347,7 +343,6 @@ public class MainFrame extends JFrame implements SearchListener {
 
 	@Override
 	public String getSelectedText() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -1,10 +1,15 @@
 medit
+medit.API
 medit.ActionManagers
 medit.NSS
 medit.NTS
 org.fife
 org.fife.io
 org.fife.print
+org.fife.rsta.ui
+org.fife.rsta.ui.demo
+org.fife.rsta.ui.search
+org.fife.ui.autocomplete
 org.fife.ui.rsyntaxtextarea
 org.fife.ui.rsyntaxtextarea.focusabletip
 org.fife.ui.rsyntaxtextarea.folding
