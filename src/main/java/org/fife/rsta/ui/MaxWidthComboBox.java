@@ -12,14 +12,13 @@ import java.awt.Dimension;
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
-
 /**
- * A combo box whose width cannot go over a specified value.  This class is
+ * A combo box whose width cannot go over a specified value. This class is
  * useful when you have a layout manager that adheres to the combo box's
- * preferred/maximum sizes (such as <code>SpringLayout</code>), and your
- * combo box contains a value longer than you'd like - the combo box is drawn
- * too large and the GUI looks ugly.  With this class you can set a maximum
- * width for the combo box, and its height will never be affected.
+ * preferred/maximum sizes (such as <code>SpringLayout</code>), and your combo
+ * box contains a value longer than you'd like - the combo box is drawn too
+ * large and the GUI looks ugly. With this class you can set a maximum width for
+ * the combo box, and its height will never be affected.
  *
  * @author Robert Futrell
  * @version 0.5
@@ -33,32 +32,32 @@ public class MaxWidthComboBox extends JComboBox {
 	 */
 	private int maxWidth;
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param maxWidth The maximum width for this combo box.
+	 * @param maxWidth
+	 *            The maximum width for this combo box.
 	 */
 	public MaxWidthComboBox(int maxWidth) {
 		this.maxWidth = maxWidth;
 	}
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param model The model for this combo box.
-	 * @param maxWidth The maximum width for this combo box.
+	 * @param model
+	 *            The model for this combo box.
+	 * @param maxWidth
+	 *            The maximum width for this combo box.
 	 */
 	public MaxWidthComboBox(ComboBoxModel model, int maxWidth) {
 		super(model);
 		this.maxWidth = maxWidth;
 	}
 
-
 	/**
-	 * Overridden to ensure that the returned size has width no greater than
-	 * the specified maximum.
+	 * Overridden to ensure that the returned size has width no greater than the
+	 * specified maximum.
 	 *
 	 * @return The maximum size of this combo box.
 	 */
@@ -69,10 +68,9 @@ public class MaxWidthComboBox extends JComboBox {
 		return size;
 	}
 
-
 	/**
-	 * Overridden to ensure that the returned size has width no greater than
-	 * the specified maximum.
+	 * Overridden to ensure that the returned size has width no greater than the
+	 * specified maximum.
 	 *
 	 * @return The minimum size of this combo box.
 	 */
@@ -83,10 +81,9 @@ public class MaxWidthComboBox extends JComboBox {
 		return size;
 	}
 
-
 	/**
-	 * Overridden to ensure that the returned size has width no greater than
-	 * the specified maximum.
+	 * Overridden to ensure that the returned size has width no greater than the
+	 * specified maximum.
 	 *
 	 * @return The preferred size of this combo box.
 	 */
@@ -96,6 +93,5 @@ public class MaxWidthComboBox extends JComboBox {
 		size.width = Math.min(size.width, maxWidth);
 		return size;
 	}
-
 
 }

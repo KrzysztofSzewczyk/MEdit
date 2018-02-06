@@ -8,7 +8,6 @@ package org.fife.ui.autocomplete;
 
 import java.util.EventListener;
 
-
 /**
  * An interface that allows listening for interesting events from an
  * {@link AutoCompletion}.
@@ -18,14 +17,13 @@ import java.util.EventListener;
  */
 public interface AutoCompletionListener extends EventListener {
 
-
 	/**
-	 * Callback notified when a change to the <code>AutoCompletion</code>'s
-	 * status occurs.
+	 * Callback notified when a change to the <code>AutoCompletion</code>'s status
+	 * occurs.
 	 *
-	 * @param e The event.
+	 * @param e
+	 *            The event.
 	 */
 	void autoCompleteUpdate(AutoCompletionEvent e);
-
 
 }

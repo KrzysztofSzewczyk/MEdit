@@ -198,7 +198,7 @@ public class EditActionManager {
 			instance.findDialog.setVisible(true);
 		}).start());
 		parent.add(mntmUndo);
-		
+
 		final JMenuItem mntmUndo2 = new JMenuItem("Replace");
 		mntmUndo2.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK));
 		mntmUndo2.addActionListener(e -> new Thread(() -> {

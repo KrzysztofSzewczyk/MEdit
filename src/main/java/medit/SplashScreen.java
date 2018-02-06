@@ -20,7 +20,7 @@ public class SplashScreen extends JFrame {
 	public SplashScreen instance;
 	public JLabel lblLogo = new JLabel("");
 	public JProgressBar progressBar = new JProgressBar();
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -28,8 +28,8 @@ public class SplashScreen extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//System.setProperty("sun.java2d.ddscale", "true");
-			        //UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
+					// System.setProperty("sun.java2d.ddscale", "true");
+					// UIManager.setLookAndFeel("com.birosoft.liquid.LiquidLookAndFeel");
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					SplashScreen frame = new SplashScreen();
 					frame.setVisible(true);
@@ -60,15 +60,15 @@ public class SplashScreen extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
-		
+
 		lblLogo.setIcon(new ImageIcon(SplashScreen.class.getResource("/medit/assets/logo/MEdit.png")));
 		contentPane.add(lblLogo, BorderLayout.CENTER);
-		
+
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.SOUTH);
 		panel.setLayout(new BorderLayout(0, 0));
 		progressBar.setStringPainted(true);
-		
+
 		panel.add(progressBar);
 		progressBar.setMaximum(21);
 	}

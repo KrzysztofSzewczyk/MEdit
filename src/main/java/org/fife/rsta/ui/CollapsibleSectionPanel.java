@@ -28,11 +28,10 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-
 /**
- * A panel that can show or hide contents anchored to its bottom via a
- * shortcut.  Those contents "slide" in, since today's applications are
- * all about fancy smancy animations.
+ * A panel that can show or hide contents anchored to its bottom via a shortcut.
+ * Those contents "slide" in, since today's applications are all about fancy
+ * smancy animations.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -51,7 +50,6 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	private static final int FRAME_MILLIS = 10;
 
-
 	/**
 	 * Constructor.
 	 */
@@ -59,11 +57,11 @@ public class CollapsibleSectionPanel extends JPanel {
 		this(true);
 	}
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param animate Whether the collapsible sections should animate in.
+	 * @param animate
+	 *            Whether the collapsible sections should animate in.
 	 */
 	public CollapsibleSectionPanel(boolean animate) {
 		super(new BorderLayout());
@@ -72,34 +70,34 @@ public class CollapsibleSectionPanel extends JPanel {
 		this.animate = animate;
 	}
 
-
 	/**
-	 * Adds a "bottom component."  To show this component, you must call
-	 * {@link #showBottomComponent(JComponent)} directly.  Any previously
-	 * displayed bottom component will be hidden.
+	 * Adds a "bottom component." To show this component, you must call
+	 * {@link #showBottomComponent(JComponent)} directly. Any previously displayed
+	 * bottom component will be hidden.
 	 *
-	 * @param comp The component to add.
+	 * @param comp
+	 *            The component to add.
 	 * @see #addBottomComponent(KeyStroke, JComponent)
 	 */
 	public void addBottomComponent(JComponent comp) {
 		addBottomComponent(null, comp);
 	}
 
-
 	/**
-	 * Adds a "bottom component" and binds its display to a key stroke.
-	 * Whenever that key stroke is typed in a descendant of this panel, this
-	 * component will be displayed.  You can also display it programmatically
-	 * by calling {@link #showBottomComponent(JComponent)}.
+	 * Adds a "bottom component" and binds its display to a key stroke. Whenever
+	 * that key stroke is typed in a descendant of this panel, this component will
+	 * be displayed. You can also display it programmatically by calling
+	 * {@link #showBottomComponent(JComponent)}.
 	 *
-	 * @param ks The key stroke to bind to the display of the component.
-	 *        If this parameter is <code>null</code>, this method behaves
-	 *        exactly like the {@link #addBottomComponent(JComponent)}
-	 *        overload.
-	 * @param comp The component to add.
-	 * @return An action that displays this component.  You can add this
-	 *         action to a <code>JMenu</code>, for example, to alert the user
-	 *         of a way to display the component.
+	 * @param ks
+	 *            The key stroke to bind to the display of the component. If this
+	 *            parameter is <code>null</code>, this method behaves exactly like
+	 *            the {@link #addBottomComponent(JComponent)} overload.
+	 * @param comp
+	 *            The component to add.
+	 * @return An action that displays this component. You can add this action to a
+	 *         <code>JMenu</code>, for example, to alert the user of a way to
+	 *         display the component.
 	 * @see #addBottomComponent(JComponent)
 	 */
 	public Action addBottomComponent(KeyStroke ks, JComponent comp) {
@@ -108,9 +106,8 @@ public class CollapsibleSectionPanel extends JPanel {
 		bottomComponentInfos.add(bci);
 
 		Action action = null;
-		if (ks!=null) {
-			InputMap im = getInputMap(
-					JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		if (ks != null) {
+			InputMap im = getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 			im.put(ks, ks);
 			action = new ShowBottomComponentAction(ks, bci);
 			getActionMap().put(ks, action);
@@ -119,40 +116,35 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	private void createTimer() {
 		timer = new Timer(FRAME_MILLIS, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				tick++;
-				if (tick==totalTicks) {
+				if (tick == totalTicks) {
 					timer.stop();
 					timer = null;
 					tick = 0;
-					Dimension finalSize = down ?
-							new Dimension(0, 0) : currentBci.getRealPreferredSize();
+					Dimension finalSize = down ? new Dimension(0, 0) : currentBci.getRealPreferredSize();
 					currentBci.component.setPreferredSize(finalSize);
 					if (down) {
 						remove(currentBci.component);
 						currentBci = null;
 					}
-				}
-				else {
+				} else {
 					if (firstTick) {
 						if (down) {
 							focusMainComponent();
-						}
-						else {
+						} else {
 							// We assume here that the component has some
 							// focusable child we want to play with
 							currentBci.component.requestFocusInWindow();
 						}
 						firstTick = false;
 					}
-					float proportion = !down ? (((float)tick)/totalTicks) :
-						(1f- (((float)tick)/totalTicks));
+					float proportion = !down ? (((float) tick) / totalTicks) : (1f - (((float) tick) / totalTicks));
 					Dimension size = new Dimension(currentBci.getRealPreferredSize());
-					size.height = (int)(size.height*proportion);
+					size.height = (int) (size.height * proportion);
 					currentBci.component.setPreferredSize(size);
 				}
 				revalidate();
@@ -162,45 +154,40 @@ public class CollapsibleSectionPanel extends JPanel {
 		timer.setRepeats(true);
 	}
 
-
 	/**
 	 * Attempt to focus the "center" component of this panel.
 	 */
 	private void focusMainComponent() {
-		Component center = ((BorderLayout)getLayout()).
-				getLayoutComponent(BorderLayout.CENTER);
+		Component center = ((BorderLayout) getLayout()).getLayoutComponent(BorderLayout.CENTER);
 		if (center instanceof JScrollPane) {
-			center = ((JScrollPane)center).getViewport().getView();
+			center = ((JScrollPane) center).getViewport().getView();
 		}
 		center.requestFocusInWindow();
 	}
 
-
 	/**
 	 * Returns the currently displayed bottom component.
 	 *
-	 * @return The currently displayed bottom component.  This will be
+	 * @return The currently displayed bottom component. This will be
 	 *         <code>null</code> if no bottom component is displayed.
 	 */
 	public JComponent getDisplayedBottomComponent() {
 		// If a component is animating in or out, we consider it to be "not
 		// displayed."
-		if (currentBci!=null && (timer==null || !timer.isRunning())) {
+		if (currentBci != null && (timer == null || !timer.isRunning())) {
 			return currentBci.component;
 		}
 		return null;
 	}
 
-
 	/**
-	 * Hides the currently displayed "bottom" component with a slide-out
-	 * animation.
+	 * Hides the currently displayed "bottom" component with a slide-out animation.
 	 *
 	 * @see #showBottomComponent(JComponent)
 	 */
 	public void hideBottomComponent() {
 
-		if (currentBci==null) {
+		if (currentBci == null) {
 			return;
 		}
 		if (!animate) {
@@ -212,7 +199,7 @@ public class CollapsibleSectionPanel extends JPanel {
 			return;
 		}
 
-		if (timer!=null) {
+		if (timer != null) {
 			if (down) {
 				return; // Already animating away
 			}
@@ -227,7 +214,6 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	/**
 	 * Installs standard keystrokes for this component.
 	 */
@@ -241,26 +227,26 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	/**
-	 * Sets the amount of time, in milliseconds, it should take for a
-	 * "collapsible panel" to show or hide.  The default is <code>120</code>.
+	 * Sets the amount of time, in milliseconds, it should take for a "collapsible
+	 * panel" to show or hide. The default is <code>120</code>.
 	 *
-	 * @param millis The amount of time, in milliseconds.
+	 * @param millis
+	 *            The amount of time, in milliseconds.
 	 */
 	public void setAnimationTime(int millis) {
-		if (millis<0) {
+		if (millis < 0) {
 			throw new IllegalArgumentException("millis must be >= 0");
 		}
 		totalTicks = Math.max(millis / FRAME_MILLIS, 1);
 	}
 
-
 	/**
-	 * Displays a new "bottom" component.  If a component is currently
-	 * displayed at the "bottom," it is hidden.
+	 * Displays a new "bottom" component. If a component is currently displayed at
+	 * the "bottom," it is hidden.
 	 *
-	 * @param bci The new bottom component.
+	 * @param bci
+	 *            The new bottom component.
 	 * @see #hideBottomComponent()
 	 */
 	private void showBottomComponent(BottomComponentInfo bci) {
@@ -271,7 +257,7 @@ public class CollapsibleSectionPanel extends JPanel {
 		}
 
 		// Remove currently displayed bottom component
-		if (currentBci!=null) {
+		if (currentBci != null) {
 			remove(currentBci.component);
 		}
 		currentBci = bci;
@@ -283,7 +269,7 @@ public class CollapsibleSectionPanel extends JPanel {
 			return;
 		}
 
-		if (timer!=null) {
+		if (timer != null) {
 			timer.stop();
 		}
 		tick = 0;
@@ -296,11 +282,11 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	/**
 	 * Displays a previously-registered "bottom component."
 	 *
-	 * @param comp A previously registered component.
+	 * @param comp
+	 *            A previously registered component.
 	 * @see #addBottomComponent(JComponent)
 	 * @see #addBottomComponent(KeyStroke, JComponent)
 	 * @see #hideBottomComponent()
@@ -309,23 +295,22 @@ public class CollapsibleSectionPanel extends JPanel {
 
 		BottomComponentInfo info = null;
 		for (BottomComponentInfo bci : bottomComponentInfos) {
-			if (bci.component==comp) {
+			if (bci.component == comp) {
 				info = bci;
 				break;
 			}
 		}
 
-		if (info!=null) {
+		if (info != null) {
 			showBottomComponent(info);
 		}
 
 	}
 
-
 	@Override
 	public void updateUI() {
 		super.updateUI();
-		if (bottomComponentInfos!=null) { // First time through
+		if (bottomComponentInfos != null) { // First time through
 			for (BottomComponentInfo info : bottomComponentInfos) {
 				if (!info.component.isDisplayable()) {
 					SwingUtilities.updateComponentTreeUI(info.component);
@@ -334,7 +319,6 @@ public class CollapsibleSectionPanel extends JPanel {
 			}
 		}
 	}
-
 
 	/**
 	 * Information about a "bottom component."
@@ -349,7 +333,7 @@ public class CollapsibleSectionPanel extends JPanel {
 		}
 
 		public Dimension getRealPreferredSize() {
-			if (_preferredSize==null) {
+			if (_preferredSize == null) {
 				_preferredSize = component.getPreferredSize();
 			}
 			return _preferredSize;
@@ -362,7 +346,6 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	private class HideBottomComponentAction extends AbstractAction {
 
 		@Override
@@ -372,12 +355,11 @@ public class CollapsibleSectionPanel extends JPanel {
 
 	}
 
-
 	private class ShowBottomComponentAction extends AbstractAction {
 
 		private BottomComponentInfo bci;
 
-		public ShowBottomComponentAction(KeyStroke ks, BottomComponentInfo bci){
+		public ShowBottomComponentAction(KeyStroke ks, BottomComponentInfo bci) {
 			putValue(ACCELERATOR_KEY, ks);
 			this.bci = bci;
 		}
@@ -388,6 +370,5 @@ public class CollapsibleSectionPanel extends JPanel {
 		}
 
 	}
-
 
 }

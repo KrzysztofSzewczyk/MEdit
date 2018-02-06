@@ -31,12 +31,11 @@ import medit.MainFrame;
 public class CodeCompletionActionManager {
 
 	/**
-	 * This field is storing old autocompletion
-	 * to get it removed later.
+	 * This field is storing old autocompletion to get it removed later.
 	 */
-	
+
 	private AutoCompletion oldAC;
-	
+
 	/**
 	 * MainFrame instance used by this class to reference bottombar.
 	 */
@@ -59,7 +58,8 @@ public class CodeCompletionActionManager {
 
 	public void SetUpCodeCompletion(String language) {
 		language = language.substring(5);
-		if(oldAC!=null) oldAC.uninstall();
+		if (oldAC != null)
+			oldAC.uninstall();
 		CompletionProvider provider = createCompletionProvider(language);
 		AutoCompletion ac = new AutoCompletion(provider);
 		ac.setAutoActivationDelay(100);
@@ -72,7 +72,7 @@ public class CodeCompletionActionManager {
 	 */
 	private CompletionProvider createCompletionProvider(String language) {
 		DefaultCompletionProvider provider = new DefaultCompletionProvider();
-		if(new File("completion.xml").exists()) {
+		if (new File("completion.xml").exists()) {
 			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = null;
 			try {
@@ -101,7 +101,8 @@ public class CodeCompletionActionManager {
 			for (int temp = 0; temp < nList.getLength(); temp++) {
 				final Node nNode = nList.item(temp);
 				if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-					final String completion = ((Element) nNode).getElementsByTagName("completion").item(0).getTextContent();
+					final String completion = ((Element) nNode).getElementsByTagName("completion").item(0)
+							.getTextContent();
 					provider.addCompletion(new BasicCompletion(provider, completion));
 				}
 			}

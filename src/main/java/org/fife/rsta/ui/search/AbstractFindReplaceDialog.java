@@ -34,11 +34,10 @@ import javax.swing.text.JTextComponent;
 import org.fife.rsta.ui.UIUtil;
 import org.fife.ui.rtextarea.SearchContext;
 
-
 /**
  * This is the base class for {@link FindDialog} and {@link ReplaceDialog}. It
- * is basically all of the features common to the two dialogs that weren't
- * taken care of in {@link AbstractSearchDialog}.
+ * is basically all of the features common to the two dialogs that weren't taken
+ * care of in {@link AbstractSearchDialog}.
  *
  * @author Robert Futrell
  * @version 0.1
@@ -48,7 +47,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	/**
 	 * Property fired when the user toggles the search direction radio buttons.
 	 */
-	public static final String SEARCH_DOWNWARD_PROPERTY	= "SearchDialog.SearchDownward";
+	public static final String SEARCH_DOWNWARD_PROPERTY = "SearchDialog.SearchDownward";
 
 	// The radio buttons for changing the search direction.
 	protected JRadioButton upButton;
@@ -68,11 +67,11 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	 */
 	private EventListenerList listenerList;
 
-
 	/**
 	 * Constructor.
 	 *
-	 * @param owner The dialog that owns this search dialog.
+	 * @param owner
+	 *            The dialog that owns this search dialog.
 	 */
 	public AbstractFindReplaceDialog(Dialog owner) {
 		super(owner);
@@ -80,22 +79,23 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	}
 
 	/**
-	 * Constructor.  Does initializing for parts common to
-	 * <code>FindDialog</code> and <code>ReplaceDialog</code> that isn't
-	 * taken care of in <code>AbstractSearchDialog</code>'s constructor.
+	 * Constructor. Does initializing for parts common to <code>FindDialog</code>
+	 * and <code>ReplaceDialog</code> that isn't taken care of in
+	 * <code>AbstractSearchDialog</code>'s constructor.
 	 *
-	 * @param owner The window that owns this search dialog.
+	 * @param owner
+	 *            The window that owns this search dialog.
 	 */
 	public AbstractFindReplaceDialog(Frame owner) {
 		super(owner);
 		init();
 	}
 
-
 	/**
 	 * Listens for action events in this dialog.
 	 *
-	 * @param e The event that occurred.
+	 * @param e
+	 *            The event that occurred.
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -132,28 +132,27 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 
 	}
 
-
 	/**
-	 * Adds a {@link SearchListener} to this dialog.  This listener will
-	 * be notified when find or replace operations are triggered.  For
-	 * example, for a Replace dialog, a listener will receive notification
-	 * when the user clicks "Find", "Replace", or "Replace All".
+	 * Adds a {@link SearchListener} to this dialog. This listener will be notified
+	 * when find or replace operations are triggered. For example, for a Replace
+	 * dialog, a listener will receive notification when the user clicks "Find",
+	 * "Replace", or "Replace All".
 	 *
-	 * @param l The listener to add.
+	 * @param l
+	 *            The listener to add.
 	 * @see #removeSearchListener(SearchListener)
 	 */
 	public void addSearchListener(SearchListener l) {
 		listenerList.add(SearchListener.class, l);
 	}
 
-
 	/**
-	 * Notifies all listeners that have registered interest for notification on
-	 * this event type. The event instance is lazily created using the
-	 * <code>event</code> parameter.
+	 * Notifies all listeners that have registered interest for notification on this
+	 * event type. The event instance is lazily created using the <code>event</code>
+	 * parameter.
 	 * 
-	 * @param event The <code>ActionEvent</code> object coming from a
-	 *        child component.
+	 * @param event
+	 *            The <code>ActionEvent</code> object coming from a child component.
 	 */
 	protected void fireSearchEvent(ActionEvent event) {
 		// Guaranteed to return a non-null array
@@ -169,11 +168,10 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 					SearchEvent.Type type = SearchEvent.Type.valueOf(command);
 					e = new SearchEvent(this, type, context);
 				}
-				((SearchListener)listeners[i+1]).searchEvent(e);
+				((SearchListener) listeners[i + 1]).searchEvent(e);
 			}
 		}
 	}
-
 
 	/**
 	 * Returns the text for the "Down" radio button.
@@ -185,7 +183,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		return downButton.getText();
 	}
 
-
 	/**
 	 * Returns the text on the "Find" button.
 	 *
@@ -195,7 +192,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	public final String getFindButtonText() {
 		return findNextButton.getText();
 	}
-
 
 	/**
 	 * Returns the label on the "Find what" text field.
@@ -207,7 +203,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		return findFieldLabel.getText();
 	}
 
-
 	/**
 	 * Returns the text for the search direction's radio buttons' border.
 	 *
@@ -217,7 +212,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	public final String getSearchButtonsBorderText() {
 		return dirPanelTitle;
 	}
-
 
 	/**
 	 * Returns the text for the "Up" radio button.
@@ -229,12 +223,12 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		return upButton.getText();
 	}
 
-
 	/**
-	 * Called whenever a property in the search context is modified.
-	 * Subclasses should override if they listen for additional properties.
+	 * Called whenever a property in the search context is modified. Subclasses
+	 * should override if they listen for additional properties.
 	 *
-	 * @param e The property change event fired.
+	 * @param e
+	 *            The property change event fired.
 	 */
 	@Override
 	protected void handleSearchContextPropertyChanged(PropertyChangeEvent e) {
@@ -242,13 +236,13 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		String prop = e.getPropertyName();
 
 		if (SearchContext.PROPERTY_SEARCH_FORWARD.equals(prop)) {
-			boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
+			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
 			JRadioButton button = newValue ? downButton : upButton;
 			button.setSelected(true);
 		}
 
 		else if (SearchContext.PROPERTY_MARK_ALL.equals(prop)) {
-			boolean newValue = ((Boolean)e.getNewValue()).booleanValue();
+			boolean newValue = ((Boolean) e.getNewValue()).booleanValue();
 			markAllCheckBox.setSelected(newValue);
 		}
 
@@ -257,7 +251,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		}
 
 	}
-
 
 	@Override
 	protected FindReplaceButtonsEnableResult handleToggleButtons() {
@@ -268,11 +261,10 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		findNextButton.setEnabled(enable);
 
 		// setBackground doesn't show up with XP Look and Feel!
-		//findTextComboBox.setBackground(enable ?
-		//		UIManager.getColor("ComboBox.background") : Color.PINK);
+		// findTextComboBox.setBackground(enable ?
+		// UIManager.getColor("ComboBox.background") : Color.PINK);
 		JTextComponent tc = UIUtil.getTextComponent(findTextCombo);
-		tc.setForeground(enable ? UIManager.getColor("TextField.foreground") :
-									UIUtil.getErrorTextForeground());
+		tc.setForeground(enable ? UIManager.getColor("TextField.foreground") : UIUtil.getErrorTextForeground());
 
 		String tooltip = SearchUtil.getToolTip(er);
 		tc.setToolTipText(tooltip); // Always set, even if null
@@ -280,7 +272,6 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		return er;
 
 	}
-
 
 	private void init() {
 
@@ -292,9 +283,9 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		setSearchButtonsBorderText(getString("Direction"));
 		ButtonGroup bg = new ButtonGroup();
 		upButton = new JRadioButton(getString("Up"), false);
-		upButton.setMnemonic((int)getString("UpMnemonic").charAt(0));
+		upButton.setMnemonic((int) getString("UpMnemonic").charAt(0));
 		downButton = new JRadioButton(getString("Down"), true);
-		downButton.setMnemonic((int)getString("DownMnemonic").charAt(0));
+		downButton.setMnemonic((int) getString("DownMnemonic").charAt(0));
 		upButton.setActionCommand("UpRadioButtonClicked");
 		upButton.addActionListener(this);
 		downButton.setActionCommand("DownRadioButtonClicked");
@@ -306,7 +297,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 
 		// Initialize the "mark all" button.
 		markAllCheckBox = new JCheckBox(getString("MarkAll"));
-		markAllCheckBox.setMnemonic((int)getString("MarkAllMnemonic").charAt(0));
+		markAllCheckBox.setMnemonic((int) getString("MarkAllMnemonic").charAt(0));
 		markAllCheckBox.setActionCommand("MarkAll");
 		markAllCheckBox.addActionListener(this);
 
@@ -325,19 +316,18 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		searchConditionsPanel.add(temp, BorderLayout.LINE_END);
 
 		// Create the "Find what" label.
-		findFieldLabel = UIUtil.newLabel(getBundle(), "FindWhat",findTextCombo);
+		findFieldLabel = UIUtil.newLabel(getBundle(), "FindWhat", findTextCombo);
 
 		// Create a "Find Next" button.
 		findNextButton = UIUtil.newButton(getBundle(), "Find");
 		findNextButton.setActionCommand(SearchEvent.Type.FIND.name());
 		findNextButton.addActionListener(this);
 		findNextButton.setDefaultCapable(true);
-		findNextButton.setEnabled(false);	// Initially, nothing to look for.
+		findNextButton.setEnabled(false); // Initially, nothing to look for.
 
 		installKeyboardActions();
 
 	}
-
 
 	/**
 	 * Adds extra keyboard actions for Find and Replace dialogs.
@@ -345,8 +335,7 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 	private void installKeyboardActions() {
 
 		JRootPane rootPane = getRootPane();
-		InputMap im = rootPane.getInputMap(
-				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+		InputMap im = rootPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 		ActionMap am = rootPane.getActionMap();
 
 		int modifier = getToolkit().getMenuShortcutKeyMask();
@@ -360,13 +349,12 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		});
 	}
 
-
 	/**
 	 * Overridden to initialize UI elements specific to this subclass.
 	 */
 	@Override
 	protected void refreshUIFromContext() {
-		if (this.markAllCheckBox==null) {
+		if (this.markAllCheckBox == null) {
 			return; // First time through, UI not realized yet
 		}
 		super.refreshUIFromContext();
@@ -376,55 +364,55 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		downButton.setSelected(searchForward);
 	}
 
-
 	/**
 	 * Removes a {@link SearchListener} from this dialog.
 	 *
-	 * @param l The listener to remove
+	 * @param l
+	 *            The listener to remove
 	 * @see #addSearchListener(SearchListener)
 	 */
 	public void removeSearchListener(SearchListener l) {
 		listenerList.remove(SearchListener.class, l);
 	}
 
-
 	/**
 	 * Sets the text label for the "Down" radio button.
 	 *
-	 * @param text The new text label for the "Down" radio button.
+	 * @param text
+	 *            The new text label for the "Down" radio button.
 	 * @see #getDownRadioButtonText
 	 */
 	public void setDownRadioButtonText(String text) {
 		downButton.setText(text);
 	}
 
-
 	/**
 	 * Sets the text on the "Find" button.
 	 *
-	 * @param text The text for the Find button.
+	 * @param text
+	 *            The text for the Find button.
 	 * @see #getFindButtonText
 	 */
 	public final void setFindButtonText(String text) {
 		findNextButton.setText(text);
 	}
 
-
 	/**
 	 * Sets the label on the "Find what" text field.
 	 *
-	 * @param text The text for the "Find what" text field's label.
+	 * @param text
+	 *            The text for the "Find what" text field's label.
 	 * @see #getFindWhatLabelText
 	 */
 	public void setFindWhatLabelText(String text) {
 		findFieldLabel.setText(text);
 	}
 
-
 	/**
 	 * Sets the text for the search direction's radio buttons' border.
 	 *
-	 * @param text The text for the search radio buttons' border.
+	 * @param text
+	 *            The text for the search radio buttons' border.
 	 * @see #getSearchButtonsBorderText
 	 */
 	public final void setSearchButtonsBorderText(String text) {
@@ -432,16 +420,15 @@ public abstract class AbstractFindReplaceDialog extends AbstractSearchDialog {
 		dirPanel.setBorder(createTitledBorder(dirPanelTitle));
 	}
 
-
 	/**
 	 * Sets the text label for the "Up" radio button.
 	 *
-	 * @param text The new text label for the "Up" radio button.
+	 * @param text
+	 *            The new text label for the "Up" radio button.
 	 * @see #getUpRadioButtonText
 	 */
 	public void setUpRadioButtonText(String text) {
 		upButton.setText(text);
 	}
-
 
 }

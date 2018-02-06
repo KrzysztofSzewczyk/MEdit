@@ -25,10 +25,10 @@ import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 import org.fife.ui.rtextarea.SearchResult;
 
-
 /**
- * An application that demonstrates use of the RSTAUI project.  Please don't
- * take this as good application design; it's just a simple example.<p>
+ * An application that demonstrates use of the RSTAUI project. Please don't take
+ * this as good application design; it's just a simple example.
+ * <p>
  *
  * Unlike the library itself, this class is public domain.
  *
@@ -45,7 +45,6 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 	private ReplaceToolBar replaceToolBar;
 	private StatusBar statusBar;
 
-
 	public RSTAUIDemoApp() {
 
 		initSearchDialogs();
@@ -56,7 +55,7 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		contentPane.add(csp);
 
 		setJMenuBar(createMenuBar());
-		
+
 		textArea = new RSyntaxTextArea(25, 80);
 		textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 		textArea.setCodeFoldingEnabled(true);
@@ -66,8 +65,9 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 		ErrorStrip errorStrip = new ErrorStrip(textArea);
 		contentPane.add(errorStrip, BorderLayout.LINE_END);
-//org.fife.rsta.ui.DocumentMap docMap = new org.fife.rsta.ui.DocumentMap(textArea);
-//contentPane.add(docMap, BorderLayout.LINE_END);
+		// org.fife.rsta.ui.DocumentMap docMap = new
+		// org.fife.rsta.ui.DocumentMap(textArea);
+		// contentPane.add(docMap, BorderLayout.LINE_END);
 
 		statusBar = new StatusBar();
 		contentPane.add(statusBar, BorderLayout.SOUTH);
@@ -79,13 +79,11 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 	}
 
-
 	private void addItem(Action a, ButtonGroup bg, JMenu menu) {
 		JRadioButtonMenuItem item = new JRadioButtonMenuItem(a);
 		bg.add(item);
 		menu.add(item);
 	}
-
 
 	private JMenuBar createMenuBar() {
 
@@ -98,11 +96,11 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 		int ctrl = getToolkit().getMenuShortcutKeyMask();
 		int shift = InputEvent.SHIFT_MASK;
-		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_F, ctrl|shift);
+		KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_F, ctrl | shift);
 		Action a = csp.addBottomComponent(ks, findToolBar);
 		a.putValue(Action.NAME, "Show Find Search Bar");
 		menu.add(new JMenuItem(a));
-		ks = KeyStroke.getKeyStroke(KeyEvent.VK_H, ctrl|shift);
+		ks = KeyStroke.getKeyStroke(KeyEvent.VK_H, ctrl | shift);
 		a = csp.addBottomComponent(ks, replaceToolBar);
 		a.putValue(Action.NAME, "Show Replace Search Bar");
 		menu.add(new JMenuItem(a));
@@ -112,7 +110,7 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		menu = new JMenu("LookAndFeel");
 		ButtonGroup bg = new ButtonGroup();
 		LookAndFeelInfo[] infos = UIManager.getInstalledLookAndFeels();
-		for (int i=0; i<infos.length; i++) {
+		for (int i = 0; i < infos.length; i++) {
 			addItem(new LookAndFeelAction(infos[i]), bg, menu);
 		}
 		mb.add(menu);
@@ -121,12 +119,10 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 	}
 
-
 	@Override
 	public String getSelectedText() {
 		return textArea.getSelectedText();
 	}
-
 
 	/**
 	 * Creates our Find and Replace dialogs.
@@ -149,10 +145,8 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 	}
 
-
 	/**
-	 * Listens for events from our search dialogs and actually does the dirty
-	 * work.
+	 * Listens for events from our search dialogs and actually does the dirty work.
 	 */
 	@Override
 	public void searchEvent(SearchEvent e) {
@@ -162,48 +156,43 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		SearchResult result = null;
 
 		switch (type) {
-			default: // Prevent FindBugs warning later
-			case MARK_ALL:
-				result = SearchEngine.markAll(textArea, context);
-				break;
-			case FIND:
-				result = SearchEngine.find(textArea, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-				break;
-			case REPLACE:
-				result = SearchEngine.replace(textArea, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-				}
-				break;
-			case REPLACE_ALL:
-				result = SearchEngine.replaceAll(textArea, context);
-				JOptionPane.showMessageDialog(null, result.getCount() +
-						" occurrences replaced.");
-				break;
+		default: // Prevent FindBugs warning later
+		case MARK_ALL:
+			result = SearchEngine.markAll(textArea, context);
+			break;
+		case FIND:
+			result = SearchEngine.find(textArea, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			}
+			break;
+		case REPLACE:
+			result = SearchEngine.replace(textArea, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+			}
+			break;
+		case REPLACE_ALL:
+			result = SearchEngine.replaceAll(textArea, context);
+			JOptionPane.showMessageDialog(null, result.getCount() + " occurrences replaced.");
+			break;
 		}
 
 		String text = null;
 		if (result.wasFound()) {
 			text = "Text found; occurrences marked: " + result.getMarkedCount();
-		}
-		else if (type==SearchEvent.Type.MARK_ALL) {
-			if (result.getMarkedCount()>0) {
+		} else if (type == SearchEvent.Type.MARK_ALL) {
+			if (result.getMarkedCount() > 0) {
 				text = "Occurrences marked: " + result.getMarkedCount();
-			}
-			else {
+			} else {
 				text = "";
 			}
-		}
-		else {
+		} else {
 			text = "Text not found";
 		}
 		statusBar.setLabel(text);
 
 	}
-
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -211,7 +200,7 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 			public void run() {
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//					UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteAquaLookAndFeel");
+					// UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceGraphiteAquaLookAndFeel");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -219,7 +208,6 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 			}
 		});
 	}
-
 
 	private class GoToLineAction extends AbstractAction {
 
@@ -241,9 +229,9 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 			dialog.setMaxLineNumberAllowed(textArea.getLineCount());
 			dialog.setVisible(true);
 			int line = dialog.getLineNumber();
-			if (line>0) {
+			if (line > 0) {
 				try {
-					textArea.setCaretPosition(textArea.getLineStartOffset(line-1));
+					textArea.setCaretPosition(textArea.getLineStartOffset(line - 1));
 				} catch (BadLocationException ble) { // Never happens
 					UIManager.getLookAndFeel().provideErrorFeedback(textArea);
 					ble.printStackTrace();
@@ -252,7 +240,6 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		}
 
 	}
-
 
 	private class LookAndFeelAction extends AbstractAction {
 
@@ -268,7 +255,7 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 			try {
 				UIManager.setLookAndFeel(info.getClassName());
 				SwingUtilities.updateComponentTreeUI(RSTAUIDemoApp.this);
-				if (findDialog!=null) {
+				if (findDialog != null) {
 					findDialog.updateUI();
 					replaceDialog.updateUI();
 				}
@@ -281,9 +268,8 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		}
 	}
 
-
 	private class ShowFindDialogAction extends AbstractAction {
-		
+
 		public ShowFindDialogAction() {
 			super("Find...");
 			int c = getToolkit().getMenuShortcutKeyMask();
@@ -300,9 +286,8 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 
 	}
 
-
 	private class ShowReplaceDialogAction extends AbstractAction {
-		
+
 		public ShowReplaceDialogAction() {
 			super("Replace...");
 			int c = getToolkit().getMenuShortcutKeyMask();
@@ -318,7 +303,6 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		}
 
 	}
-
 
 	private static class StatusBar extends JPanel {
 
@@ -336,6 +320,5 @@ public class RSTAUIDemoApp extends JFrame implements SearchListener {
 		}
 
 	}
-
 
 }

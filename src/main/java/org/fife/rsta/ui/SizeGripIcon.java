@@ -10,7 +10,6 @@ package org.fife.rsta.ui;
 import java.awt.*;
 import javax.swing.*;
 
-
 /**
  * An icon that looks like a Windows 98 or XP-style size grip.
  *
@@ -20,7 +19,6 @@ import javax.swing.*;
 public class SizeGripIcon implements Icon {
 
 	private static final int SIZE = 16;
-
 
 	/**
 	 * Returns the height of this icon.
@@ -32,7 +30,6 @@ public class SizeGripIcon implements Icon {
 		return SIZE;
 	}
 
-
 	/**
 	 * Returns the width of this icon.
 	 *
@@ -43,14 +40,17 @@ public class SizeGripIcon implements Icon {
 		return SIZE;
 	}
 
-
 	/**
 	 * Paints this icon.
 	 *
-	 * @param c The component to paint on.
-	 * @param g The graphics context.
-	 * @param x The x-coordinate at which to paint.
-	 * @param y The y-coordinate at which to paint.
+	 * @param c
+	 *            The component to paint on.
+	 * @param g
+	 *            The graphics context.
+	 * @param x
+	 *            The x-coordinate at which to paint.
+	 * @param y
+	 *            The y-coordinate at which to paint.
 	 */
 	@Override
 	public void paintIcon(Component c, Graphics g, int x, int y) {
@@ -63,40 +63,38 @@ public class SizeGripIcon implements Icon {
 		int height = dim.height -= 3;
 
 		if (orientation.isLeftToRight()) {
-			int width = dim.width  -= 3;
+			int width = dim.width -= 3;
 			g.setColor(c1);
-			g.fillRect(width-9,height-1, 3,3);
-			g.fillRect(width-5,height-1, 3,3);
-			g.fillRect(width-1,height-1, 3,3);
-			g.fillRect(width-5,height-5, 3,3);
-			g.fillRect(width-1,height-5, 3,3);
-			g.fillRect(width-1,height-9, 3,3);
+			g.fillRect(width - 9, height - 1, 3, 3);
+			g.fillRect(width - 5, height - 1, 3, 3);
+			g.fillRect(width - 1, height - 1, 3, 3);
+			g.fillRect(width - 5, height - 5, 3, 3);
+			g.fillRect(width - 1, height - 5, 3, 3);
+			g.fillRect(width - 1, height - 9, 3, 3);
 			g.setColor(c2);
-			g.fillRect(width-9,height-1, 2,2);
-			g.fillRect(width-5,height-1, 2,2);
-			g.fillRect(width-1,height-1, 2,2);
-			g.fillRect(width-5,height-5, 2,2);
-			g.fillRect(width-1,height-5, 2,2);
-			g.fillRect(width-1,height-9, 2,2);
-		}
-		else {
+			g.fillRect(width - 9, height - 1, 2, 2);
+			g.fillRect(width - 5, height - 1, 2, 2);
+			g.fillRect(width - 1, height - 1, 2, 2);
+			g.fillRect(width - 5, height - 5, 2, 2);
+			g.fillRect(width - 1, height - 5, 2, 2);
+			g.fillRect(width - 1, height - 9, 2, 2);
+		} else {
 			g.setColor(c1);
-			g.fillRect(10,height-1, 3,3);
-			g.fillRect(6,height-1, 3,3);
-			g.fillRect(2,height-1, 3,3);
-			g.fillRect(6,height-5, 3,3);
-			g.fillRect(2,height-5, 3,3);
-			g.fillRect(2,height-9, 3,3);
+			g.fillRect(10, height - 1, 3, 3);
+			g.fillRect(6, height - 1, 3, 3);
+			g.fillRect(2, height - 1, 3, 3);
+			g.fillRect(6, height - 5, 3, 3);
+			g.fillRect(2, height - 5, 3, 3);
+			g.fillRect(2, height - 9, 3, 3);
 			g.setColor(c2);
-			g.fillRect(10,height-1, 2,2);
-			g.fillRect(6,height-1, 2,2);
-			g.fillRect(2,height-1, 2,2);
-			g.fillRect(6,height-5, 2,2);
-			g.fillRect(2,height-5, 2,2);
-			g.fillRect(2,height-9, 2,2);
+			g.fillRect(10, height - 1, 2, 2);
+			g.fillRect(6, height - 1, 2, 2);
+			g.fillRect(2, height - 1, 2, 2);
+			g.fillRect(6, height - 5, 2, 2);
+			g.fillRect(2, height - 5, 2, 2);
+			g.fillRect(2, height - 9, 2, 2);
 		}
 
 	}
-
 
 }

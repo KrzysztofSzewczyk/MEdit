@@ -168,10 +168,10 @@ public class ThemesActionManager {
 			}
 		});
 		parent.add(mntmVisualStudio);
-		
+
 		final JSeparator separator = new JSeparator();
 		parent.add(separator);
-		
+
 	}
 
 }

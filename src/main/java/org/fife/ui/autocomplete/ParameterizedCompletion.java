@@ -10,7 +10,6 @@ package org.fife.ui.autocomplete;
 
 import javax.swing.text.JTextComponent;
 
-
 /**
  * A completion option that takes parameters, such as a function or method.
  *
@@ -19,26 +18,24 @@ import javax.swing.text.JTextComponent;
  */
 public interface ParameterizedCompletion extends Completion {
 
-
 	/**
-	 * Returns the "definition string" for this completion.  For example,
-	 * for the C "<code>printf</code>" function, this would return
+	 * Returns the "definition string" for this completion. For example, for the C
+	 * "<code>printf</code>" function, this would return
 	 * "<code>int printf(const char *, ...)</code>".
 	 * 
 	 * @return The definition string.
 	 */
 	public String getDefinitionString();
 
-
 	/**
 	 * Returns the specified {@link Parameter}.
 	 *
-	 * @param index The index of the parameter to retrieve.
+	 * @param index
+	 *            The index of the parameter to retrieve.
 	 * @return The parameter.
 	 * @see #getParamCount()
 	 */
 	public Parameter getParam(int index);
-
 
 	/**
 	 * Returns the number of parameters this completion takes.
@@ -48,19 +45,15 @@ public interface ParameterizedCompletion extends Completion {
 	 */
 	public int getParamCount();
 
-
-	public ParameterizedCompletionInsertionInfo getInsertionInfo(
-			JTextComponent tc, boolean replaceTabsWithSpaces);
-
+	public ParameterizedCompletionInsertionInfo getInsertionInfo(JTextComponent tc, boolean replaceTabsWithSpaces);
 
 	/**
-	 * Returns whether a tool tip displaying assistance for each parameter
-	 * while it is being edited is appropriate for this completion.
+	 * Returns whether a tool tip displaying assistance for each parameter while it
+	 * is being edited is appropriate for this completion.
 	 *
 	 * @return Whether the tool tip is appropriate to display.
 	 */
 	public boolean getShowParameterToolTip();
-
 
 	/**
 	 * A parameter passed to a parameterized {@link Completion}.
@@ -75,13 +68,15 @@ public interface ParameterizedCompletion extends Completion {
 		/**
 		 * Constructor.
 		 *
-		 * @param type The type of this parameter.  This may be
-		 *        <code>null</code> for languages without specific types,
-		 *        dynamic typing, etc.  Usually you'll pass a String for this
-		 *        value, but you may pass any object representing a type in
-		 *        your language, as long as its <code>toString()</code> method
-		 *        returns a string representation of the type.
-		 * @param name The name of the parameter.
+		 * @param type
+		 *            The type of this parameter. This may be <code>null</code> for
+		 *            languages without specific types, dynamic typing, etc. Usually
+		 *            you'll pass a String for this value, but you may pass any object
+		 *            representing a type in your language, as long as its
+		 *            <code>toString()</code> method returns a string representation of
+		 *            the type.
+		 * @param name
+		 *            The name of the parameter.
 		 */
 		public Parameter(Object type, String name) {
 			this(type, name, false);
@@ -90,19 +85,22 @@ public interface ParameterizedCompletion extends Completion {
 		/**
 		 * Constructor.
 		 *
-		 * @param type The type of this parameter.  This may be
-		 *        <code>null</code> for languages without specific types,
-		 *        dynamic typing, etc.  Usually you'll pass a String for this
-		 *        value, but you may pass any object representing a type in
-		 *        your language, as long as its <code>toString()</code> method
-		 *        returns a string representation of the type.
-		 * @param name The name of the parameter.
-		 * @param endParam Whether this parameter is an "ending parameter;"
-		 *        that is, whether this parameter is at a logical "ending
-		 *        point" in the completion text.  If the user types in a
-		 *        parameter that is an ending point, parameter completion mode
-		 *        terminates.  Set this to <code>true</code> for a trailing
-		 *        parameter after a function call's closing ')', for example.
+		 * @param type
+		 *            The type of this parameter. This may be <code>null</code> for
+		 *            languages without specific types, dynamic typing, etc. Usually
+		 *            you'll pass a String for this value, but you may pass any object
+		 *            representing a type in your language, as long as its
+		 *            <code>toString()</code> method returns a string representation of
+		 *            the type.
+		 * @param name
+		 *            The name of the parameter.
+		 * @param endParam
+		 *            Whether this parameter is an "ending parameter;" that is, whether
+		 *            this parameter is at a logical "ending point" in the completion
+		 *            text. If the user types in a parameter that is an ending point,
+		 *            parameter completion mode terminates. Set this to
+		 *            <code>true</code> for a trailing parameter after a function call's
+		 *            closing ')', for example.
 		 */
 		public Parameter(Object type, String name, boolean endParam) {
 			this.name = name;
@@ -124,7 +122,7 @@ public interface ParameterizedCompletion extends Completion {
 		 * @return The type of the parameter, or <code>null</code> for none.
 		 */
 		public String getType() {
-			return type==null ? null : type.toString();
+			return type == null ? null : type.toString();
 		}
 
 		/**
@@ -137,11 +135,10 @@ public interface ParameterizedCompletion extends Completion {
 		}
 
 		/**
-		 * @return Whether this parameter is an "ending parameter;"
-		 *         that is, whether this parameter is at a logical "ending
-		 *         point" in the completion text.  If the user types in a
-		 *         parameter that is an ending point, parameter completion mode
-		 *         terminates.
+		 * @return Whether this parameter is an "ending parameter;" that is, whether
+		 *         this parameter is at a logical "ending point" in the completion text.
+		 *         If the user types in a parameter that is an ending point, parameter
+		 *         completion mode terminates.
 		 */
 		public boolean isEndParam() {
 			return isEndParam;
@@ -154,11 +151,11 @@ public interface ParameterizedCompletion extends Completion {
 		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			if (getType()!=null) {
+			if (getType() != null) {
 				sb.append(getType());
 			}
-			if (getName()!=null) {
-				if (getType()!=null) {
+			if (getName() != null) {
+				if (getType() != null) {
 					sb.append(' ');
 				}
 				sb.append(getName());
@@ -167,6 +164,5 @@ public interface ParameterizedCompletion extends Completion {
 		}
 
 	}
-
 
 }

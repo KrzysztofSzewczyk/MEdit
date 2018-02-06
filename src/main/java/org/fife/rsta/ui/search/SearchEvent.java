@@ -12,10 +12,9 @@ import java.util.EventObject;
 
 import org.fife.ui.rtextarea.SearchContext;
 
-
 /**
- * The event fired whenever a user wants to search for or replace text in a
- * Find or Replace dialog/tool bar.
+ * The event fired whenever a user wants to search for or replace text in a Find
+ * or Replace dialog/tool bar.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -31,16 +30,13 @@ public class SearchEvent extends EventObject {
 		this.context = context;
 	}
 
-
 	public Type getType() {
 		return type;
 	}
 
-
 	public SearchContext getSearchContext() {
 		return context;
 	}
-
 
 	/**
 	 * Types of search events.
@@ -63,11 +59,11 @@ public class SearchEvent extends EventObject {
 		REPLACE,
 
 		/**
-		 * The event fired when the user wants to replace all instances of
-		 * specific text with new text in the editor.
+		 * The event fired when the user wants to replace all instances of specific text
+		 * with new text in the editor.
 		 */
 		REPLACE_ALL;
 
 	}
-	
+
 }

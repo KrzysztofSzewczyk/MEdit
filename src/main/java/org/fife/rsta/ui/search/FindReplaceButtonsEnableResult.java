@@ -10,8 +10,8 @@
 package org.fife.rsta.ui.search;
 
 /**
- * Returns the result of whether the "action" buttons such as "Find"
- * and "Replace" should be enabled.
+ * Returns the result of whether the "action" buttons such as "Find" and
+ * "Replace" should be enabled.
  *
  * @author Robert Futrell
  * @version 1.0

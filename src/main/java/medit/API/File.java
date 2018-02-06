@@ -3,8 +3,8 @@ package medit.API;
 import medit.MainFrame;
 
 /**
- * Interface for current file script management
- * for MEdit B++ scripts.
+ * Interface for current file script management for MEdit B++ scripts.
+ * 
  * @author Krzysztof Szewczyk
  *
  */
@@ -12,15 +12,15 @@ import medit.MainFrame;
 public class File {
 
 	MainFrame instance;
-	
+
 	public File(MainFrame instance) {
 		this.instance = instance;
 	}
-	
+
 	public java.io.File getFile() {
 		return instance.currentFile;
 	}
-	
+
 	public void setFile(java.io.File file) {
 		instance.currentFile = file;
 	}

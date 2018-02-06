@@ -205,8 +205,7 @@ public class LanguageActionManager {
 		mntmCSS.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LanguageActionManager.this.instance.textPane
-						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
+				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_CSS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_CSS);
 			}
 		});
@@ -307,7 +306,8 @@ public class LanguageActionManager {
 		mntmJshintrc.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
+				LanguageActionManager.this.instance.textPane
+						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS);
 			}
 		});
@@ -394,8 +394,7 @@ public class LanguageActionManager {
 		mntmPHP.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				LanguageActionManager.this.instance.textPane
-						.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PHP);
+				LanguageActionManager.this.instance.textPane.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_PHP);
 				ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_PHP);
 			}
 		});

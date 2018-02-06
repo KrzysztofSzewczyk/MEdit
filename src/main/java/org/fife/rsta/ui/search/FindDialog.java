@@ -31,30 +31,30 @@ import org.fife.rsta.ui.UIUtil;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
 
-
 /**
  * A "Find" dialog similar to those found in most Windows text editing
- * applications.  Contains many search options, including:<br>
+ * applications. Contains many search options, including:<br>
  * <ul>
- *   <li>Match Case
- *   <li>Match Whole Word
- *   <li>Use Regular Expressions
- *   <li>Search Forwards or Backwards
- *   <li>Mark all
+ * <li>Match Case
+ * <li>Match Whole Word
+ * <li>Use Regular Expressions
+ * <li>Search Forwards or Backwards
+ * <li>Mark all
  * </ul>
  * The dialog also remembers your previous several selections in a combo box.
- * <p>An application can use a <code>FindDialog</code> as follows.  It is
- * suggested that you create an <code>Action</code> or something similar to
- * facilitate "bringing up" the Find dialog.  Have the main application contain
- * an object that implements {@link SearchListener}.  This object will receive
+ * <p>
+ * An application can use a <code>FindDialog</code> as follows. It is suggested
+ * that you create an <code>Action</code> or something similar to facilitate
+ * "bringing up" the Find dialog. Have the main application contain an object
+ * that implements {@link SearchListener}. This object will receive
  * {@link SearchEvent}s of the following types from the Find dialog:
  * <ul>
- *   <li>{@link SearchEvent.Type#FIND} action when the user clicks the
- *       "Find" button.
+ * <li>{@link SearchEvent.Type#FIND} action when the user clicks the "Find"
+ * button.
  * </ul>
  * The application can then call i.e.
- * {@link SearchEngine#find(javax.swing.JTextArea, org.fife.ui.rtextarea.SearchContext) SearchEngine.find()}
- * to actually execute the search.
+ * {@link SearchEngine#find(javax.swing.JTextArea, org.fife.ui.rtextarea.SearchContext)
+ * SearchEngine.find()} to actually execute the search.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -73,46 +73,47 @@ public class FindDialog extends AbstractFindReplaceDialog {
 	 */
 	protected SearchListener searchListener;
 
-
 	/**
 	 * Creates a new <code>FindDialog</code>.
 	 *
-	 * @param owner The parent dialog.
-	 * @param listener The component that listens for {@link SearchEvent}s.
+	 * @param owner
+	 *            The parent dialog.
+	 * @param listener
+	 *            The component that listens for {@link SearchEvent}s.
 	 */
 	public FindDialog(Dialog owner, SearchListener listener) {
 		super(owner);
 		init(listener);
 	}
 
-
 	/**
 	 * Creates a new <code>FindDialog</code>.
 	 *
-	 * @param owner The main window that owns this dialog.
-	 * @param listener The component that listens for {@link SearchEvent}s.
+	 * @param owner
+	 *            The main window that owns this dialog.
+	 * @param listener
+	 *            The component that listens for {@link SearchEvent}s.
 	 */
 	public FindDialog(Frame owner, SearchListener listener) {
 		super(owner);
 		init(listener);
 	}
 
-
 	/**
 	 * Initializes find dialog-specific initialization stuff.
 	 *
-	 * @param listener The component that listens for {@link SearchEvent}s.
+	 * @param listener
+	 *            The component that listens for {@link SearchEvent}s.
 	 */
 	private void init(SearchListener listener) {
 
 		this.searchListener = listener;
 
-		ComponentOrientation orientation = ComponentOrientation.
-									getOrientation(getLocale());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(getLocale());
 
 		// Make a panel containing the "Find" edit box.
 		JPanel enterTextPane = new JPanel(new SpringLayout());
-		enterTextPane.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
+		enterTextPane.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 		JTextComponent textField = UIUtil.getTextComponent(findTextCombo);
 		textField.addFocusListener(new FindFocusAdapter());
 		textField.addKeyListener(new FindKeyListener());
@@ -124,15 +125,14 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		if (orientation.isLeftToRight()) {
 			enterTextPane.add(findFieldLabel);
 			enterTextPane.add(temp);
-		}
-		else {
+		} else {
 			enterTextPane.add(temp);
 			enterTextPane.add(findFieldLabel);
 		}
 
-		UIUtil.makeSpringCompactGrid(enterTextPane, 1, 2,	//rows, cols
-											0,0,		//initX, initY
-											6, 6);	//xPad, yPad
+		UIUtil.makeSpringCompactGrid(enterTextPane, 1, 2, // rows, cols
+				0, 0, // initX, initY
+				6, 6); // xPad, yPad
 
 		// Make a panel containing the inherited search direction radio
 		// buttons and the inherited search options.
@@ -151,7 +151,7 @@ public class FindDialog extends AbstractFindReplaceDialog {
 
 		// Make a panel containing the action buttons.
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(2,1, 5,5));
+		buttonPanel.setLayout(new GridLayout(2, 1, 5, 5));
 		buttonPanel.add(findNextButton);
 		buttonPanel.add(cancelButton);
 		JPanel rightPanel = new JPanel();
@@ -161,10 +161,9 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		// Put everything into a neat little package.
 		JPanel contentPane = new JPanel(new BorderLayout());
 		if (orientation.isLeftToRight()) {
-			contentPane.setBorder(BorderFactory.createEmptyBorder(5,0,0,5));
-		}
-		else {
-			contentPane.setBorder(BorderFactory.createEmptyBorder(5,5,0,0));
+			contentPane.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 5));
+		} else {
+			contentPane.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 0));
 		}
 		contentPane.add(leftPanel);
 		contentPane.add(rightPanel, BorderLayout.LINE_END);
@@ -184,12 +183,12 @@ public class FindDialog extends AbstractFindReplaceDialog {
 
 	}
 
-
 	/**
 	 * Overrides <code>JDialog</code>'s <code>setVisible</code> method; decides
 	 * whether or not buttons are enabled.
 	 *
-	 * @param visible Whether or not the dialog should be visible.
+	 * @param visible
+	 *            Whether or not the dialog should be visible.
 	 */
 	@Override
 	public void setVisible(boolean visible) {
@@ -198,12 +197,12 @@ public class FindDialog extends AbstractFindReplaceDialog {
 
 			// Select text entered in the UI
 			String text = searchListener.getSelectedText();
-			if (text!=null) {
+			if (text != null) {
 				findTextCombo.addItem(text);
 			}
 
 			String selectedItem = findTextCombo.getSelectedString();
-			boolean nonEmpty = selectedItem!=null && selectedItem.length()>0;
+			boolean nonEmpty = selectedItem != null && selectedItem.length() > 0;
 			findNextButton.setEnabled(nonEmpty);
 			super.setVisible(true);
 			focusFindTextField();
@@ -217,10 +216,11 @@ public class FindDialog extends AbstractFindReplaceDialog {
 	}
 
 	/**
-	 * This method should be called whenever the <code>LookAndFeel</code> of
-	 * the application changes.  This calls
-	 * <code>SwingUtilities.updateComponentTreeUI(this)</code> and does
-	 * other necessary things.<p>
+	 * This method should be called whenever the <code>LookAndFeel</code> of the
+	 * application changes. This calls
+	 * <code>SwingUtilities.updateComponentTreeUI(this)</code> and does other
+	 * necessary things.
+	 * <p>
 	 * Note that this is <em>not</em> an override, as JDialogs don't have an
 	 * <code>updateUI()</code> method.
 	 */
@@ -232,7 +232,6 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		textField.addKeyListener(new FindKeyListener());
 		textField.getDocument().addDocumentListener(new FindDocumentListener());
 	}
-
 
 	/**
 	 * Listens for changes in the text field (find search field).
@@ -247,10 +246,9 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		@Override
 		public void removeUpdate(DocumentEvent e) {
 			JTextComponent comp = UIUtil.getTextComponent(findTextCombo);
-			if (comp.getDocument().getLength()==0) {
+			if (comp.getDocument().getLength() == 0) {
 				findNextButton.setEnabled(false);
-			}
-			else {
+			} else {
 				handleToggleButtons();
 			}
 		}
@@ -261,10 +259,9 @@ public class FindDialog extends AbstractFindReplaceDialog {
 
 	}
 
-
 	/**
-	 * Listens for the text field gaining focus.  All it does is select all
-	 * text in the combo box's text area.
+	 * Listens for the text field gaining focus. All it does is select all text in
+	 * the combo box's text area.
 	 */
 	private class FindFocusAdapter extends FocusAdapter {
 
@@ -272,11 +269,10 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		public void focusGained(FocusEvent e) {
 			UIUtil.getTextComponent(findTextCombo).selectAll();
 			// Remember what it originally was, in case they tabbed out.
-			lastSearchString = (String)findTextCombo.getSelectedItem();
+			lastSearchString = (String) findTextCombo.getSelectedItem();
 		}
 
 	}
-
 
 	/**
 	 * Listens for key presses in the find dialog.
@@ -296,8 +292,8 @@ public class FindDialog extends AbstractFindReplaceDialog {
 			// insistence on eating the first Enter keypress
 			// it receives when it has focus and its selected item
 			// has changed since the last time it lost focus.
-			if (e.getKeyCode()==KeyEvent.VK_ENTER && isPreJava6JRE()) {
-				String searchString = (String)findTextCombo.getSelectedItem();
+			if (e.getKeyCode() == KeyEvent.VK_ENTER && isPreJava6JRE()) {
+				String searchString = (String) findTextCombo.getSelectedItem();
 				if (!searchString.equals(lastSearchString)) {
 					findNextButton.doClick(0);
 					lastSearchString = searchString;
@@ -313,6 +309,5 @@ public class FindDialog extends AbstractFindReplaceDialog {
 		}
 
 	}
-
 
 }

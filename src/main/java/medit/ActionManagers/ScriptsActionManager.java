@@ -82,9 +82,9 @@ public class ScriptsActionManager {
 								return;
 							}
 						}
-						
+
 					});
-					
+
 					final JMenuItem item = new JMenuItem(e.getName());
 					item.addActionListener(new MenuActionListener(e.getCodeFN(), e.getName()) {
 						@Override

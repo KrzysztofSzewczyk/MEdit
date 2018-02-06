@@ -8,10 +8,9 @@
  */
 package org.fife.ui.autocomplete;
 
-
 /**
- * A piece of a <code>TemplateCompletion</code>.  You add instances of this
- * class to template completions to define them.
+ * A piece of a <code>TemplateCompletion</code>. You add instances of this class
+ * to template completions to define them.
  *
  * @author Robert Futrell
  * @version 1.0
@@ -19,9 +18,7 @@ package org.fife.ui.autocomplete;
  */
 interface TemplatePiece {
 
-
 	String getText();
-
 
 	public class Text implements TemplatePiece {
 
@@ -43,7 +40,6 @@ interface TemplatePiece {
 
 	}
 
-
 	public class Param implements TemplatePiece {
 
 		String text;
@@ -64,7 +60,6 @@ interface TemplatePiece {
 
 	}
 
-
 	public class ParamCopy implements TemplatePiece {
 
 		private String text;
@@ -84,6 +79,5 @@ interface TemplatePiece {
 		}
 
 	}
-
 
 }

@@ -74,7 +74,7 @@ public class MainFrame extends JFrame implements SearchListener {
 	public final JLabel lblReady = new JLabel(
 			"Ready | Length: 0 | Filename: \"Unnamed\" | Maximum size: 0KB | INS | LCK | SCR");
 	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
-	
+
 	public final JMenu mnFile = new JMenu("File");
 	public final JMenu mnEdit = new JMenu("Edit");
 	public final JMenu mnLanguage = new JMenu("Language");
@@ -84,60 +84,44 @@ public class MainFrame extends JFrame implements SearchListener {
 	public final JMenu mnScripts = new JMenu("Scripts");
 	public final JMenu mnAbout = new JMenu("About");
 	public final JMenu mnTextOperations = new JMenu("Text Operations");
-	
+
 	public CollapsibleSectionPanel csp;
 	public FindDialog findDialog;
 	public ReplaceDialog replaceDialog;
 	public FindToolBar findToolBar;
 	public ReplaceToolBar replaceToolBar;
-	
+
 	private int LoadValue = 1;
-	private String[] sLoadValues = {
-			"Loading classes",
-			"Menubar setup",
-			"Menu items setup",
-			"Window AM setup",
-			"File AM setup",
-			"Text OP AM setup",
-			"About AM setup",
-			"Code Completion AM setup",
-			"Language AM setup",
-			"Themes AM setup",
-			"Timer task AM setup",
-			"Bottombar setup",
-			"Tool AM setup",
-			"Script AM setup",
-			"Language AM setup",
-			"Toolbar setup",
-			"Editor look setup",
-			"Editor functionality setup",
-			"Gutter setup",
-			"Default theme setup",
-			"Starting editor",
-			"Done loading."
-	};
+	private String[] sLoadValues = { "Loading classes", "Menubar setup", "Menu items setup", "Window AM setup",
+			"File AM setup", "Text OP AM setup", "About AM setup", "Code Completion AM setup", "Language AM setup",
+			"Themes AM setup", "Timer task AM setup", "Bottombar setup", "Tool AM setup", "Script AM setup",
+			"Language AM setup", "Toolbar setup", "Editor look setup", "Editor functionality setup", "Gutter setup",
+			"Default theme setup", "Starting editor", "Done loading." };
 	private final JPanel panel = new JPanel();
 
 	/**
 	 * Create the frame.
-	 * @param instance2 
+	 * 
+	 * @param instance2
 	 */
 	public MainFrame(SplashScreen splashScreen) {
 
 		/**
 		 * SplashScreen state updater.
 		 */
-		
+
 		final Timer gctimer = new Timer();
 		gctimer.schedule(new TimerTask() {
 			@Override
 			public void run() {
-				if(splashScreen==null) return;
+				if (splashScreen == null)
+					return;
 				splashScreen.progressBar.setValue(LoadValue);
-				splashScreen.progressBar.setString("Current Task (Done): " + sLoadValues [LoadValue] + " (" + LoadValue + "/" + sLoadValues.length + ")");
+				splashScreen.progressBar.setString("Current Task (Done): " + sLoadValues[LoadValue] + " (" + LoadValue
+						+ "/" + sLoadValues.length + ")");
 			}
 		}, 0, 1);
-		
+
 		/**
 		 * Frame setup
 		 */
@@ -243,7 +227,7 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
 		scrollPane.setViewportView(this.textPane);
 		LoadValue++;
-		
+
 		this.textPane.clearParsers();
 		this.textPane.setParserDelay(1);
 		this.textPane.setAnimateBracketMatching(true);
@@ -258,15 +242,15 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.textPane.setPaintMatchedBracketPair(true);
 		this.textPane.setPaintTabLines(true);
 		LoadValue++;
-		
+
 		scrollPane.setIconRowHeaderEnabled(true);
 		scrollPane.setLineNumbersEnabled(true);
 		scrollPane.setFoldIndicatorEnabled(true);
 		LoadValue++;
-		
+
 		ErrorStrip errorStrip = new ErrorStrip(textPane);
 		contentPane.add(errorStrip, BorderLayout.LINE_END);
-		
+
 		findDialog = new FindDialog(this, this);
 		replaceDialog = new ReplaceDialog(this, this);
 
@@ -280,12 +264,12 @@ public class MainFrame extends JFrame implements SearchListener {
 		findToolBar.setSearchContext(context);
 		replaceToolBar = new ReplaceToolBar(this);
 		replaceToolBar.setSearchContext(context);
-		
+
 		try {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
 			theme.apply(this.textPane);
-			
+
 			contentPane.add(panel, BorderLayout.NORTH);
 			panel.setLayout(new BorderLayout(0, 0));
 			/**
@@ -294,25 +278,25 @@ public class MainFrame extends JFrame implements SearchListener {
 			final JToolBar toolBar = new JToolBar();
 			panel.add(toolBar, BorderLayout.WEST);
 			toolBar.setFloatable(false);
-			
-					fam.New(toolBar);
-					fam.Open(toolBar);
-					fam.Save(toolBar);
-					fam.Exit(toolBar);
-					
-							eam.Cut(toolBar);
-							eam.Copy(toolBar);
-							eam.Paste(toolBar);
-							eam.Delete(toolBar);
-							eam.Undo(toolBar);
-							eam.Redo(toolBar);
+
+			fam.New(toolBar);
+			fam.Open(toolBar);
+			fam.Save(toolBar);
+			fam.Exit(toolBar);
+
+			eam.Cut(toolBar);
+			eam.Copy(toolBar);
+			eam.Paste(toolBar);
+			eam.Delete(toolBar);
+			eam.Undo(toolBar);
+			eam.Redo(toolBar);
 		} catch (final IOException ioe) { // Never happens
 			final Crash dialog = new Crash(ioe);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
 		LoadValue++;
-		
+
 		setVisible(true);
 		gctimer.cancel();
 	}
@@ -324,42 +308,38 @@ public class MainFrame extends JFrame implements SearchListener {
 		SearchResult result = null;
 
 		switch (type) {
-			default: // Prevent FindBugs warning later
-			case MARK_ALL:
-				result = SearchEngine.markAll(textPane, context);
-				break;
-			case FIND:
-				result = SearchEngine.find(textPane, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textPane);
-				}
-				break;
-			case REPLACE:
-				result = SearchEngine.replace(textPane, context);
-				if (!result.wasFound()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(textPane);
-				}
-				break;
-			case REPLACE_ALL:
-				result = SearchEngine.replaceAll(textPane, context);
-				JOptionPane.showMessageDialog(this, result.getCount() +
-						" occurrences replaced.");
-				break;
+		default: // Prevent FindBugs warning later
+		case MARK_ALL:
+			result = SearchEngine.markAll(textPane, context);
+			break;
+		case FIND:
+			result = SearchEngine.find(textPane, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textPane);
+			}
+			break;
+		case REPLACE:
+			result = SearchEngine.replace(textPane, context);
+			if (!result.wasFound()) {
+				UIManager.getLookAndFeel().provideErrorFeedback(textPane);
+			}
+			break;
+		case REPLACE_ALL:
+			result = SearchEngine.replaceAll(textPane, context);
+			JOptionPane.showMessageDialog(this, result.getCount() + " occurrences replaced.");
+			break;
 		}
 
 		String text = null;
 		if (result.wasFound()) {
 			text = "Text found; occurrences marked: " + result.getMarkedCount();
-		}
-		else if (type==SearchEvent.Type.MARK_ALL) {
-			if (result.getMarkedCount()>0) {
+		} else if (type == SearchEvent.Type.MARK_ALL) {
+			if (result.getMarkedCount() > 0) {
 				text = "Occurrences marked: " + result.getMarkedCount();
-			}
-			else {
+			} else {
 				text = "";
 			}
-		}
-		else {
+		} else {
 			text = "Text not found";
 		}
 		JOptionPane.showMessageDialog(this, text);

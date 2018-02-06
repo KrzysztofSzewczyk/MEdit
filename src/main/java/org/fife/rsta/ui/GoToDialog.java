@@ -35,23 +35,24 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
-
 /**
- * A "Go To" dialog allowing you to go to a specific line number in an
- * instance of RSyntaxTextArea.<p>
+ * A "Go To" dialog allowing you to go to a specific line number in an instance
+ * of RSyntaxTextArea.
+ * <p>
  *
  * Example usage:
+ * 
  * <pre>
  * GoToDialog dialog = new GoToDialog(window);
  * dialog.setMaxLineNumberAllowed(textArea.getLineCount());
  * dialog.setVisible(true);
  * int line = dialog.getLineNumber();
  * if (line &gt; 0) {
- *    try {
- *       textArea.setCaretPosition(textArea.getLineStartOffset(line-1));
- *    } catch (BadLocationException ble) {
- *       ble.printStackTrace(); // Never happens
- *    }
+ * 	try {
+ * 		textArea.setCaretPosition(textArea.getLineStartOffset(line - 1));
+ * 	} catch (BadLocationException ble) {
+ * 		ble.printStackTrace(); // Never happens
+ * 	}
  * }
  * </pre>
  *
@@ -63,40 +64,38 @@ public class GoToDialog extends EscapableDialog {
 	private JButton okButton;
 	private JButton cancelButton;
 	private JTextField lineNumberField;
-	private int maxLineNumberAllowed;	// Number of lines in the document.
-	private int lineNumber;			// The line to go to, or -1 for Cancel.
+	private int maxLineNumberAllowed; // Number of lines in the document.
+	private int lineNumber; // The line to go to, or -1 for Cancel.
 	private String errorDialogTitle;
 
 	private static final String MSG = "org.fife.rsta.ui.GoToDialog";
 	private static final ResourceBundle msg = ResourceBundle.getBundle(MSG);
 
-
 	/**
 	 * Creates a new <code>GoToDialog</code>.
 	 *
-	 * @param owner The parent dialog.
+	 * @param owner
+	 *            The parent dialog.
 	 */
 	public GoToDialog(Dialog owner) {
 		super(owner);
 		init();
 	}
 
-
 	/**
 	 * Creates a new <code>GoToDialog</code>.
 	 *
-	 * @param owner The parent window.
+	 * @param owner
+	 *            The parent window.
 	 */
 	public GoToDialog(Frame owner) {
 		super(owner);
 		init();
 	}
 
-
 	private void init() {
 
-		ComponentOrientation orientation = ComponentOrientation.
-									getOrientation(getLocale());
+		ComponentOrientation orientation = ComponentOrientation.getOrientation(getLocale());
 
 		lineNumber = -1;
 		maxLineNumberAllowed = 1; // Empty document has 1 line.
@@ -109,11 +108,10 @@ public class GoToDialog extends EscapableDialog {
 
 		// Make a panel containing the "Line Number" edit box.
 		Box enterLineNumberPane = new Box(BoxLayout.LINE_AXIS);
-		enterLineNumberPane.setBorder(BorderFactory.createEmptyBorder(
-												0, 0, 20, 0));
+		enterLineNumberPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 		lineNumberField = new JTextField(16);
 		lineNumberField.setText("1");
-		AbstractDocument doc = (AbstractDocument)lineNumberField.getDocument();
+		AbstractDocument doc = (AbstractDocument) lineNumberField.getDocument();
 		doc.addDocumentListener(l);
 		doc.setDocumentFilter(new NumberDocumentFilter());
 		JLabel label = UIUtil.newLabel(msg, "LineNumber", lineNumberField);
@@ -141,14 +139,13 @@ public class GoToDialog extends EscapableDialog {
 
 	}
 
-
 	/**
-	 * Called when they've clicked OK or pressed Enter; check the line number
-	 * they entered for validity and if it's okay, close this dialog.  If it
-	 * isn't okay, display an error message.
+	 * Called when they've clicked OK or pressed Enter; check the line number they
+	 * entered for validity and if it's okay, close this dialog. If it isn't okay,
+	 * display an error message.
 	 *
-	 * @return Whether the line number was valid.  In this case, this dialog
-	 *         will be hidden when this method returns.
+	 * @return Whether the line number was valid. In this case, this dialog will be
+	 *         hidden when this method returns.
 	 */
 	private boolean attemptToGetGoToLine() {
 
@@ -156,7 +153,7 @@ public class GoToDialog extends EscapableDialog {
 
 			lineNumber = Integer.parseInt(lineNumberField.getText());
 
-			if (lineNumber<1 || lineNumber>maxLineNumberAllowed) {
+			if (lineNumber < 1 || lineNumber > maxLineNumberAllowed) {
 				lineNumber = -1;
 				throw new NumberFormatException();
 			}
@@ -172,19 +169,19 @@ public class GoToDialog extends EscapableDialog {
 
 	}
 
-
 	/**
-	 * Returns a panel containing the OK and Cancel buttons.  This panel is
-	 * added to the bottom of this dialog.  Applications that don't like these
-	 * buttons right-aligned in the dialog can override this method to change
-	 * that behavior.
+	 * Returns a panel containing the OK and Cancel buttons. This panel is added to
+	 * the bottom of this dialog. Applications that don't like these buttons
+	 * right-aligned in the dialog can override this method to change that behavior.
 	 *
-	 * @param ok The OK button.
-	 * @param cancel The Cancel button.
+	 * @param ok
+	 *            The OK button.
+	 * @param cancel
+	 *            The Cancel button.
 	 * @return A panel containing the two buttons.
 	 */
 	protected Container createButtonPanel(JButton ok, JButton cancel) {
-		JPanel buttonPanel = new JPanel(new GridLayout(1,2, 5,5));
+		JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 5, 5));
 		buttonPanel.add(ok);
 		buttonPanel.add(cancel);
 		JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -192,31 +189,25 @@ public class GoToDialog extends EscapableDialog {
 		return bottomPanel;
 	}
 
-
 	/**
-	 * Displays a message to the user that they have entered an invalid line
-	 * number.  The default implementation displays the error message in a
-	 * modal.  Subclasses that wish to have a slicker error delivery mechanism
-	 * can override.
+	 * Displays a message to the user that they have entered an invalid line number.
+	 * The default implementation displays the error message in a modal. Subclasses
+	 * that wish to have a slicker error delivery mechanism can override.
 	 */
 	protected void displayInvalidLineNumberMessage() {
-		JOptionPane.showMessageDialog(this,
-				msg.getString("LineNumberRange") + maxLineNumberAllowed + ".",
-				getErrorDialogTitle(),
-				JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, msg.getString("LineNumberRange") + maxLineNumberAllowed + ".",
+				getErrorDialogTitle(), JOptionPane.ERROR_MESSAGE);
 	}
 
-
 	/**
-	 * Called when the user clicks Cancel or hits the Escape key.  This
-	 * hides the dialog.
+	 * Called when the user clicks Cancel or hits the Escape key. This hides the
+	 * dialog.
 	 */
 	@Override
 	protected void escapePressed() {
 		lineNumber = -1;
 		super.escapePressed();
 	}
-
 
 	/**
 	 * Returns the title for the error dialog.
@@ -226,24 +217,21 @@ public class GoToDialog extends EscapableDialog {
 	 */
 	public String getErrorDialogTitle() {
 		String title = errorDialogTitle;
-		if (title==null) {
+		if (title == null) {
 			title = msg.getString("ErrorDialog.Title");
 		}
 		return title;
 	}
 
-
 	/**
 	 * Gets the line number the user entered to go to.
 	 *
-	 * @return The line number the user decided to go to, or <code>-1</code>
-	 *         if the dialog was canceled.  If valid, this will be 1-based,
-	 *         not 0-based.
+	 * @return The line number the user decided to go to, or <code>-1</code> if the
+	 *         dialog was canceled. If valid, this will be 1-based, not 0-based.
 	 */
 	public int getLineNumber() {
 		return lineNumber;
 	}
-
 
 	/**
 	 * Returns the maximum line number the user is allowed to enter.
@@ -255,29 +243,28 @@ public class GoToDialog extends EscapableDialog {
 		return maxLineNumberAllowed;
 	}
 
-
 	/**
 	 * Sets the title for the error dialog.
 	 *
-	 * @param title The new title.  If this is <code>null</code>, a default
-	 *        value will be used.
+	 * @param title
+	 *            The new title. If this is <code>null</code>, a default value will
+	 *            be used.
 	 * @see #getErrorDialogTitle()
 	 */
 	public void setErrorDialogTitle(String title) {
 		this.errorDialogTitle = title;
 	}
 
-
 	/**
 	 * Sets the maximum line number for them to enter.
 	 *
-	 * @param max The new maximum line number value.
+	 * @param max
+	 *            The new maximum line number value.
 	 * @see #getMaxLineNumberAllowed()
 	 */
 	public void setMaxLineNumberAllowed(int max) {
 		this.maxLineNumberAllowed = max;
 	}
-
 
 	/**
 	 * Overrides <code>JDialog</code>'s <code>setVisible</code> method; decides
@@ -287,7 +274,7 @@ public class GoToDialog extends EscapableDialog {
 	public void setVisible(boolean visible) {
 		if (visible) {
 			lineNumber = -1;
-			okButton.setEnabled(lineNumberField.getDocument().getLength()>0);
+			okButton.setEnabled(lineNumberField.getDocument().getLength() > 0);
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
@@ -299,7 +286,6 @@ public class GoToDialog extends EscapableDialog {
 		super.setVisible(visible);
 	}
 
-
 	/**
 	 * Listens for events in this dialog.
 	 */
@@ -308,10 +294,9 @@ public class GoToDialog extends EscapableDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object source = e.getSource();
-			if (okButton==source) {
+			if (okButton == source) {
 				attemptToGetGoToLine();
-			}
-			else if (cancelButton==source) {
+			} else if (cancelButton == source) {
 				escapePressed();
 			}
 		}
@@ -322,16 +307,15 @@ public class GoToDialog extends EscapableDialog {
 
 		@Override
 		public void insertUpdate(DocumentEvent e) {
-			okButton.setEnabled(lineNumberField.getDocument().getLength()>0);
+			okButton.setEnabled(lineNumberField.getDocument().getLength() > 0);
 		}
 
 		@Override
 		public void removeUpdate(DocumentEvent e) {
-			okButton.setEnabled(lineNumberField.getDocument().getLength()>0);
+			okButton.setEnabled(lineNumberField.getDocument().getLength() > 0);
 		}
 
 	}
-
 
 	/**
 	 * A document filter that only lets the user enter digits.
@@ -339,36 +323,33 @@ public class GoToDialog extends EscapableDialog {
 	private class NumberDocumentFilter extends DocumentFilter {
 
 		private String fix(String str) {
-			if (str!=null) {
+			if (str != null) {
 				int origLength = str.length();
-				for (int i=0; i<str.length(); i++) {
+				for (int i = 0; i < str.length(); i++) {
 					if (!Character.isDigit(str.charAt(i))) {
-						str = str.substring(0, i) + str.substring(i+1);
+						str = str.substring(0, i) + str.substring(i + 1);
 						i--;
 					}
 				}
-				if (origLength!=str.length()) {
-					UIManager.getLookAndFeel().provideErrorFeedback(
-							GoToDialog.this);
+				if (origLength != str.length()) {
+					UIManager.getLookAndFeel().provideErrorFeedback(GoToDialog.this);
 				}
 			}
 			return str;
 		}
 
 		@Override
-		public void insertString(FilterBypass fb, int offset, String string,
-				AttributeSet attr) throws BadLocationException {
+		public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+				throws BadLocationException {
 			fb.insertString(offset, fix(string), attr);
 		}
 
 		@Override
-		public void replace(DocumentFilter.FilterBypass fb, int offset,
-				int length, String text, AttributeSet attr)
-						throws BadLocationException {
+		public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attr)
+				throws BadLocationException {
 			fb.replace(offset, length, fix(text), attr);
 		}
 
 	}
-
 
 }
