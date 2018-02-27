@@ -29,6 +29,7 @@ What does MEdit feature? Here's the list:
 * One document per window, multiple windows avaliable to open
 * Code folding, bracket matching, animated editing, hyperlink colors, tab lines, matching tags ...
 * Code completion (You can set up code completion for any language).
+* Regex search and replace
 * And MANY MORE!
 
 ## Setup
