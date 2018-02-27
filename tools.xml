@@ -1,8 +1,6 @@
 <?xml version = "1.0"?>
 <medit>
 	<tool>
-		<name>Run java -version.</name>
-		<script>-version</script>
-		<exe>java</exe>
+		<!-- Your code here... -->
 	</tool>
 </medit>

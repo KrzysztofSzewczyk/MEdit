@@ -29,9 +29,9 @@ medit.API = function (instance) {
 		javax.swing.JOptionPane.showMessageDialog(undefined, "[start.b++]: [API Setup]: Please pass instance to medit.API constructor.");
     } else {
 		this.instance = instance;
-		this.ApplicationType = Java.type('medit.API.Application');
-		this.FileType = Java.type('medit.API.File');
-		this.BottombarLabelType = Java.type('medit.API.BottombarLabel');
+		this.ApplicationType = Java.type('medit.legacy.API.Application');
+		this.FileType = Java.type('medit.legacy.API.File');
+		this.BottombarLabelType = Java.type('medit.legacy.API.BottombarLabel');
 		this.Application = undefined;
 		this.getJavaType = function (type){
 			return Java.type(type);

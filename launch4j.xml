@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>D:\MEdit\MEdit.jar</jar>
+  <outfile>D:\MEdit\MEdit.exe</outfile>
+  <errTitle>No JRE installed!</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>D:\MEdit\src\main\java\medit\assets\apps\accessories-text-editor.png</icon>
+  <jre>
+    <path>C:\Users\PC\Desktop\Dokumenty\Prawdziwie losowe liczby\mcc\jdk64\jre</path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+    <initialHeapSize>64</initialHeapSize>
+    <maxHeapSize>1024</maxHeapSize>
+  </jre>
+  <splash>
+    <file>D:\MEdit\src\main\java\medit\assets\logo\MEdit.png</file>
+    <waitForWindow>true</waitForWindow>
+    <timeout>20</timeout>
+    <timeoutErr>true</timeoutErr>
+  </splash>
+  <versionInfo>
+    <fileVersion>1.5.0.0</fileVersion>
+    <txtFileVersion>v1.5.0</txtFileVersion>
+    <fileDescription>MEdit launcher for Windows.</fileDescription>
+    <copyright>Copyright (C) by Krzysztof Szewczyk. Copyright (C) by Robert Futrell.</copyright>
+    <productVersion>1.5.0.0</productVersion>
+    <txtProductVersion>v1.5.0</txtProductVersion>
+    <productName>MEdit</productName>
+    <companyName></companyName>
+    <internalName>MEdit</internalName>
+    <originalFilename>MEdit.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+  <messages>
+    <startupErr>An error occured while starting MEdit.
+Please use lastest version, redownload MEdit or report bug in issues section.</startupErr>
+    <bundledJreErr>This application was configured to use a bundled JRE
+but the runtime is missing or corrupted. Please use lastest version,
+redownload MEdit or report bug in issues section.</bundledJreErr>
+    <jreVersionErr>This application requires a JRE, which is not
+installed on this computer.</jreVersionErr>
+    <launcherErr>The registry refers to a nonexistent JRE
+installation or the runtime is corrupted.
+Please clean up registry.</launcherErr>
+    <instanceAlreadyExistsMsg>Logic Error. Please use lastest version,
+redownload MEdit or report bug in issues section.</instanceAlreadyExistsMsg>
+  </messages>
+</launch4jConfig>

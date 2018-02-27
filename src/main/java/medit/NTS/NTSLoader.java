@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import medit.Crash;
+import medit.legacy.Crash;
 
 /**
  * This class is loader of tools for the new tool system.
