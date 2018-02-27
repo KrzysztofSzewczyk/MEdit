@@ -23,11 +23,11 @@ What does MEdit feature? Here's the list:
 * Scripting possibility using B++ (You can setup autobuild).
 * Own tools using NTS (You can use your favourite compiler with MEdit).
 * 100% Pure Java
-* Featuring 90 Programming Languages
+* Featuring over 90 Programming Languages
 * Eight color themes
 * Unique syntax highlighing for every language.
 * One document per window, multiple windows avaliable to open
-* Code folding, bracket matching, animated editing, hyperlink colors, tab lines, matching tags
+* Code folding, bracket matching, animated editing, hyperlink colors, tab lines, matching tags ...
 * Code completion (You can set up code completion for any language).
 * And MANY MORE!
 
