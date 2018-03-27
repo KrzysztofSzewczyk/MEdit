@@ -21,9 +21,9 @@ MEdit is propably the most advanced Java Swing code editor that is in existence 
 One of the most important things in text editor are features.
 What does MEdit feature? Here's the list:
 
-* Scripting possibility using B++ (You can setup autobuild).
+* Scripting possibility using MEdit's unique language - B++ (You can setup autobuild).
 * Own tools using NTS (You can use your favourite compiler with MEdit).
-* 100% Pure Java
+* Written in 100% Pure Java
 * Featuring over 90 Programming Languages
 * Eight color themes
 * Unique syntax highlighing for every language.
@@ -41,8 +41,7 @@ Eclipse should build it automatically, if not you should press build button.
 You can make .jar file by doubleclicking jardesc file and following instructions
 appearing on screen.
 
-As of now you can use jdk and ant! Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information
-on building, (and eventually contributing to repository) using ant.
+As of now you can use JDK and ANT to build MEdit! Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information on building, (and eventually contributing to repository) using ant.
 
 ## Dependencies
 
