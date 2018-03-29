@@ -48,6 +48,7 @@ import medit.legacy.ActionManagers.ThemesActionManager;
 import medit.legacy.ActionManagers.TimerTaskActionManager;
 import medit.legacy.ActionManagers.ToolActionManager;
 import medit.legacy.ActionManagers.WindowActionManager;
+import javax.swing.JTabbedPane;
 
 /**
  * Main frame for MEdit project. That's where the whole magic is done. It was
@@ -90,6 +91,7 @@ public class MainFrame extends JFrame implements SearchListener {
 
 	public ReplaceToolBar replaceToolBar;
 	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
+	private final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 
 	/**
 	 * Create the frame.
@@ -192,40 +194,6 @@ public class MainFrame extends JFrame implements SearchListener {
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		this.mnLanguage.add(rdbtnmntmEnglish);
-		
-
-		/**
-		 * Editor setup
-		 */
-		final RTextScrollPane scrollPane = new RTextScrollPane();
-		this.contentPane.add(scrollPane, BorderLayout.CENTER);
-
-		this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
-		scrollPane.setViewportView(this.textPane);
-		
-
-		this.textPane.clearParsers();
-		this.textPane.setParserDelay(1);
-		this.textPane.setAnimateBracketMatching(true);
-		this.textPane.setAutoIndentEnabled(true);
-		this.textPane.setAntiAliasingEnabled(true);
-		this.textPane.setBracketMatchingEnabled(true);
-		this.textPane.setCloseCurlyBraces(true);
-		this.textPane.setCloseMarkupTags(true);
-		this.textPane.setCodeFoldingEnabled(true);
-		this.textPane.setHyperlinkForeground(Color.pink);
-		this.textPane.setHyperlinksEnabled(true);
-		this.textPane.setPaintMatchedBracketPair(true);
-		this.textPane.setPaintTabLines(true);
-		
-
-		scrollPane.setIconRowHeaderEnabled(true);
-		scrollPane.setLineNumbersEnabled(true);
-		scrollPane.setFoldIndicatorEnabled(true);
-		
-
-		final ErrorStrip errorStrip = new ErrorStrip(this.textPane);
-		this.contentPane.add(errorStrip, BorderLayout.LINE_END);
 
 		this.findDialog = new FindDialog(this, this);
 		this.replaceDialog = new ReplaceDialog(this, this);
@@ -240,7 +208,6 @@ public class MainFrame extends JFrame implements SearchListener {
 		try {
 			final Theme theme = Theme
 					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
-			theme.apply(this.textPane);
 
 			this.contentPane.add(this.panel, BorderLayout.NORTH);
 			this.panel.setLayout(new BorderLayout(0, 0));
@@ -262,6 +229,42 @@ public class MainFrame extends JFrame implements SearchListener {
 			eam.Delete(toolBar);
 			eam.Undo(toolBar);
 			eam.Redo(toolBar);
+			
+			contentPane.add(tabbedPane, BorderLayout.CENTER);
+			
+
+			/**
+			 * Editor setup
+			 */
+			final RTextScrollPane scrollPane = new RTextScrollPane();
+			tabbedPane.addTab("New tab", null, scrollPane, null);
+			
+					this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
+					scrollPane.setViewportView(this.textPane);
+					
+
+					this.textPane.clearParsers();
+					this.textPane.setParserDelay(1);
+					this.textPane.setAnimateBracketMatching(true);
+					this.textPane.setAutoIndentEnabled(true);
+					this.textPane.setAntiAliasingEnabled(true);
+					this.textPane.setBracketMatchingEnabled(true);
+					this.textPane.setCloseCurlyBraces(true);
+					this.textPane.setCloseMarkupTags(true);
+					this.textPane.setCodeFoldingEnabled(true);
+					this.textPane.setHyperlinkForeground(Color.pink);
+					this.textPane.setHyperlinksEnabled(true);
+					this.textPane.setPaintMatchedBracketPair(true);
+					this.textPane.setPaintTabLines(true);
+					
+
+					scrollPane.setIconRowHeaderEnabled(true);
+					scrollPane.setLineNumbersEnabled(true);
+					scrollPane.setFoldIndicatorEnabled(true);
+					
+
+					final ErrorStrip errorStrip = new ErrorStrip(this.textPane);
+					theme.apply(this.textPane);
 		} catch (final IOException ioe) { // Never happens
 			final Crash dialog = new Crash(ioe);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -316,5 +319,4 @@ public class MainFrame extends JFrame implements SearchListener {
 			text = "Text not found";
 		JOptionPane.showMessageDialog(this, text);
 	}
-
 }

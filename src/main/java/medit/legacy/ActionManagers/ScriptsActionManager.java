@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.script.Invocable;
@@ -56,7 +57,16 @@ public class ScriptsActionManager {
 	public void SetupScripts(final JMenu mnTools) {
 		final NSSLoader tsldr = new NSSLoader();
 		try {
-			final List<NSSEntry> tools = tsldr.loadAll("scripts.xml");
+			List<NSSEntry> tools = null;
+			try {
+				tools = tsldr.loadAll(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + File.separator + "scripts.xml");
+			} catch (URISyntaxException e1) {
+				JOptionPane
+				.showMessageDialog(ScriptsActionManager.this.instance,
+						"Could not locate scripts config file.",
+						"Error.", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			if (tools != null)
 				for (final NSSEntry e : tools) {
 					new Thread(new NSSRunnable(e.getCodeFN()) {
@@ -64,7 +74,12 @@ public class ScriptsActionManager {
 						public void run() {
 							final ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 							try {
-								engine.eval(new FileReader("scripts/start.b++"));
+								try {
+									engine.eval(new FileReader(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + File.separator + "scripts/start.b++"));
+								} catch (URISyntaxException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
 								engine.eval(new FileReader(this.codefn));
 								final Invocable invocable = (Invocable) engine;
 								try {
@@ -92,7 +107,16 @@ public class ScriptsActionManager {
 							new Thread(new NSSRunnable(e.getCodeFN()) {
 								@Override
 								public void run() {
-									final File codefile = new File(this.codefn);
+									File codefile = null;
+									try {
+										codefile = new File(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + File.separator + this.codefn);
+									} catch (URISyntaxException e1) {
+										JOptionPane
+										.showMessageDialog(ScriptsActionManager.this.instance,
+												"Script referenced by \"scripts.xml\" file, named \""
+														+ this.codefn + "\", does not exist.",
+												"Error.", JOptionPane.ERROR_MESSAGE);
+									}
 									if (!codefile.exists()) {
 										JOptionPane
 												.showMessageDialog(ScriptsActionManager.this.instance,
@@ -104,7 +128,15 @@ public class ScriptsActionManager {
 										final ScriptEngine engine = new ScriptEngineManager()
 												.getEngineByName("nashorn");
 										try {
-											engine.eval(new FileReader("scripts/start.b++"));
+											try {
+												engine.eval(new FileReader(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + File.separator + "scripts/start.b++"));
+											} catch (URISyntaxException e1) {
+												JOptionPane
+												.showMessageDialog(ScriptsActionManager.this.instance,
+														"Script referenced by \"scripts.xml\" file, named \""
+																+ "scripts/start.b++" + "\", does not exist.",
+														"Error.", JOptionPane.ERROR_MESSAGE);
+											}
 											engine.eval(new FileReader(this.codefn));
 											final Invocable invocable = (Invocable) engine;
 											try {
