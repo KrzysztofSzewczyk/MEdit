@@ -4,25 +4,26 @@
 </p>
 
 <a href="https://travis-ci.org/KrzysztofSzewczyk/MEdit"><img src="https://travis-ci.org/KrzysztofSzewczyk/MEdit.svg?branch=master"></a>
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Join the chat at https://gitter.im/MITEdit/Lobby](https://badges.gitter.im/MITEdit/Lobby.svg)](https://gitter.im/MITEdit/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![wercker status](https://app.wercker.com/status/91d3762acc455ca396941f6a1ab63f5d/m/master "wercker status")](https://app.wercker.com/project/byKey/91d3762acc455ca396941f6a1ab63f5d)
 
-MEdit is propably the most advanced Java Swing code editor that is in existence and continous development.
-You can check out project javadoc [there](https://krzysztofszewczyk.github.io/MEdit/).
-Also, you can check out project wiki [there](https://github.com/KrzysztofSzewczyk/MEdit/wiki)
-To check out progress of creating new release, check [there](https://github.com/KrzysztofSzewczyk/MEdit/projects)
-To browse list of issues or submit your own, please check [this](https://github.com/KrzysztofSzewczyk/MEdit/issues) place.
+MEdit is propably the most advanced Java Swing code editor that is in existence and continous development. Useful links:
+ * [JavaDOC](https://krzysztofszewczyk.github.io/MEdit/).
+ * [Project WIKI](https://github.com/KrzysztofSzewczyk/MEdit/wiki)
+ * [Roadmap](https://github.com/KrzysztofSzewczyk/MEdit/projects)
+ * [Issues](https://github.com/KrzysztofSzewczyk/MEdit/issues)
+ * [Pull Requests](https://github.com/KrzysztofSzewczyk/MEdit/pulls)
 
 ## Features
 
 One of the most important things in text editor are features.
 What does MEdit feature? Here's the list:
 
-* Scripting possibility using B++ (You can setup autobuild).
+* Scripting possibility using MEdit's unique language - B++ (You can setup autobuild).
 * Own tools using NTS (You can use your favourite compiler with MEdit).
-* 100% Pure Java
+* Written in 100% Pure Java
 * Featuring over 90 Programming Languages
 * Eight color themes
 * Unique syntax highlighing for every language.
@@ -40,8 +41,7 @@ Eclipse should build it automatically, if not you should press build button.
 You can make .jar file by doubleclicking jardesc file and following instructions
 appearing on screen.
 
-As of now you can use jdk and ant! Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information
-on building, (and eventually contributing to repository) using ant.
+As of now you can use JDK and ANT to build MEdit! Check out [this](https://github.com/KrzysztofSzewczyk/MEdit/blob/master/CONTRIBUTING.md) file for information on building, (and eventually contributing to repository) using ant.
 
 ## Dependencies
 
