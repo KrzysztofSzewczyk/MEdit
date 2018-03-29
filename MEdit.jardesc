@@ -4,15 +4,25 @@
     <options buildIfNeeded="true" compress="true" descriptionLocation="/MEdit/MEdit.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
-    <manifest generateManifest="false" mainClassHandleIdentifier="=MEdit/src\/main\/java&lt;medit{SplashScreen.java[SplashScreen" manifestLocation="/MEdit/Manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+    <manifest generateManifest="false" mainClassHandleIdentifier="=MEdit/src\/main\/java&lt;medit.legacy{Start.java[Start" manifestLocation="/MEdit/Manifest" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
         <sealing sealJar="true">
             <packagesToSeal/>
             <packagesToUnSeal/>
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=MEdit/src\/main\/java"/>
+        <file path="/MEdit/README.md"/>
+        <folder path="/MEdit/src"/>
+        <file path="/MEdit/MEdit.png"/>
+        <file path="/MEdit/CONTRIBUTING.md"/>
         <folder path="/MEdit/docs"/>
+        <file path="/MEdit/scripts.xml"/>
+        <folder path="/MEdit/scripts"/>
+        <file path="/MEdit/completion.xml"/>
+        <file path="/MEdit/ISSUE_TEMPLATE.md"/>
+        <file path="/MEdit/CODE_OF_CONDUCT.md"/>
+        <file path="/MEdit/tools.xml"/>
         <file path="/MEdit/LICENSE"/>
+        <javaElement handleIdentifier="=MEdit/src\/main\/java"/>
     </selectedElements>
 </jardesc>

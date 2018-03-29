@@ -2,5 +2,8 @@
 <medit>
 	<tool>
 		<!-- Your code here... -->
+		<name>Run java -version.</name>
+		<script>-version</script>
+		<exe>java</exe>
 	</tool>
 </medit>

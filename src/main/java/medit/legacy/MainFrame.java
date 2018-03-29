@@ -98,7 +98,7 @@ public class MainFrame extends JFrame implements SearchListener {
 	 *
 	 * @param instance2
 	 */
-	public MainFrame() {
+	public MainFrame(String[] args) {
 
 		/**
 		 * Frame setup
@@ -273,6 +273,10 @@ public class MainFrame extends JFrame implements SearchListener {
 		
 
 		this.setVisible(true);
+		
+		if(args != null && args.length >= 1) {
+			
+		}
 	}
 
 	@Override
