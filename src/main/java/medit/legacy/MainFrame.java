@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -89,7 +90,8 @@ public class MainFrame extends JFrame implements SearchListener {
 	public final JMenu mnThemes = new JMenu("Themes");
 	public final JMenu mnTools = new JMenu("Tools");
 	private final JPanel panel = new JPanel();
-	public RTextArea textPane = null;
+	public RSyntaxTextArea textPane = null;
+	public List<JInternalFrame> windows;
 	public ReplaceDialog replaceDialog;
 	public RTextScrollPane scrollPane = null;
 

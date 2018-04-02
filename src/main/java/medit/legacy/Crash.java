@@ -59,6 +59,7 @@ public class Crash extends JDialog {
 				txtr.setText(sStackTrace);
 				txtr.setFont(new Font("Monospaced", Font.PLAIN, 13));
 				scrollPane.setViewportView(txtr);
+				E1.printStackTrace();
 			}
 		}
 		{
