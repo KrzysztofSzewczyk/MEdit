@@ -1,13 +1,11 @@
-medit
-medit.API
-medit.ActionManagers
 medit.NSS
 medit.NTS
-org.fife
+medit.legacy
+medit.legacy.API
+medit.legacy.ActionManagers
 org.fife.io
 org.fife.print
 org.fife.rsta.ui
-org.fife.rsta.ui.demo
 org.fife.rsta.ui.search
 org.fife.ui.autocomplete
 org.fife.ui.rsyntaxtextarea
@@ -17,4 +15,5 @@ org.fife.ui.rsyntaxtextarea.modes
 org.fife.ui.rsyntaxtextarea.parser
 org.fife.ui.rsyntaxtextarea.templates
 org.fife.ui.rtextarea
+org.fife.ui.search
 org.fife.util
