@@ -68,14 +68,17 @@ public class FileActionManager {
 	 */
 
 	public void Exit(final JMenu parent) {
-		final JMenuItem mntmExit = new JMenuItem("Exit");
+		final JMenuItem mntmExit = new JMenuItem("Close");
 		mntmExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_E, InputEvent.CTRL_MASK));
 		mntmExit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (MainFrame.instances == 0)
-					return;
-				FileActionManager.this.instance.dispose();
+				if (MainFrame.instances == 0 || MainFrame.instances == 1)
+					System.exit(0);
+				else {
+					instance.dispose();
+					MainFrame.instances--;
+				}
 			}
 		});
 		parent.add(mntmExit);
@@ -92,9 +95,12 @@ public class FileActionManager {
 		btnSaveButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (MainFrame.instances == 0)
-					return;
-				FileActionManager.this.instance.dispose();
+				if (MainFrame.instances == 0 || MainFrame.instances == 1)
+					System.exit(0);
+				else {
+					instance.dispose();
+					MainFrame.instances--;
+				}
 			}
 		});
 		btnSaveButton.setToolTipText("Close");
@@ -287,7 +293,7 @@ public class FileActionManager {
 							try {
 								Desktop.getDesktop().open(FileActionManager.this.instance.currentFile.getParentFile());
 							} catch (final IOException e1) {
-								/*File is nonexistent. Dont crash!*/
+								/* File is nonexistent. Dont crash! */
 							}
 					}
 				}).start();
@@ -390,7 +396,7 @@ public class FileActionManager {
 						try {
 							FileActionManager.this.instance.currentFile.delete();
 						} catch (final Exception E) {
-							/*Error...*/
+							/* Error... */
 						}
 					}
 				}).start();

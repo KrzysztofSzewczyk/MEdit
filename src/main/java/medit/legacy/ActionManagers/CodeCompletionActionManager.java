@@ -60,7 +60,8 @@ public class CodeCompletionActionManager {
 	private CompletionProvider createCompletionProvider(final String language) {
 		final DefaultCompletionProvider provider = new DefaultCompletionProvider();
 		try {
-			if (new File(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath() + File.separator + "completion.xml").exists()) {
+			if (new File(CodeCompletionActionManager.class.getProtectionDomain().getCodeSource().getLocation().toURI()
+					.getPath() + File.separator + "completion.xml").exists()) {
 				final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = null;
 				try {
@@ -80,8 +81,8 @@ public class CodeCompletionActionManager {
 				}
 				doc.getDocumentElement().normalize();
 				if (doc.getDocumentElement().getNodeName() != "medit") {
-					final Crash dialog = new Crash(
-							new Exception("Parent element in code completion config file has to be equal to \"medit\"!"));
+					final Crash dialog = new Crash(new Exception(
+							"Parent element in code completion config file has to be equal to \"medit\"!"));
 					dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 					dialog.setVisible(true);
 				}
@@ -96,8 +97,7 @@ public class CodeCompletionActionManager {
 				}
 			}
 		} catch (DOMException | URISyntaxException e) {
-			final Crash dialog = new Crash(
-					new Exception("Error: Could not find config file."));
+			final Crash dialog = new Crash(new Exception("Error: Could not find config file."));
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}

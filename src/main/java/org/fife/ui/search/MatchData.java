@@ -10,7 +10,6 @@
  */
 package org.fife.ui.search;
 
-
 /**
  * Information on a match found when searching a document.
  *
@@ -24,53 +23,43 @@ public class MatchData {
 	private String lineText;
 	private int type;
 
-	public static final int TYPE_MATCH		= 0;
-	public static final int TYPE_VERBOSE	= 1;
-	public static final int TYPE_ERROR		= 2;
-
+	public static final int TYPE_MATCH = 0;
+	public static final int TYPE_VERBOSE = 1;
+	public static final int TYPE_ERROR = 2;
 
 	public MatchData(String fileName, String lineNumber, String lineText) {
 		this(fileName, lineNumber, lineText, TYPE_MATCH);
 	}
 
-
-	public MatchData(String fileName, String lineNumber, String lineText,
-					int type) {
+	public MatchData(String fileName, String lineNumber, String lineText, int type) {
 		this.fileName = fileName;
 		this.lineNumber = lineNumber;
 		this.lineText = lineText;
 		this.type = type;
 	}
 
-
 	public String getFileName() {
 		return fileName;
 	}
-
 
 	public String getLineNumber() {
 		return lineNumber;
 	}
 
-
 	public String getLineText() {
 		return lineText;
 	}
 
-
 	public boolean isError() {
-		return type==TYPE_ERROR;
+		return type == TYPE_ERROR;
 	}
-
 
 	public boolean isMatchData() {
-		return type==TYPE_MATCH;
+		return type == TYPE_MATCH;
 	}
-
 
 	public boolean isVerboseSearchInfo() {
-		return type==TYPE_VERBOSE;
+		return type == TYPE_VERBOSE;
 	}
-
 
 }

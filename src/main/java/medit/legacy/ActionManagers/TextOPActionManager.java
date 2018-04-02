@@ -98,8 +98,7 @@ public class TextOPActionManager {
 					public void run() {
 						try {
 							final String text = TextOPActionManager.this.instance.textPane.getSelectedText();
-							TextOPActionManager.this.instance.textPane
-									.replaceSelection(toTitleCase(text));
+							TextOPActionManager.this.instance.textPane.replaceSelection(toTitleCase(text));
 						} catch (final Exception e3) {
 						}
 					}
@@ -171,22 +170,20 @@ public class TextOPActionManager {
 				}).start();
 			}
 		});
-		/*mnCase.add(mntmRandom);
-		final JMenu mnRow = new JMenu("Row");
-		mnTextOperations.add(mnRow);
-		final JMenuItem mntmGoToRow = new JMenuItem("Go to row ...");
-		/**
-		 * This is actionlistener which is creating 'Go to row ...' dialog.
+		/*
+		 * mnCase.add(mntmRandom); final JMenu mnRow = new JMenu("Row");
+		 * mnTextOperations.add(mnRow); final JMenuItem mntmGoToRow = new
+		 * JMenuItem("Go to row ..."); /** This is actionlistener which is creating 'Go
+		 * to row ...' dialog.
 		 *//*
-		mntmGoToRow.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				final GoToLine gtlDlg = new GoToLine(TextOPActionManager.this.instance.instance);
-				gtlDlg.setVisible(true);
-				gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			}
-		});
-		mnRow.add(mntmGoToRow);*/
+			 * mntmGoToRow.addActionListener(new ActionListener() {
+			 * 
+			 * @Override public void actionPerformed(ActionEvent e) { final GoToLine gtlDlg
+			 * = new GoToLine(TextOPActionManager.this.instance.instance);
+			 * gtlDlg.setVisible(true);
+			 * gtlDlg.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE); } });
+			 * mnRow.add(mntmGoToRow);
+			 */
 	}
 
 }

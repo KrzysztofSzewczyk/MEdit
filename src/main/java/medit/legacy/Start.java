@@ -1,6 +1,7 @@
 package medit.legacy;
 
 import java.awt.EventQueue;
+import java.util.Locale;
 
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -14,6 +15,7 @@ public class Start {
 		EventQueue.invokeLater(new Runnable() {
 			@Override
 			public void run() {
+				Locale.setDefault(new Locale("", ""));
 				try {
 					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 					final MainFrame frame = new MainFrame(args);

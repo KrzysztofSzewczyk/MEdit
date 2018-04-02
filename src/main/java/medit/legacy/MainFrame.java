@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,7 +28,6 @@ import org.fife.rsta.ui.search.ReplaceDialog;
 import org.fife.rsta.ui.search.ReplaceToolBar;
 import org.fife.rsta.ui.search.SearchEvent;
 import org.fife.rsta.ui.search.SearchListener;
-import org.fife.ui.rsyntaxtextarea.ErrorStrip;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -48,7 +48,6 @@ import medit.legacy.ActionManagers.ThemesActionManager;
 import medit.legacy.ActionManagers.TimerTaskActionManager;
 import medit.legacy.ActionManagers.ToolActionManager;
 import medit.legacy.ActionManagers.WindowActionManager;
-import javax.swing.JTabbedPane;
 
 /**
  * Main frame for MEdit project. That's where the whole magic is done. It was
@@ -88,15 +87,15 @@ public class MainFrame extends JFrame implements SearchListener {
 	public final JMenu mnTools = new JMenu("Tools");
 	private final JPanel panel = new JPanel();
 	public ReplaceDialog replaceDialog;
+	public RTextScrollPane scrollPane = null;
 
 	public ReplaceToolBar replaceToolBar;
-	public final RSyntaxTextArea textPane = new RSyntaxTextArea();
-	private final JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
-
+	public RSyntaxTextArea textPane = new RSyntaxTextArea();
+	
 	/**
 	 * Create the frame.
 	 *
-	 * @param instance2
+	 * @param args
 	 */
 	public MainFrame(String[] args) {
 
@@ -114,13 +113,13 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.setContentPane(this.contentPane);
 		this.contentPane.setLayout(new BorderLayout(0, 0));
-		
+
 		/**
 		 * Menu bar Setup
 		 */
 		final JMenuBar menuBar = new JMenuBar();
 		this.setJMenuBar(menuBar);
-		
+
 		/**
 		 * Menus setup
 		 */
@@ -133,14 +132,14 @@ public class MainFrame extends JFrame implements SearchListener {
 		menuBar.add(this.mnScripts);
 		menuBar.add(this.mnAbout);
 		menuBar.add(this.mnTextOperations);
-		
+
 		/**
 		 * Menu action managers setup.
 		 */
 
 		final WindowActionManager wam = new WindowActionManager(this);
 		wam.Closing();
-		
+
 		final FileActionManager fam = new FileActionManager(this);
 		fam.New(this.mnFile);
 		fam.Open(this.mnFile);
@@ -153,7 +152,7 @@ public class MainFrame extends JFrame implements SearchListener {
 		fam.RemoveFromDisk(this.mnFile);
 		fam.Separator(this.mnFile);
 		fam.Exit(this.mnFile);
-		
+
 		final EditActionManager eam = new EditActionManager(this);
 		eam.Cut(this.mnEdit);
 		eam.Copy(this.mnEdit);
@@ -164,33 +163,33 @@ public class MainFrame extends JFrame implements SearchListener {
 		eam.Redo(this.mnEdit);
 		eam.Separator(this.mnEdit);
 		eam.Search(this.mnEdit);
-		
+
 		final TextOPActionManager topam = new TextOPActionManager(this);
 		topam.SetupTextOP(this.mnTextOperations);
-		
+
 		final AboutActionManager aam = new AboutActionManager();
 		aam.About(this.mnAbout);
 		final CodeCompletionActionManager ccam = new CodeCompletionActionManager(this);
 		ccam.SetUpCodeCompletion(SyntaxConstants.SYNTAX_STYLE_NONE);
-		
+
 		final LanguageActionManager lam = new LanguageActionManager(this);
 		lam.SetUp(this.mnSyntaxHighlighting, ccam);
-		
+
 		final ThemesActionManager tam = new ThemesActionManager(this);
 		tam.RegisterThemes(this.mnThemes);
-		
+
 		final TimerTaskActionManager ttam = new TimerTaskActionManager(this);
 		ttam.SetUpTimers();
-		
+
 		final BottombarActionManager bbam = new BottombarActionManager(this);
 		bbam.SetUpBottombar();
-		
+
 		final ToolActionManager toolam = new ToolActionManager(this);
 		toolam.SetupTools(this.mnTools);
-		
+
 		final ScriptsActionManager sam = new ScriptsActionManager(this);
 		sam.SetupScripts(this.mnScripts);
-		
+
 		final JRadioButtonMenuItem rdbtnmntmEnglish = new JRadioButtonMenuItem("English");
 		rdbtnmntmEnglish.setSelected(true);
 		this.mnLanguage.add(rdbtnmntmEnglish);
@@ -229,53 +228,46 @@ public class MainFrame extends JFrame implements SearchListener {
 			eam.Delete(toolBar);
 			eam.Undo(toolBar);
 			eam.Redo(toolBar);
-			
-			contentPane.add(tabbedPane, BorderLayout.CENTER);
-			
+			contentPane.add(lblReady, BorderLayout.SOUTH);
 
 			/**
 			 * Editor setup
 			 */
-			final RTextScrollPane scrollPane = new RTextScrollPane();
-			tabbedPane.addTab("New tab", null, scrollPane, null);
-			
-					this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
-					scrollPane.setViewportView(this.textPane);
-					
+			scrollPane = new RTextScrollPane();
+			contentPane.add(scrollPane, BorderLayout.CENTER);
 
-					this.textPane.clearParsers();
-					this.textPane.setParserDelay(1);
-					this.textPane.setAnimateBracketMatching(true);
-					this.textPane.setAutoIndentEnabled(true);
-					this.textPane.setAntiAliasingEnabled(true);
-					this.textPane.setBracketMatchingEnabled(true);
-					this.textPane.setCloseCurlyBraces(true);
-					this.textPane.setCloseMarkupTags(true);
-					this.textPane.setCodeFoldingEnabled(true);
-					this.textPane.setHyperlinkForeground(Color.pink);
-					this.textPane.setHyperlinksEnabled(true);
-					this.textPane.setPaintMatchedBracketPair(true);
-					this.textPane.setPaintTabLines(true);
-					
+			this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
+			scrollPane.setViewportView(this.textPane);
 
-					scrollPane.setIconRowHeaderEnabled(true);
-					scrollPane.setLineNumbersEnabled(true);
-					scrollPane.setFoldIndicatorEnabled(true);
-					
+			this.textPane.clearParsers();
+			this.textPane.setParserDelay(1);
+			this.textPane.setAnimateBracketMatching(true);
+			this.textPane.setAutoIndentEnabled(true);
+			this.textPane.setAntiAliasingEnabled(true);
+			this.textPane.setBracketMatchingEnabled(true);
+			this.textPane.setCloseCurlyBraces(true);
+			this.textPane.setCloseMarkupTags(true);
+			this.textPane.setCodeFoldingEnabled(true);
+			this.textPane.setHyperlinkForeground(Color.pink);
+			this.textPane.setHyperlinksEnabled(true);
+			this.textPane.setPaintMatchedBracketPair(true);
+			this.textPane.setPaintTabLines(true);
 
-					final ErrorStrip errorStrip = new ErrorStrip(this.textPane);
-					theme.apply(this.textPane);
+			scrollPane.setIconRowHeaderEnabled(true);
+			scrollPane.setLineNumbersEnabled(true);
+			scrollPane.setFoldIndicatorEnabled(true);
+
+			theme.apply(this.textPane);
 		} catch (final IOException ioe) { // Never happens
 			final Crash dialog = new Crash(ioe);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		}
-		
 
 		this.setVisible(true);
-		
-		if(args != null && args.length >= 1) {
-			
+
+		if (args != null && args.length >= 1) {
+			//TODO
 		}
 	}
 

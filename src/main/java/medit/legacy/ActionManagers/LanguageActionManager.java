@@ -105,7 +105,8 @@ public class LanguageActionManager {
 		final JMenuItem mntmTcl = new JMenuItem("TCL"); // Look at SQL
 		final JMenuItem mntmTypescript = new JMenuItem("TypeScript");
 		final JMenuItem mntmUnixShell = new JMenuItem("Unix Shell");
-		final JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic"); // It's nice that he separated these guys up and down here.
+		final JMenuItem mntmVisualBasic = new JMenuItem("Visual Basic"); // It's nice that he separated these guys up
+																			// and down here.
 		final JMenuItem mntmWindowsBatch = new JMenuItem("Windows Batch");
 		final JMenuItem mntmXml = new JMenuItem("XML");
 		final JMenuItem mntmYaml = new JMenuItem("YAML");
