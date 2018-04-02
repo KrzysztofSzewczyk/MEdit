@@ -9,9 +9,10 @@
  */
 package org.fife.ui.search;
 
+
 /**
- * Interface that identifies a component that displays search or replace
- * information in a <code>FindInFilesDialog</code> or
+ * Interface that identifies a component that displays search or
+ * replace information in a <code>FindInFilesDialog</code> or
  * <code>ReplaceInFilesDialog</code>.
  *
  * @author Robert Futrell
@@ -22,15 +23,14 @@ interface ResultsComponent {
 	/**
 	 * Adds data on a match to the component.
 	 *
-	 * @param matchData
-	 *            The data.
-	 * @param dirName
-	 *            The "root directory" searching was done in. This is used so all
-	 *            file paths displayed in are abbreviated to be relative to this
-	 *            directory.
+	 * @param matchData The data.
+	 * @param dirName The "root directory" searching was done in.  This is
+	 *        used so all file paths displayed in are abbreviated to be
+	 *        relative to this directory.
 	 * @see #clear()
 	 */
 	public void addMatchData(MatchData matchData, String dirName);
+
 
 	/**
 	 * Clears all match results from the table.
@@ -39,14 +39,15 @@ interface ResultsComponent {
 	 */
 	public void clear();
 
+
 	/**
 	 * Returns the match data displayed in the specified row.
 	 *
-	 * @param row
-	 *            The row.
+	 * @param row The row.
 	 * @return The match data.
 	 */
 	public MatchData getMatchDataForRow(int row);
+
 
 	/**
 	 * Returns the number of rows displayed in this component.
@@ -55,6 +56,7 @@ interface ResultsComponent {
 	 */
 	public int getRowCount();
 
+
 	/**
 	 * Returns the row selected, or <code>-1</code> if none.
 	 *
@@ -62,10 +64,12 @@ interface ResultsComponent {
 	 */
 	public int getSelectedRow();
 
+
 	/**
-	 * Allows the results component to update its appearance after having lots of
-	 * data added to it.
+	 * Allows the results component to update its appearance after
+	 * having lots of data added to it.
 	 */
 	public void prettyUp();
+
 
 }

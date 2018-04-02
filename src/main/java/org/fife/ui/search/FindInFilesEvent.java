@@ -12,6 +12,7 @@ package org.fife.ui.search;
 
 import java.util.EventObject;
 
+
 /**
  * Event fired by <code>FindInFileDialog</code>s when the user clicks on a
  * match.
@@ -29,27 +30,26 @@ public class FindInFilesEvent extends EventObject {
 	private String fileName;
 
 	/**
-	 * The line number of the match they clicked. Note that this value may be
-	 * <code>-1</code> signifying that no match was found (i.e., they clicked on a
-	 * "verbose" informational line).
+	 * The line number of the match they clicked.  Note that this value may be
+	 * <code>-1</code> signifying that no match was found (i.e., they clicked on
+	 * a "verbose" informational line).
 	 */
 	private int line;
+
 
 	/**
 	 * Constructor.
 	 *
-	 * @param source
-	 *            The find-in-files dialog that fired this event.
-	 * @param fileName
-	 *            The name of the file of the match they clicked.
-	 * @param line
-	 *            The line number of the match they clicked.
+	 * @param source The find-in-files dialog that fired this event.
+	 * @param fileName The name of the file of the match they clicked.
+	 * @param line The line number of the match they clicked.
 	 */
 	public FindInFilesEvent(Object source, String fileName, int line) {
 		super(source);
 		this.fileName = fileName;
 		this.line = line;
 	}
+
 
 	/**
 	 * Returns the name of the file for the match of this event.
@@ -60,6 +60,7 @@ public class FindInFilesEvent extends EventObject {
 		return fileName;
 	}
 
+
 	/**
 	 * Returns the line number for the match of this event.
 	 *
@@ -68,5 +69,6 @@ public class FindInFilesEvent extends EventObject {
 	public int getLine() {
 		return line;
 	}
+
 
 }

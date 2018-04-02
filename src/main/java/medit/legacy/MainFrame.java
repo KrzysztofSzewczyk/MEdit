@@ -7,8 +7,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -48,7 +48,6 @@ import medit.legacy.ActionManagers.ThemesActionManager;
 import medit.legacy.ActionManagers.TimerTaskActionManager;
 import medit.legacy.ActionManagers.ToolActionManager;
 import medit.legacy.ActionManagers.WindowActionManager;
-import javax.swing.JDesktopPane;
 
 /**
  * Main frame for MEdit project. That's where the whole magic is done. It was
