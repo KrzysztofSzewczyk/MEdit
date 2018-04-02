@@ -48,6 +48,7 @@ import medit.legacy.ActionManagers.ThemesActionManager;
 import medit.legacy.ActionManagers.TimerTaskActionManager;
 import medit.legacy.ActionManagers.ToolActionManager;
 import medit.legacy.ActionManagers.WindowActionManager;
+import javax.swing.JDesktopPane;
 
 /**
  * Main frame for MEdit project. That's where the whole magic is done. It was
@@ -91,6 +92,7 @@ public class MainFrame extends JFrame implements SearchListener {
 
 	public ReplaceToolBar replaceToolBar;
 	public RSyntaxTextArea textPane = new RSyntaxTextArea();
+	private final JDesktopPane desktopPane = new JDesktopPane();
 	
 	/**
 	 * Create the frame.
@@ -258,6 +260,8 @@ public class MainFrame extends JFrame implements SearchListener {
 			scrollPane.setFoldIndicatorEnabled(true);
 
 			theme.apply(this.textPane);
+			
+			contentPane.add(desktopPane, BorderLayout.WEST);
 		} catch (final IOException ioe) { // Never happens
 			final Crash dialog = new Crash(ioe);
 			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
