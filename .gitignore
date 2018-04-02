@@ -25,3 +25,6 @@ packages/
 
 # Suggested by Sebastian Krajewski
 MEdit.jar
+
+# My archive files
+*.7z
