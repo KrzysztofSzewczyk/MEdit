@@ -31,6 +31,7 @@ import org.fife.rsta.ui.search.SearchListener;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.fife.ui.rtextarea.RTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
@@ -48,6 +49,8 @@ import medit.legacy.ActionManagers.ThemesActionManager;
 import medit.legacy.ActionManagers.TimerTaskActionManager;
 import medit.legacy.ActionManagers.ToolActionManager;
 import medit.legacy.ActionManagers.WindowActionManager;
+import java.awt.FlowLayout;
+import java.awt.SystemColor;
 
 /**
  * Main frame for MEdit project. That's where the whole magic is done. It was
@@ -86,12 +89,12 @@ public class MainFrame extends JFrame implements SearchListener {
 	public final JMenu mnThemes = new JMenu("Themes");
 	public final JMenu mnTools = new JMenu("Tools");
 	private final JPanel panel = new JPanel();
+	public RTextArea textPane = null;
 	public ReplaceDialog replaceDialog;
 	public RTextScrollPane scrollPane = null;
 
 	public ReplaceToolBar replaceToolBar;
-	public RSyntaxTextArea textPane = new RSyntaxTextArea();
-	private final JDesktopPane desktopPane = new JDesktopPane();
+	public final JDesktopPane desktopPane = new JDesktopPane();
 	
 	/**
 	 * Create the frame.
@@ -205,67 +208,31 @@ public class MainFrame extends JFrame implements SearchListener {
 		this.replaceToolBar = new ReplaceToolBar(this);
 		this.replaceToolBar.setSearchContext(context);
 
-		try {
-			final Theme theme = Theme
-					.load(this.getClass().getResourceAsStream("/org/fife/ui/rsyntaxtextarea/themes/default.xml"));
+		this.contentPane.add(this.panel, BorderLayout.NORTH);
+		this.panel.setLayout(new BorderLayout(0, 0));
+		/**
+		 * Toolbar setup.
+		 */
+		final JToolBar toolBar = new JToolBar();
+		this.panel.add(toolBar, BorderLayout.WEST);
+		toolBar.setFloatable(false);
 
-			this.contentPane.add(this.panel, BorderLayout.NORTH);
-			this.panel.setLayout(new BorderLayout(0, 0));
-			/**
-			 * Toolbar setup.
-			 */
-			final JToolBar toolBar = new JToolBar();
-			this.panel.add(toolBar, BorderLayout.WEST);
-			toolBar.setFloatable(false);
+		fam.New(toolBar);
+		fam.Open(toolBar);
+		fam.Save(toolBar);
+		fam.Exit(toolBar);
 
-			fam.New(toolBar);
-			fam.Open(toolBar);
-			fam.Save(toolBar);
-			fam.Exit(toolBar);
-
-			eam.Cut(toolBar);
-			eam.Copy(toolBar);
-			eam.Paste(toolBar);
-			eam.Delete(toolBar);
-			eam.Undo(toolBar);
-			eam.Redo(toolBar);
-			contentPane.add(lblReady, BorderLayout.SOUTH);
-
-			/**
-			 * Editor setup
-			 */
-			scrollPane = new RTextScrollPane();
-			contentPane.add(scrollPane, BorderLayout.CENTER);
-
-			this.textPane.setFont(new Font("Monospaced", Font.PLAIN, 13));
-			scrollPane.setViewportView(this.textPane);
-
-			this.textPane.clearParsers();
-			this.textPane.setParserDelay(1);
-			this.textPane.setAnimateBracketMatching(true);
-			this.textPane.setAutoIndentEnabled(true);
-			this.textPane.setAntiAliasingEnabled(true);
-			this.textPane.setBracketMatchingEnabled(true);
-			this.textPane.setCloseCurlyBraces(true);
-			this.textPane.setCloseMarkupTags(true);
-			this.textPane.setCodeFoldingEnabled(true);
-			this.textPane.setHyperlinkForeground(Color.pink);
-			this.textPane.setHyperlinksEnabled(true);
-			this.textPane.setPaintMatchedBracketPair(true);
-			this.textPane.setPaintTabLines(true);
-
-			scrollPane.setIconRowHeaderEnabled(true);
-			scrollPane.setLineNumbersEnabled(true);
-			scrollPane.setFoldIndicatorEnabled(true);
-
-			theme.apply(this.textPane);
-			
-			contentPane.add(desktopPane, BorderLayout.WEST);
-		} catch (final IOException ioe) { // Never happens
-			final Crash dialog = new Crash(ioe);
-			dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		}
+		eam.Cut(toolBar);
+		eam.Copy(toolBar);
+		eam.Paste(toolBar);
+		eam.Delete(toolBar);
+		eam.Undo(toolBar);
+		eam.Redo(toolBar);
+		contentPane.add(lblReady, BorderLayout.SOUTH);
+		desktopPane.setBackground(new Color(240, 255, 255));
+		
+		contentPane.add(desktopPane, BorderLayout.CENTER);
+		desktopPane.setLayout(new BorderLayout(0, 0));
 
 		this.setVisible(true);
 
