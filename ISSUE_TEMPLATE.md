@@ -1,14 +1,14 @@
 ### Which area of MEdit are we dealing with? (Scripts, tools, editor in general, functionality, look):
 
-[//]: # (Please uncomment options that are correct in your case:)
+[//]: # (Please mark valid option with X:)
 
-[//]: # (- [X] I'm encountering a bug)
+ - [ ] I'm encountering a bug
 
-[//]: # (- [X] I'm proposing enchancement)
+ - [ ] I'm proposing enchancement
 
-[//]: # (- [X] I want something other)
+ - [ ] I want something other
 
-[//]: # (Please remove h3, if it doesn't match with your selection)
+[//]: # (Please remove h3, if it doesn't match with your selection. REMOVE THE TITLE, LEAVE ONLY INNER HEADERS.)
 
 ### In case of selecting first answer:
 #### Steps to reproduce:
