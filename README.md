@@ -9,6 +9,9 @@
 
 [![wercker status](https://app.wercker.com/status/91d3762acc455ca396941f6a1ab63f5d/m/master "wercker status")](https://app.wercker.com/project/byKey/91d3762acc455ca396941f6a1ab63f5d)
 
+# Dead
+It's hard to say for me, but this project is no longer alive.
+
 MEdit is propably the most advanced Java Swing code editor that is in existence and continous development. Useful links:
  * [JavaDOC](https://krzysztofszewczyk.github.io/MEdit/).
  * [Project WIKI](https://github.com/KrzysztofSzewczyk/MEdit/wiki)
